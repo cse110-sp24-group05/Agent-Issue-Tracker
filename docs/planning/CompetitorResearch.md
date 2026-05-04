@@ -119,3 +119,57 @@ _Figure 5 - The word “agent” appears on Linear’s new product page 25 times
 
 - Letting agents write too many issues: As people discussed on this Reddit thread I found, the issue of what not to build is a big challenge in project management. If - AI is not monitored, it will come up with a bunch of issues, most of which will have to be cut.
 - Automations: while agent automations are nice, they’re complex and would add too much scope to our project.
+
+----
+
+----
+
+## Atlassian Trello
+A Kanban-style issue tracker that represents tasks as cards moving across lists, making it highly visual and easy to use with minimal setup. Its biggest advantage over Jira, GitHub Issues, and Linear is its flexibility and low friction—there are no rigid schemas or complex workflows, which makes it especially useful for agent-based systems or loosely defined tasks. Unlike Jira, which is powerful but often overcomplicated, Trello allows teams to get started immediately without heavy configuration or training. Compared to GitHub Issues, it is more accessible to non-developers and supports cross-functional collaboration without being tied to a codebase. While Linear offers a fast and modern developer experience, it is still more structured than Trello and less adaptable to unconventional workflows. Trello’s visual board makes it easy to track progress and identify bottlenecks at a glance. However, it lacks advanced features like reporting, sprint management, and deep integrations that larger engineering teams may need. Overall, Trello is a better choice when simplicity, flexibility, and quick onboarding are more important than structure and scalability.
+
+**Figure 6 - Bug Tracker Board screenshot from “How to Use Trello for Bug Tracking (Simple Issue Management)”**
+
+**Create your first Trello Board Guide**
+
+## Best Features
+- **Mobile-friendly** – Works smoothly across devices  
+- **Visual Kanban interface** – Drag-and-drop boards make workflows intuitive and easy to understand at a glance  
+- **Low setup / low friction** – You can start tracking tasks in minutes with no complex configuration  
+- **Highly flexible** – No rigid schema; you can customize boards for any workflow (engineering, agents, personal, etc.)  
+- **Easy collaboration** – Accessible to non-technical users, great for cross-functional teams  
+- **Card-based organization** – Each task can hold comments, checklists, attachments, and due dates in one place  
+- **Automation (Butler)** – Built-in automation for recurring tasks and workflow triggers  
+- **Integrations (“Power-Ups”)** – Connects with tools like Slack, Google Drive, and GitHub  
+
+## Weaknesses
+- **Lack of structure** – No strong enforcement of workflows, issue types, or relationships between tasks  
+- **Limited reporting/analytics** – No native velocity tracking, burndown charts, or deep insights  
+- **Not ideal for large-scale engineering teams** – Becomes messy as projects grow  
+- **Weak developer integration** – Not as tightly connected to code as GitHub Issues  
+- **No built-in sprint management** – Agile features require workarounds or add-ons  
+- **Can become cluttered** – Boards get overwhelming without discipline  
+- **Limited hierarchy** – No native epics/subtasks structure like Jira or Linear  
+- **Permissions are basic** – Less granular control compared to enterprise tools  
+
+
+## ClickUp 
+A highly customizable all-in-one work management platform that combines issue tracking, project management, docs, dashboards, and automation into a single workspace. For agent-style issue tracking, it acts like a flexible database where tasks (or “issues”) can be structured with custom fields, statuses, dependencies, and workflows. Its biggest appeal is that it can be shaped to fit almost any process—from simple Kanban boards to complex engineering ticketing systems—without needing multiple tools. It is often used as a middle ground between lightweight tools like Trello and heavy systems like Jira.
+
+**ClickUp Startup Guide**
+
+## Strengths
+- **Highly customizable workflows** – You can design your own issue tracking system with custom statuses, fields, and hierarchies (Spaces → Lists → Tasks)  
+- **All-in-one platform** – Combines tasks, docs, dashboards, chat, and goals in one system  
+- **Strong issue tracking features** – Supports bug tracking, ticketing, and structured resolution flows in a single workspace  
+- **Automation support** – Can trigger actions like assignments, notifications, and status updates automatically  
+- **Good collaboration tools** – Comments, tagging, and shared views make cross-functional teamwork easier  
+- **Scalable structure** – Works for individuals, startups, and large teams due to its hierarchy system  
+- **Integrations + AI features** – Connects with tools like GitHub, Slack, and includes AI-assisted task handling  
+
+## Weaknesses
+- **Can become overly complex** – The flexibility often leads to “tool sprawl” and messy configurations  
+- **Performance issues at scale** – Larger workspaces can feel slow or cluttered (common user complaint)  
+- **Steep learning curve** – More setup required compared to Trello or Linear  
+- **Bloat from too many features** – Some teams feel it tries to do everything instead of doing a few things perfectly  
+- **Inconsistent UX across features** – Different parts of the app can feel disconnected  
+- **Advanced features locked behind paid tiers** – Some automation, dashboards, and permissions require higher plans  
