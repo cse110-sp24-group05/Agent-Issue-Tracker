@@ -72,3 +72,41 @@ export function fmtDateTime(iso) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
        + ', ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 }
+
+/**
+ * Color-coded flash highlight for an entity (table row or board card).
+ * Adds a class for ~2.2s that pulses background + outline so a developer
+ * can immediately spot what changed. Each `kind` has its own color:
+ *
+ *   create   → green   (something new appeared)
+ *   claim    → amber   (in-progress)
+ *   complete → purple  (pending review)
+ *   close    → green-dark (done)
+ *   block    → red
+ *   update   → blue    (generic / default)
+ *
+ * Looks up *every* element with [data-id="id"] so it lights up in both
+ * the list view and the board view simultaneously when they're side-by-side.
+ */
+const FLASH_KIND = {
+  create:   { cls: 'flash-create',   ms: 2200 },
+  claim:    { cls: 'flash-claim',    ms: 2200 },
+  complete: { cls: 'flash-complete', ms: 2200 },
+  close:    { cls: 'flash-close',    ms: 2200 },
+  block:    { cls: 'flash-block',    ms: 2200 },
+  update:   { cls: 'flash-update',   ms: 1800 }
+};
+
+const ALL_FLASH_CLASSES = Object.values(FLASH_KIND).map(c => c.cls);
+
+export function flashEntity(id, kind = 'update') {
+  if (!id) return;
+  const cfg = FLASH_KIND[kind] || FLASH_KIND.update;
+  document.querySelectorAll(`[data-id="${CSS.escape(id)}"]`).forEach(el => {
+    el.classList.remove(...ALL_FLASH_CLASSES);
+    // Force reflow so the animation restarts even if the same class was just removed.
+    void el.offsetWidth;
+    el.classList.add(cfg.cls);
+    setTimeout(() => el.classList.remove(cfg.cls), cfg.ms);
+  });
+}

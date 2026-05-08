@@ -10,6 +10,7 @@ import {
   getIssues, claimIssue, postResult, closeIssue, createIssue,
   getApprovalMode, saveApprovalMode
 } from './data.js';
+import { flashEntity } from './ui.js';
 
 // ── Constants ────────────────────────────────────────────────────
 const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
@@ -64,13 +65,10 @@ function notify() {
   document.dispatchEvent(new CustomEvent('ait:data-changed'));
 }
 
-function flash(id) {
-  const el = document.querySelector(`[data-id="${id}"]`);
-  if (!el) return;
-  el.classList.remove('sim-flash');
-  void el.offsetWidth; // force reflow so animation restarts
-  el.classList.add('sim-flash');
-  setTimeout(() => el.classList.remove('sim-flash'), 1600);
+// Local wrapper kept so existing call sites stay readable;
+// delegates to the shared color-coded helper in ui.js.
+function flash(id, kind = 'update') {
+  flashEntity(id, kind);
 }
 
 // ── Queue helpers ────────────────────────────────────────────────
@@ -135,9 +133,9 @@ const PANEL_HTML = `
       </div>
       <div class="sim-speed-row">
         <div class="sim-speed-btns">
-          <button class="sim-speed-btn" data-speed="3000">Slow 3s</button>
-          <button class="sim-speed-btn active" data-speed="1500">Med 1.5s</button>
-          <button class="sim-speed-btn" data-speed="400">Fast 0.4s</button>
+          <button class="sim-speed-btn" data-speed="4000">Slow 4s</button>
+          <button class="sim-speed-btn active" data-speed="2500">Med 2.5s</button>
+          <button class="sim-speed-btn" data-speed="800">Fast 0.8s</button>
         </div>
       </div>
       <div class="sim-status" id="sim-status"></div>
@@ -224,7 +222,7 @@ document.getElementById('sim-claim-next').addEventListener('click', () => {
   claimIssue(issue.id, name);
   simLog(`POST /api/claim → { id: "${issue.id}", agent: "${name}" }`);
   notify();
-  flash(issue.id);
+  flash(issue.id, 'claim');
   setStatus(`Claimed ${issue.id} (${issue.priority})`);
 });
 
@@ -243,17 +241,18 @@ document.getElementById('sim-complete').addEventListener('click', () => {
 
   postResult(issue.id, result, tokens, timeSpent);
   simLog(`POST /api/complete → { id: "${issue.id}", tokens: ${tokens}, time: ${timeSpent}m }`);
+  notify();
+  flash(issue.id, 'complete');
 
   if (mode === 'auto-close') {
     closeIssue(issue.id);
     simLog(`POST /api/close → ${issue.id} closed`);
     setStatus(`Closed ${issue.id} · ${tokens} tok burned`);
+    notify();
+    setTimeout(() => flash(issue.id, 'close'), 600);
   } else {
     setStatus(`${issue.id} submitted for review`);
   }
-
-  notify();
-  flash(issue.id);
 });
 
 // ── Single action: Create Issue (Agent) ──────────────────────────
@@ -263,6 +262,8 @@ document.getElementById('sim-create').addEventListener('click', () => {
   const issue  = createIssue({ ...preset, creator: name, created_by: name });
   simLog(`POST /api/issues/create → { id: "${issue.id}", priority: "${issue.priority}", title: "${issue.title.slice(0, 40)}…" }`);
   notify();
+  // Wait one tick so the new row/card is rendered before we try to flash it.
+  setTimeout(() => flash(issue.id, 'create'), 60);
   setStatus(`Created ${issue.id}`);
 });
 
@@ -272,7 +273,7 @@ document.getElementById('sim-create').addEventListener('click', () => {
 // shows up in the queue without restarting auto-run.
 
 let autoActive    = false;
-let autoSpeed     = 1500;
+let autoSpeed     = 2500;
 let autoTimerId   = null;
 let autoSleepResolve = null;
 
@@ -322,7 +323,7 @@ async function runAutoLoop() {
     claimIssue(issue.id, name);
     simLog(`POST /api/claim → ${issue.id} locked by ${name}`);
     notify();
-    flash(issue.id);
+    flash(issue.id, 'claim');
 
     if (!autoActive) return;
     await autoSleep(autoSpeed, `working on ${issue.id}…`);
@@ -335,7 +336,7 @@ async function runAutoLoop() {
     postResult(issue.id, result, tokens, timeSpent);
     simLog(`POST /api/complete → ${issue.id} · ${tokens} tok · ${timeSpent}m`);
     notify();
-    flash(issue.id);
+    flash(issue.id, 'complete');
 
     if (!autoActive) return;
     await autoSleep(autoSpeed, `submitting ${issue.id}…`);
@@ -347,7 +348,7 @@ async function runAutoLoop() {
       closeIssue(issue.id);
       simLog(`POST /api/close → ${issue.id} closed`);
       notify();
-      flash(issue.id);
+      flash(issue.id, 'close');
     } else {
       simLog(`${issue.id} → pending-review (approval required)`);
     }

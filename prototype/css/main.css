@@ -515,3 +515,56 @@ select {
   color: var(--color-text-muted);
   margin-left: var(--space-1);
 }
+
+/* ─── Color-coded change highlights ─────────────────────────────── */
+/* Used by ui.js flashEntity() — pulses background + outline so a
+   developer can spot the row/card that just changed. Each action has
+   its own hue; outline (not border) is used so it doesn't disturb the
+   priority left-border on board cards. */
+
+@keyframes flash-create-kf {
+  0%   { background-color: rgba(22, 163, 74, 0.32);  outline-color: rgba(22, 163, 74, 0.85); outline-offset: 0; }
+  60%  { background-color: rgba(22, 163, 74, 0.22);  outline-color: rgba(22, 163, 74, 0.55); }
+  100% { background-color: transparent;              outline-color: transparent; }
+}
+@keyframes flash-claim-kf {
+  0%   { background-color: rgba(202, 138, 4, 0.32);  outline-color: rgba(202, 138, 4, 0.9); }
+  60%  { background-color: rgba(202, 138, 4, 0.20); }
+  100% { background-color: transparent;              outline-color: transparent; }
+}
+@keyframes flash-complete-kf {
+  0%   { background-color: rgba(124, 58, 237, 0.30); outline-color: rgba(124, 58, 237, 0.9); }
+  60%  { background-color: rgba(124, 58, 237, 0.20); }
+  100% { background-color: transparent;              outline-color: transparent; }
+}
+@keyframes flash-close-kf {
+  0%   { background-color: rgba(21, 128, 61, 0.32);  outline-color: rgba(21, 128, 61, 0.95); }
+  60%  { background-color: rgba(21, 128, 61, 0.20); }
+  100% { background-color: transparent;              outline-color: transparent; }
+}
+@keyframes flash-block-kf {
+  0%   { background-color: rgba(220, 38, 38, 0.30);  outline-color: rgba(220, 38, 38, 0.9); }
+  60%  { background-color: rgba(220, 38, 38, 0.20); }
+  100% { background-color: transparent;              outline-color: transparent; }
+}
+@keyframes flash-update-kf {
+  0%   { background-color: rgba(37, 99, 235, 0.28);  outline-color: rgba(37, 99, 235, 0.85); }
+  100% { background-color: transparent;              outline-color: transparent; }
+}
+
+.flash-create,
+.flash-claim,
+.flash-complete,
+.flash-close,
+.flash-block,
+.flash-update {
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+}
+
+.flash-create   { animation: flash-create-kf   2.2s ease-out forwards; }
+.flash-claim    { animation: flash-claim-kf    2.2s ease-out forwards; }
+.flash-complete { animation: flash-complete-kf 2.2s ease-out forwards; }
+.flash-close    { animation: flash-close-kf    2.2s ease-out forwards; }
+.flash-block    { animation: flash-block-kf    2.2s ease-out forwards; }
+.flash-update   { animation: flash-update-kf   1.8s ease-out forwards; }

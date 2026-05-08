@@ -15,6 +15,7 @@ import {
   createIssue, claimIssue, postResult, closeIssue,
   getIssues, saveApprovalMode,
 } from './data.js';
+import { flashEntity } from './ui.js';
 
 const DEMO_STEP  = 'ait_demo_step';
 const DEMO_ISSUE = 'ait_demo_issue';
@@ -104,13 +105,8 @@ function demoToast(msg) {
 // ── Misc helpers ───────────────────────────────────────────────────
 function changed() { document.dispatchEvent(new CustomEvent('ait:data-changed')); }
 
-function flash(id) {
-  const el = document.querySelector(`[data-id="${id}"]`);
-  if (!el) return;
-  el.classList.remove('sim-flash');
-  void el.offsetWidth;
-  el.classList.add('sim-flash');
-  setTimeout(() => el.classList.remove('sim-flash'), 1600);
+function flash(id, kind = 'update') {
+  flashEntity(id, kind);
 }
 
 // Abort-aware wait: polls every 80 ms so ESC stops the demo quickly.
@@ -128,6 +124,16 @@ function wait(ms) {
   });
 }
 
+// ── Demo cadence ───────────────────────────────────────────────────
+// Tuned slow on purpose so an audience can read each step's narration,
+// see the colored flash on the affected row/card, and follow what the
+// agent is doing. If you tighten these, also tighten the flash
+// animation duration (~2.2s) in main.css to match.
+const PAUSE_READ_NARRATION = 1200; // pause AFTER showing a narration before firing the action
+const PAUSE_AFTER_ACTION   = 4000; // pause AFTER an action so the colored flash is visible
+const PAUSE_AGENT_WORKING  = 6000; // longer pause for the "agent working" step
+const PAUSE_BEFORE_NAV     = 3000; // give the audience a beat before page change
+
 // ── Main demo sequence (runs on index.html) ────────────────────────
 async function runDemo() {
   running = true;
@@ -137,7 +143,7 @@ async function runDemo() {
 
   // ── Step 1: AI-assisted issue creation ──────────────────────────
   showStep(1, 'Developer creates an issue with AI assist...');
-  await wait(500);
+  await wait(PAUSE_READ_NARRATION);
   if (aborted) return cleanup();
 
   const issue = createIssue({
@@ -151,18 +157,19 @@ async function runDemo() {
     created_by:    'llm-assist',
   });
   changed();
-  setTimeout(() => flash(issue.id), 60);
+  // green flash = something new appeared
+  setTimeout(() => flash(issue.id, 'create'), 80);
 
-  await wait(2000);
+  await wait(PAUSE_AFTER_ACTION);
   if (aborted) return cleanup();
 
-  // ── Step 2: GitHub mirror (createIssue already fired the side effect) ──
+  // ── Step 2: GitHub mirror ───────────────────────────────────────
   showStep(2, 'Issue mirrors to GitHub automatically...');
   const fresh = getIssues().find(i => i.id === issue.id);
   const ghNum = fresh?.github_number ?? Math.floor(Math.random() * 900) + 100;
   demoToast(`✅ GitHub issue #${ghNum} created`);
 
-  await wait(2000);
+  await wait(PAUSE_AFTER_ACTION);
   if (aborted) return cleanup();
 
   // ── Step 3: Agent reads queue ────────────────────────────────────
@@ -173,7 +180,7 @@ async function runDemo() {
     document.getElementById('sim-read-queue')?.click();
   }
 
-  await wait(2000);
+  await wait(PAUSE_AFTER_ACTION);
   if (aborted) return cleanup();
 
   // ── Step 4: Agent claims ─────────────────────────────────────────
@@ -182,23 +189,30 @@ async function runDemo() {
   const nameEl = document.getElementById('sim-agent-name');
   if (nameEl) nameEl.value = agentName;
 
+  await wait(PAUSE_READ_NARRATION);
+  if (aborted) return cleanup();
+
   claimIssue(issue.id, agentName);
   changed();
-  setTimeout(() => flash(issue.id), 60);
+  // amber flash = claimed / now in-progress
+  setTimeout(() => flash(issue.id, 'claim'), 80);
 
-  await wait(2000);
+  await wait(PAUSE_AFTER_ACTION);
   if (aborted) return cleanup();
 
   // ── Step 5: Agent working ────────────────────────────────────────
   showStep(5, 'Agent working... (in Cursor/Claude Code)', true);
   demoToast('🔄 claude-agent-demo is processing the issue...');
 
-  await wait(3000);
+  await wait(PAUSE_AGENT_WORKING);
   if (aborted) return cleanup();
 
   // ── Step 6: Post result ──────────────────────────────────────────
   showStep(6, 'Agent posts result back to AIT...');
   saveApprovalMode('require-review'); // keep in pending-review so step 8 can close it
+
+  await wait(PAUSE_READ_NARRATION);
+  if (aborted) return cleanup();
 
   postResult(
     issue.id,
@@ -207,9 +221,10 @@ async function runDemo() {
     23,
   );
   changed();
-  setTimeout(() => flash(issue.id), 60);
+  // purple flash = pending review
+  setTimeout(() => flash(issue.id, 'complete'), 80);
 
-  await wait(2000);
+  await wait(PAUSE_AFTER_ACTION);
   if (aborted) return cleanup();
 
   // ── Step 7: Navigate to dashboard ───────────────────────────────
@@ -217,7 +232,7 @@ async function runDemo() {
   sessionStorage.setItem(DEMO_STEP,  '8');
   sessionStorage.setItem(DEMO_ISSUE, issue.id);
 
-  await wait(2000);
+  await wait(PAUSE_BEFORE_NAV);
   if (aborted) {
     sessionStorage.removeItem(DEMO_STEP);
     sessionStorage.removeItem(DEMO_ISSUE);
@@ -236,25 +251,30 @@ async function resumeStep8() {
   running = true;
   aborted = false;
 
-  await wait(700); // let dashboard render first
+  await wait(1200); // let dashboard render first
   if (aborted) return cleanup();
 
   // Briefly show step 7 to orient the audience ("we just arrived here")
   showStep(7, 'Developer reviews result on dashboard...');
   highlightFeedEntry(issueId);
 
-  await wait(2500);
+  await wait(PAUSE_AFTER_ACTION);
   if (aborted) return cleanup();
 
   // ── Step 8: Approve and close ────────────────────────────────────
   showStep(8, 'Developer approves. Issue closed.');
+  await wait(PAUSE_READ_NARRATION);
+  if (aborted) return cleanup();
+
   if (issueId) {
     closeIssue(issueId);
     changed();
+    // dark-green flash = closed
+    setTimeout(() => flash(issueId, 'close'), 80);
   }
   demoToast('🎉 Issue closed — approved and merged');
 
-  await wait(2000);
+  await wait(PAUSE_AFTER_ACTION);
   if (aborted) return cleanup();
 
   finishBanner('Full workflow complete ✓');

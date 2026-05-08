@@ -309,7 +309,7 @@
 
   <script type="module">
     import { getIssues, createIssue, updateIssue, getSettings } from './js/data.js';
-    import { priBadge, staBadge, staLabel, createdByIcon, fmtRelTime, esc } from './js/ui.js';
+    import { priBadge, staBadge, staLabel, createdByIcon, fmtRelTime, esc, flashEntity } from './js/ui.js';
 
     // Redirect to first-time setup if no user is configured.
     if (!getSettings().ait_user) location.replace('settings.html');
@@ -448,11 +448,20 @@
         zone.classList.remove('drag-over');
         if (!dragging || dragging.parentElement === zone) return;
         const newStatus = zone.dataset.status;
-        updateIssue(dragging.dataset.id, { status: newStatus, updatedBy: getSettings().ait_user || 'unknown' });
+        const id        = dragging.dataset.id;
+        updateIssue(id, { status: newStatus, updatedBy: getSettings().ait_user || 'unknown' });
         dragging.dataset.status = newStatus;
         zone.appendChild(dragging);
         updateBoardCounts();
         applyFilters();
+        // Flash the moved card/row in a color that matches the new status
+        // so it's obvious where it landed in both views.
+        const kind =
+          newStatus === 'in-progress'    ? 'claim'    :
+          newStatus === 'pending-review' ? 'complete' :
+          newStatus === 'closed'         ? 'close'    :
+          newStatus === 'blocked'        ? 'block'    : 'update';
+        requestAnimationFrame(() => flashEntity(id, kind));
       });
     });
 
@@ -553,7 +562,7 @@
     document.getElementById('manual-cancel').addEventListener('click', closeModal);
     document.getElementById('form-new-manual').addEventListener('submit', e => {
       e.preventDefault();
-      createIssue({
+      const issue = createIssue({
         title:         document.getElementById('new-title').value.trim(),
         description:   document.getElementById('new-description').value.trim(),
         priority:      document.getElementById('new-priority').value,
@@ -565,6 +574,8 @@
       });
       applyFilters();
       closeModal();
+      // green flash so the developer can spot the new row/card immediately
+      requestAnimationFrame(() => flashEntity(issue.id, 'create'));
     });
 
     // ── AI keyword detection ───────────────────────────────────
@@ -655,13 +666,7 @@
       });
       applyFilters();
       closeModal();
-      requestAnimationFrame(() => {
-        const row = document.querySelector('[data-id="' + issue.id + '"]');
-        if (row) {
-          row.classList.add('sim-flash');
-          setTimeout(() => row.classList.remove('sim-flash'), 1600);
-        }
-      });
+      requestAnimationFrame(() => flashEntity(issue.id, 'create'));
     });
 
     // ── Filters wiring ─────────────────────────────────────────
