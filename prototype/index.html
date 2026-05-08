@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/list.css">
   <link rel="stylesheet" href="css/agent-sim.css">
+  <link rel="stylesheet" href="css/demo.css">
 </head>
 <body>
 
@@ -134,61 +135,135 @@
   <!-- ── New Issue Modal ───────────────────────────────────────── -->
   <div class="modal-overlay hidden" id="modal-new-issue" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal">
+
       <div class="modal-header">
         <h2 class="modal-title" id="modal-title">New Issue</h2>
         <button class="modal-close" id="modal-close" aria-label="Close">&#10005;</button>
       </div>
 
-      <form class="modal-body" id="form-new-issue">
-        <div class="form-group">
-          <label class="form-label" for="new-title">Title</label>
-          <input class="form-input" type="text" id="new-title"
-                 placeholder="Short description of the issue" required>
+      <!-- Screen: Choice ─────────────────────────────────────── -->
+      <div class="modal-body screen" id="screen-choice">
+        <p class="choice-intro text-muted text-sm">How would you like to create this issue?</p>
+        <div class="choice-grid">
+          <button class="choice-card" id="choice-manual">
+            <span class="choice-emoji">✍️</span>
+            <span class="choice-name">Create Manually</span>
+            <span class="choice-hint">Fill in the fields yourself</span>
+          </button>
+          <button class="choice-card choice-card-ai" id="choice-ai">
+            <span class="choice-emoji">✨</span>
+            <span class="choice-name">Create with AI</span>
+            <span class="choice-hint">Describe it, AI structures it</span>
+          </button>
         </div>
-
-        <div class="form-group">
-          <label class="form-label" for="new-description">Description</label>
-          <textarea class="form-textarea" id="new-description"
-                    placeholder="What needs to be done and why?" rows="3"></textarea>
-        </div>
-
-        <div class="modal-row">
-          <div class="form-group">
-            <label class="form-label" for="new-priority">Priority</label>
-            <select class="form-select" id="new-priority">
-              <option value="P1">P1</option>
-              <option value="P0">P0</option>
-              <option value="P2">P2</option>
-              <option value="P3">P3</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="new-assignee">Assignee</label>
-            <input class="form-input" type="text" id="new-assignee"
-                   placeholder="e.g. claude-agent">
-          </div>
-        </div>
-
-        <div class="modal-row">
-          <div class="form-group">
-            <label class="form-label" for="new-budget">Token Budget</label>
-            <input class="form-input" type="number" id="new-budget"
-                   placeholder="2000" min="0" max="100000">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="new-estimate">Time Estimate (min)</label>
-            <input class="form-input" type="number" id="new-estimate"
-                   placeholder="60" min="0">
-          </div>
-        </div>
-      </form>
-
-      <div class="modal-footer">
-        <button class="btn btn-secondary" type="button" id="modal-cancel">Cancel</button>
-        <button class="btn btn-primary" type="submit" form="form-new-issue">Create Issue</button>
       </div>
+
+      <!-- Screen: Manual form ────────────────────────────────── -->
+      <div class="screen hidden" id="screen-manual">
+        <form class="modal-body" id="form-new-manual">
+          <div class="form-group">
+            <label class="form-label" for="new-title">Title</label>
+            <input class="form-input" type="text" id="new-title"
+                   placeholder="Short description of the issue" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="new-description">Description</label>
+            <textarea class="form-textarea" id="new-description"
+                      placeholder="What needs to be done and why?" rows="3"></textarea>
+          </div>
+          <div class="modal-row">
+            <div class="form-group">
+              <label class="form-label" for="new-priority">Priority</label>
+              <select class="form-select" id="new-priority">
+                <option value="P1">P1</option>
+                <option value="P0">P0</option>
+                <option value="P2" selected>P2</option>
+                <option value="P3">P3</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="new-assignee">Assignee</label>
+              <input class="form-input" type="text" id="new-assignee"
+                     placeholder="e.g. claude-agent">
+            </div>
+          </div>
+          <div class="modal-row">
+            <div class="form-group">
+              <label class="form-label" for="new-budget">Token Budget</label>
+              <input class="form-input" type="number" id="new-budget"
+                     placeholder="2000" min="0" max="100000">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="new-estimate">Time Estimate (min)</label>
+              <input class="form-input" type="number" id="new-estimate"
+                     placeholder="60" min="0">
+            </div>
+          </div>
+        </form>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" id="manual-cancel">Cancel</button>
+          <button class="btn btn-primary" type="submit" form="form-new-manual">Create Issue</button>
+        </div>
+      </div>
+
+      <!-- Screen: AI Input ───────────────────────────────────── -->
+      <div class="screen hidden" id="screen-ai-input">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="ai-desc-input">Describe the issue in plain language</label>
+            <textarea class="form-textarea ai-desc-textarea" id="ai-desc-input" rows="5"
+                      placeholder="e.g. The login button breaks on mobile Safari, users can't sign in on iPhone"></textarea>
+          </div>
+          <p class="ai-hint text-muted text-sm">AI will structure this into a proper issue with title, description, and priority.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" id="ai-input-back">← Back</button>
+          <button class="btn btn-primary" id="ai-analyze-btn">Analyze →</button>
+        </div>
+      </div>
+
+      <!-- Screen: AI Loading ─────────────────────────────────── -->
+      <div class="screen hidden" id="screen-ai-loading">
+        <div class="modal-body ai-loading-body">
+          <div class="ai-spinner" aria-hidden="true"></div>
+          <p class="ai-loading-text">Analyzing with Claude...</p>
+        </div>
+      </div>
+
+      <!-- Screen: AI Preview ─────────────────────────────────── -->
+      <div class="screen hidden" id="screen-ai-preview">
+        <div class="modal-body">
+          <div class="ai-created-by-badge">✨ AI-assisted</div>
+          <div class="form-group">
+            <label class="form-label" for="ai-title">Title</label>
+            <input class="form-input" type="text" id="ai-title">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="ai-description">Description</label>
+            <textarea class="form-textarea" id="ai-description" rows="5"></textarea>
+          </div>
+          <div class="modal-row">
+            <div class="form-group">
+              <label class="form-label" for="ai-priority">Priority</label>
+              <select class="form-select" id="ai-priority">
+                <option value="P0">P0 — Critical</option>
+                <option value="P1">P1 — High</option>
+                <option value="P2">P2 — Medium</option>
+                <option value="P3">P3 — Low</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ai-budget">Token Budget</label>
+              <input class="form-input" type="number" id="ai-budget" min="0">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="ai-back-btn">← Back</button>
+          <button class="btn btn-primary" id="ai-confirm-btn">Confirm & Create</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -214,7 +289,7 @@
             data-status="${i.status}" data-priority="${i.priority}"
             data-assignee="${esc(i.assignee)}">
           <td><span class="issue-id mono">${esc(i.id)}</span></td>
-          <td><span class="issue-title">${esc(i.title)}</span></td>
+          <td><span class="issue-title">${esc(i.title)}</span>${i.created_by === 'llm-assist' ? '<span class="ai-badge-inline" title="AI-assisted">✨</span>' : ''}</td>
           <td><span class="badge ${priBadge(i.priority)}">${i.priority}</span></td>
           <td><span class="badge ${staBadge(i.status)}">${staLabel(i.status)}</span></td>
           <td class="${i.assignee === 'unassigned' ? 'text-muted' : ''}">${esc(i.assignee)}</td>
@@ -256,21 +331,56 @@
     renderRows(getIssues());
 
     // ── Modal ──────────────────────────────────────────────────
-    const overlay  = document.getElementById('modal-new-issue');
-    const form     = document.getElementById('form-new-issue');
+    const overlay = document.getElementById('modal-new-issue');
+    const SCREENS = ['choice', 'manual', 'ai-input', 'ai-loading', 'ai-preview'];
+    const TITLES  = {
+      'choice':     'New Issue',
+      'manual':     'New Issue',
+      'ai-input':   '✨ Create with AI',
+      'ai-loading': '✨ Create with AI',
+      'ai-preview': '✨ AI Review'
+    };
 
-    function openModal()  { overlay.classList.remove('hidden'); document.getElementById('new-title').focus(); }
-    function closeModal() { overlay.classList.add('hidden'); form.reset(); }
+    function showScreen(name) {
+      SCREENS.forEach(s => {
+        const el = document.getElementById('screen-' + s);
+        if (el) el.classList.toggle('hidden', s !== name);
+      });
+      document.getElementById('modal-title').textContent = TITLES[name] || 'New Issue';
+    }
+
+    function openModal() {
+      overlay.classList.remove('hidden');
+      showScreen('choice');
+    }
+
+    function closeModal() {
+      overlay.classList.add('hidden');
+      showScreen('choice');
+      document.getElementById('form-new-manual').reset();
+      document.getElementById('ai-desc-input').value = '';
+    }
 
     document.getElementById('btn-new-issue').addEventListener('click', openModal);
     document.getElementById('modal-close').addEventListener('click', closeModal);
-    document.getElementById('modal-cancel').addEventListener('click', closeModal);
     overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && !overlay.classList.contains('hidden')) closeModal();
     });
 
-    form.addEventListener('submit', e => {
+    // ── Choice ─────────────────────────────────────────────────
+    document.getElementById('choice-manual').addEventListener('click', () => {
+      showScreen('manual');
+      document.getElementById('new-title').focus();
+    });
+    document.getElementById('choice-ai').addEventListener('click', () => {
+      showScreen('ai-input');
+      document.getElementById('ai-desc-input').focus();
+    });
+
+    // ── Manual form ────────────────────────────────────────────
+    document.getElementById('manual-cancel').addEventListener('click', closeModal);
+    document.getElementById('form-new-manual').addEventListener('submit', e => {
       e.preventDefault();
       createIssue({
         title:         document.getElementById('new-title').value.trim(),
@@ -279,11 +389,114 @@
         assignee:      document.getElementById('new-assignee').value.trim() || 'unassigned',
         token_budget:  parseInt(document.getElementById('new-budget').value,   10) || 2000,
         time_estimate: parseInt(document.getElementById('new-estimate').value, 10) || 60,
-        creator:       getSettings().ait_user || 'unknown'
+        creator:       getSettings().ait_user || 'unknown',
+        created_by:    'human-manual'
       });
       updateSummary();
       applyFilters();
       closeModal();
+    });
+
+    // ── AI keyword detection ───────────────────────────────────
+    function firstWords(text, n) {
+      return text.trim().split(/\s+/).slice(0, n).join(' ');
+    }
+
+    function structureIssue(text) {
+      const t = text.toLowerCase();
+      if (/bug|break|fix|error/.test(t)) {
+        return {
+          title:        'Fix: ' + firstWords(text, 6),
+          description:  'Bug report: ' + text +
+                        '\n\nExpected behavior: System should handle this correctly.' +
+                        '\nActual behavior: ' + text +
+                        '\nImpact: Affects user workflow.',
+          priority:     'P1',
+          token_budget: 1500
+        };
+      }
+      if (/refactor|clean|improve/.test(t)) {
+        return {
+          title:        'Refactor: ' + firstWords(text, 6),
+          description:  'Technical debt: ' + text +
+                        '\n\nGoal: Improve code quality and maintainability.' +
+                        '\nScope: Isolated to affected module.',
+          priority:     'P2',
+          token_budget: 2000
+        };
+      }
+      if (/feature|add|new|build/.test(t)) {
+        return {
+          title:        'Feature: ' + firstWords(text, 6),
+          description:  'Feature request: ' + text +
+                        '\n\nAcceptance criteria:\n- [ ] Core functionality works' +
+                        '\n- [ ] Edge cases handled\n- [ ] Tests written',
+          priority:     'P1',
+          token_budget: 3000
+        };
+      }
+      return {
+        title:        firstWords(text, 8),
+        description:  text,
+        priority:     'P2',
+        token_budget: 1000
+      };
+    }
+
+    function logLLM(input, result) {
+      console.log('[LLM] POST /api/llm/structure-issue');
+      console.log('[LLM] Input: "' + input.slice(0, 50) + (input.length > 50 ? '...' : '') + '"');
+      console.log('[LLM] Response:', {
+        title: result.title, description: result.description,
+        priority: result.priority, token_budget: result.token_budget
+      });
+      console.log('[LLM] Tokens used for creation: 312');
+    }
+
+    // ── AI Input screen ────────────────────────────────────────
+    document.getElementById('ai-input-back').addEventListener('click', () => showScreen('choice'));
+
+    document.getElementById('ai-analyze-btn').addEventListener('click', () => {
+      const input = document.getElementById('ai-desc-input').value.trim();
+      if (!input) { document.getElementById('ai-desc-input').focus(); return; }
+
+      showScreen('ai-loading');
+
+      setTimeout(() => {
+        const result = structureIssue(input);
+        logLLM(input, result);
+        document.getElementById('ai-title').value       = result.title;
+        document.getElementById('ai-description').value = result.description;
+        document.getElementById('ai-priority').value    = result.priority;
+        document.getElementById('ai-budget').value      = result.token_budget;
+        showScreen('ai-preview');
+      }, 500);
+    });
+
+    // ── AI Preview screen ──────────────────────────────────────
+    document.getElementById('ai-back-btn').addEventListener('click', () => showScreen('ai-input'));
+
+    document.getElementById('ai-confirm-btn').addEventListener('click', () => {
+      const issue = createIssue({
+        title:         document.getElementById('ai-title').value.trim(),
+        description:   document.getElementById('ai-description').value.trim(),
+        priority:      document.getElementById('ai-priority').value,
+        assignee:      'unassigned',
+        token_budget:  parseInt(document.getElementById('ai-budget').value, 10) || 1000,
+        time_estimate: 60,
+        creator:       getSettings().ait_user || 'unknown',
+        created_by:    'llm-assist'
+      });
+      updateSummary();
+      applyFilters();
+      closeModal();
+      requestAnimationFrame(() => {
+        const row = document.querySelector('[data-id="' + issue.id + '"]');
+        if (row) {
+          row.classList.add('sim-flash');
+          setTimeout(() => row.classList.remove('sim-flash'), 1600);
+        }
+      });
     });
 
     // ── Filters ────────────────────────────────────────────────
@@ -299,6 +512,7 @@
     });
   </script>
   <script type="module" src="js/agent-sim.js"></script>
+  <script type="module" src="js/demo.js"></script>
 
 </body>
 </html>

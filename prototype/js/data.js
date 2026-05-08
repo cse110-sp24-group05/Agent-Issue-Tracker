@@ -6,6 +6,9 @@
  * Importing pages wait for this to complete before any function runs.
  */
 
+import { createGithubIssue, claimGithubIssue, closeGithubIssue } from './github.js';
+import { notify } from './slack.js';
+
 const ISSUES_KEY = 'ait_issues';
 
 // ── Seed on first visit ─────────────────────────────────────────
@@ -89,6 +92,11 @@ export function createIssue(fields) {
   };
   issues.push(issue);
   _save(issues);
+  createGithubIssue(issue).then(gh => {
+    issue.github_number = gh.number;
+    _save(_read().map(i => i.id === issue.id ? { ...i, github_number: gh.number } : i));
+  });
+  notify('created', issue);
   return issue;
 }
 
@@ -148,7 +156,10 @@ export function claimIssue(id, claimedBy) {
     audit_log:  [...issues[idx].audit_log, { action: 'claimed', by: claimedBy, at: now }]
   };
   _save(issues);
-  return issues[idx];
+  const claimed = issues[idx];
+  claimGithubIssue(claimed, claimedBy);
+  notify('claimed', claimed);
+  return claimed;
 }
 
 /**
@@ -176,6 +187,7 @@ export function postResult(id, result, tokensUsed, timeSpent) {
     audit_log:   [...issues[idx].audit_log, { action: 'submitted for review', by, at: now }]
   };
   _save(issues);
+  notify('complete', issues[idx]);
   return issues[idx];
 }
 
@@ -199,7 +211,10 @@ export function closeIssue(id) {
     audit_log:    [...issues[idx].audit_log, { action: 'approved and closed', by, at: now }]
   };
   _save(issues);
-  return issues[idx];
+  const closed = issues[idx];
+  closeGithubIssue(closed);
+  notify('closed', closed);
+  return closed;
 }
 
 /**
@@ -223,6 +238,7 @@ export function blockIssue(id, reason) {
     audit_log:      [...issues[idx].audit_log, { action: `blocked: ${reason}`, by, at: now }]
   };
   _save(issues);
+  notify('blocked', issues[idx]);
   return issues[idx];
 }
 
