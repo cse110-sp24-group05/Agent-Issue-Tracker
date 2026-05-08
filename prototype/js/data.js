@@ -59,30 +59,33 @@ export function getIssue(id) {
  * Creates a new issue with schema-compliant defaults, saves it, and returns it.
  * @param {{ title: string, description?: string, priority?: string,
  *           assignee?: string, token_budget?: number, time_estimate?: number,
- *           creator?: string }} fields
+ *           creator?: string,
+ *           created_by?: 'human-manual'|'llm-assist'|string }} fields
  * @returns {Object}
  */
 export function createIssue(fields) {
   const issues = _read();
   const now    = _now();
   const issue  = {
-    id:            _nextId(issues),
-    title:         fields.title        || '',
-    description:   fields.description  || '',
-    status:        'open',
-    priority:      fields.priority     || 'P2',
-    assignee:      fields.assignee     || 'unassigned',
-    created_at:    now,
-    updated_at:    now,
-    token_budget:  Number(fields.token_budget)  || 2000,
-    tokens_used:   0,
-    time_estimate: Number(fields.time_estimate) || 60,
-    time_spent:    0,
-    claimed_by:    null,
-    claimed_at:    null,
-    completed_at:  null,
-    result:        null,
-    audit_log:     [{ action: 'created', by: fields.creator || 'unknown', at: now }]
+    id:             _nextId(issues),
+    title:          fields.title        || '',
+    description:    fields.description  || '',
+    status:         'open',
+    priority:       fields.priority     || 'P2',
+    assignee:       fields.assignee     || 'unassigned',
+    created_at:     now,
+    updated_at:     now,
+    token_budget:   Number(fields.token_budget)  || 2000,
+    tokens_used:    0,
+    time_estimate:  Number(fields.time_estimate) || 60,
+    time_spent:     0,
+    claimed_by:     null,
+    claimed_at:     null,
+    completed_at:   null,
+    blocked_reason: null,
+    result:         null,
+    created_by:     fields.created_by || 'human-manual',
+    audit_log:      [{ action: 'created', by: fields.creator || 'unknown', at: now }]
   };
   issues.push(issue);
   _save(issues);
@@ -92,7 +95,7 @@ export function createIssue(fields) {
 /**
  * Updates specified fields on an issue.
  * Adds one audit_log entry per changed field (title, description, priority,
- * assignee, status, token_budget, time_estimate).
+ * assignee, status, token_budget, time_estimate, blocked_reason).
  * @param {string} id
  * @param {Object} fields — values to update, plus optional `updatedBy`
  * @returns {Object|null} updated issue, or null if id not found
@@ -106,7 +109,7 @@ export function updateIssue(id, fields) {
   const now   = _now();
   const by    = fields.updatedBy || getSettings().ait_user || 'unknown';
   const TRACKED = ['title', 'description', 'priority', 'assignee', 'status',
-                   'token_budget', 'time_estimate'];
+                   'token_budget', 'time_estimate', 'blocked_reason'];
 
   TRACKED.forEach(key => {
     if (fields[key] === undefined) return;
@@ -197,6 +200,62 @@ export function closeIssue(id) {
   };
   _save(issues);
   return issues[idx];
+}
+
+/**
+ * Marks an issue as blocked with a reason, setting status to "blocked".
+ * @param {string} id
+ * @param {string} reason - short description of what is blocking progress
+ * @returns {Object|null}
+ */
+export function blockIssue(id, reason) {
+  const issues = _read();
+  const idx    = issues.findIndex(i => i.id === id);
+  if (idx === -1) return null;
+
+  const now = _now();
+  const by  = getSettings().ait_user || 'unknown';
+  issues[idx] = {
+    ...issues[idx],
+    status:         'blocked',
+    blocked_reason: reason,
+    updated_at:     now,
+    audit_log:      [...issues[idx].audit_log, { action: `blocked: ${reason}`, by, at: now }]
+  };
+  _save(issues);
+  return issues[idx];
+}
+
+/**
+ * Returns the current approval mode ('auto-close' or 'require-review').
+ * @returns {'auto-close'|'require-review'}
+ */
+export function getApprovalMode() {
+  return localStorage.getItem('ait_approval_mode') || 'auto-close';
+}
+
+/**
+ * Saves the approval mode to localStorage.
+ * @param {'auto-close'|'require-review'} mode
+ */
+export function saveApprovalMode(mode) {
+  localStorage.setItem('ait_approval_mode', mode);
+}
+
+/**
+ * Returns the sprint token budget from localStorage (default 20000).
+ * @returns {number}
+ */
+export function getSprintBudget() {
+  return parseInt(localStorage.getItem('ait_sprint_budget'), 10) || 20000;
+}
+
+/**
+ * Saves the sprint token budget to localStorage.
+ * @param {number} n
+ */
+export function saveSprintBudget(n) {
+  localStorage.setItem('ait_sprint_budget', String(Number(n) || 20000));
 }
 
 /**

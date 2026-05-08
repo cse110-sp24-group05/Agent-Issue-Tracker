@@ -1,0 +1,380 @@
+/* ─── Toggle Button ──────────────────────────────────────────────── */
+.agent-sim-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #0F1117;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 300;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agent-sim-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+/* ─── Panel ──────────────────────────────────────────────────────── */
+.agent-sim-panel {
+  position: fixed;
+  bottom: 84px;
+  right: 24px;
+  width: 340px;
+  max-height: 72vh;
+  background: #12151e;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255,255,255,0.04);
+  z-index: 299;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #E5E7EB;
+  font-size: 13px;
+}
+
+.agent-sim-panel.hidden { display: none; }
+
+/* ─── Title bar (drag handle) ───────────────────────────────────── */
+.sim-titlebar {
+  padding: 13px 14px;
+  background: #1a1f2e;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: move;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.sim-titlebar-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sim-title-icon { font-size: 18px; line-height: 1; }
+
+.sim-title-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.sim-subtitle {
+  font-size: 10px;
+  color: #4B5563;
+  margin-top: 1px;
+}
+
+.sim-close-btn {
+  background: transparent;
+  border: none;
+  color: #4B5563;
+  cursor: pointer;
+  font-size: 13px;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 120ms ease, background 120ms ease;
+}
+
+.sim-close-btn:hover { color: #E5E7EB; background: rgba(255, 255, 255, 0.1); }
+
+/* ─── Scrollable body ───────────────────────────────────────────── */
+.sim-body {
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+/* ─── Section ───────────────────────────────────────────────────── */
+.sim-section {
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sim-section:last-child { border-bottom: none; }
+
+.sim-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+/* ─── Agent name input ──────────────────────────────────────────── */
+.sim-name-input {
+  width: 100%;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #E5E7EB;
+  font-size: 12px;
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.sim-name-input:focus {
+  outline: none;
+  border-color: #2563EB;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+/* ─── Action buttons ────────────────────────────────────────────── */
+.sim-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sim-btn {
+  width: 100%;
+  padding: 8px 11px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #D1D5DB;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.sim-btn:hover  { background: rgba(255, 255, 255, 0.1); color: #FFFFFF; }
+.sim-btn:active { background: rgba(255, 255, 255, 0.16); }
+
+.sim-btn-claim {
+  background: rgba(37, 99, 235, 0.18);
+  border-color: rgba(37, 99, 235, 0.38);
+  color: #93C5FD;
+}
+.sim-btn-claim:hover { background: rgba(37, 99, 235, 0.32); color: #BFDBFE; }
+
+.sim-btn-complete {
+  background: rgba(22, 163, 74, 0.16);
+  border-color: rgba(22, 163, 74, 0.32);
+  color: #86EFAC;
+}
+.sim-btn-complete:hover { background: rgba(22, 163, 74, 0.28); color: #BBF7D0; }
+
+/* ─── JSON read output ──────────────────────────────────────────── */
+.sim-json-wrap {
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  max-height: 116px;
+  overflow-y: auto;
+}
+
+.sim-json-wrap.hidden { display: none; }
+
+.sim-json-pre {
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  font-size: 10px;
+  color: #6B7280;
+  padding: 8px 10px;
+  margin: 0;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* ─── Row layout ────────────────────────────────────────────────── */
+.sim-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* ─── Toggle switch ─────────────────────────────────────────────── */
+.sim-toggle-wrap {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.sim-toggle-wrap input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.sim-toggle-track {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  transition: background 200ms ease;
+}
+
+.sim-toggle-track::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #6B7280;
+  transition: transform 200ms ease, background 200ms ease;
+}
+
+.sim-toggle-wrap input:checked + .sim-toggle-track { background: #16A34A; }
+.sim-toggle-wrap input:checked + .sim-toggle-track::after {
+  transform: translateX(16px);
+  background: #FFFFFF;
+}
+
+/* ─── Speed buttons ─────────────────────────────────────────────── */
+.sim-speed-row { margin-top: 8px; }
+
+.sim-speed-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.sim-speed-btn {
+  flex: 1;
+  padding: 5px 4px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #4B5563;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: all 120ms ease;
+}
+
+.sim-speed-btn:hover { color: #E5E7EB; background: rgba(255, 255, 255, 0.1); }
+
+.sim-speed-btn.active {
+  background: rgba(37, 99, 235, 0.22);
+  border-color: rgba(37, 99, 235, 0.4);
+  color: #93C5FD;
+}
+
+/* ─── Status ────────────────────────────────────────────────────── */
+.sim-status {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #374151;
+  min-height: 15px;
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  line-height: 1.4;
+}
+
+.sim-status.running { color: #16A34A; }
+
+/* ─── Approval mode buttons ─────────────────────────────────────── */
+.sim-mode-btns {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.sim-mode-btn {
+  flex: 1;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #4B5563;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: all 120ms ease;
+}
+
+.sim-mode-btn:hover { color: #E5E7EB; background: rgba(255,255,255,0.08); }
+
+.sim-mode-btn.active {
+  background: rgba(124, 58, 237, 0.22);
+  border-color: rgba(124, 58, 237, 0.4);
+  color: #C4B5FD;
+}
+
+/* ─── Debug log ─────────────────────────────────────────────────── */
+.sim-log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.sim-clear-btn {
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: #374151;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.sim-clear-btn:hover { color: #E5E7EB; background: rgba(255, 255, 255, 0.08); }
+
+.sim-log-wrap {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  height: 96px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.08) transparent;
+}
+
+.sim-log {
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  font-size: 10px;
+  color: #4B5563;
+  padding: 7px 10px;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.55;
+}
+
+/* ─── Flash highlight ───────────────────────────────────────────── */
+@keyframes sim-flash-bg {
+  0%   { background-color: rgba(37, 99, 235, 0.28); }
+  100% { background-color: transparent; }
+}
+
+.sim-flash {
+  animation: sim-flash-bg 1.5s ease-out forwards;
+}
