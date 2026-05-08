@@ -502,3 +502,24 @@
   color: var(--color-text-muted);
   padding: var(--space-6) 0;
 }
+
+/* ─── Feed: Load more ──────────────────────────────────────────── */
+.feed-load-more {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  background: transparent;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.feed-load-more:hover {
+  background: rgba(37, 99, 235, 0.05);
+  border-color: var(--color-accent);
+}

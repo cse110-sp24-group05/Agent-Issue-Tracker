@@ -19,13 +19,7 @@
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
           <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm8 0A1.5 1.5 0 0 1 10.5 9h3A1.5 1.5 0 0 1 15 10.5v3A1.5 1.5 0 0 1 13.5 15h-3A1.5 1.5 0 0 1 9 13.5z"/>
         </svg>
-        List
-      </a>
-      <a class="nav-tab" href="board.html">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-          <path d="M2 2h3v12H2zm4 0h3v12H6zm4 0h4v12h-4z"/>
-        </svg>
-        Board
+        Issues
       </a>
       <a class="nav-tab active" href="dashboard.html">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -89,7 +83,6 @@
               <span class="live-dot" aria-hidden="true"></span>
               Live Activity
             </h2>
-            <span class="feed-filter-tag hidden" id="feed-filter-tag"></span>
           </div>
           <div class="feed-list" id="feed-list">
             <!-- Rendered by JS -->
@@ -155,10 +148,15 @@
   </main>
 
   <script type="module">
-    import { getIssues, getSprintBudget, saveSprintBudget } from './js/data.js';
+    import { getIssues, getSprintBudget, saveSprintBudget, getSettings } from './js/data.js';
+    import { esc, fmtRelTime } from './js/ui.js';
+
+    // Redirect to first-time setup if no user is configured.
+    if (!getSettings().ait_user) location.replace('settings.html');
 
     // ── Helpers ────────────────────────────────────────────────
-    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const FEED_LIMIT_DEFAULT = 50;
+    const STATUS_CHANGE_RE = /^status changed from/i;
 
     function actionIcon(action) {
       if (/^created/.test(action))              return '🆕';
@@ -167,27 +165,22 @@
       if (/^submitted for review/.test(action)) return '⏳';
       if (/^blocked/.test(action))              return '🚫';
       if (/^changes requested/.test(action))    return '↩️';
+      if (STATUS_CHANGE_RE.test(action))        return '🔁';
       if (/assignee/.test(action))              return '👤';
       if (/priority/.test(action))              return '🏷️';
       if (/reproduced|confirmed/.test(action))  return '🔍';
       return '📝';
     }
 
-    function relTime(iso) {
-      const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-      if (s <  10) return 'just now';
-      if (s <  60) return `${s}s ago`;
-      const m = Math.floor(s / 60);
-      if (m <  60) return `${m}m ago`;
-      const h = Math.floor(m / 60);
-      if (h <  24) return `${h}h ago`;
-      const d = Math.floor(h / 24);
-      return d === 1 ? '1d ago' : `${d}d ago`;
+    // Extract the destination status from a "status changed from \"X\" to \"Y\"" string.
+    function statusToFromAction(action) {
+      const m = /to\s+"([^"]+)"/.exec(action);
+      return m ? m[1] : '';
     }
 
     // ── State ──────────────────────────────────────────────────
-    let activeFilter  = null;
     let lastSnapshot  = '';
+    let feedExpanded  = false;
 
     // ── Sprint pills ───────────────────────────────────────────
     function renderPills(issues) {
@@ -201,38 +194,106 @@
     }
 
     // ── Activity feed ──────────────────────────────────────────
-    function buildEntries(issues) {
-      const entries = [];
+    /**
+     * Build feed entries with consecutive same-issue status changes collapsed into one.
+     * Algorithm:
+     *   1. Flatten all audit entries from all (filtered) issues.
+     *   2. Sort chronologically (oldest first).
+     *   3. Walk forward; when a status-change appears immediately after another
+     *      status-change for the SAME issue, merge them (count++, latest "to" wins).
+     *   4. Sort the resulting groups reverse-chronologically by their latest timestamp.
+     */
+    function buildFeed(issues) {
+      const flat = [];
       issues.forEach(issue => {
-        if (activeFilter && issue.status !== activeFilter) return;
-        issue.audit_log.forEach(e => entries.push({
+        issue.audit_log.forEach(e => flat.push({
           ...e, issueId: issue.id, issueTitle: issue.title
         }));
       });
-      return entries.sort((a, b) => new Date(b.at) - new Date(a.at));
+      flat.sort((a, b) => new Date(a.at) - new Date(b.at));
+
+      const groups = [];
+      for (const entry of flat) {
+        const isStatusChange = STATUS_CHANGE_RE.test(entry.action);
+        const last = groups[groups.length - 1];
+
+        if (isStatusChange && last && last.kind === 'status-group' && last.issueId === entry.issueId) {
+          last.count += 1;
+          last.toStatus = statusToFromAction(entry.action) || last.toStatus;
+          last.at = entry.at;
+          last.by = entry.by;
+        } else if (isStatusChange) {
+          groups.push({
+            kind:      'status-group',
+            issueId:   entry.issueId,
+            issueTitle:entry.issueTitle,
+            count:     1,
+            toStatus:  statusToFromAction(entry.action),
+            at:        entry.at,
+            by:        entry.by
+          });
+        } else {
+          groups.push({ kind: 'entry', ...entry });
+        }
+      }
+
+      return groups.sort((a, b) => new Date(b.at) - new Date(a.at));
+    }
+
+    function feedRowHtml(g) {
+      if (g.kind === 'status-group') {
+        const label = g.count > 1
+          ? `status changed (${g.count}×) → <strong>${esc(g.toStatus)}</strong>`
+          : `status → <strong>${esc(g.toStatus)}</strong>`;
+        return `
+          <div class="feed-entry">
+            <span class="feed-icon" aria-hidden="true">🔁</span>
+            <div class="feed-body">
+              <div class="feed-top">
+                <a class="feed-issue-id" href="issue.html?id=${esc(g.issueId)}">${esc(g.issueId)}</a>
+                <span class="feed-action">${label}</span>
+              </div>
+              <div class="feed-meta">by <strong>${esc(g.by)}</strong></div>
+            </div>
+            <span class="feed-time">${fmtRelTime(g.at)}</span>
+          </div>`;
+      }
+      return `
+        <div class="feed-entry">
+          <span class="feed-icon" aria-hidden="true">${actionIcon(g.action)}</span>
+          <div class="feed-body">
+            <div class="feed-top">
+              <a class="feed-issue-id" href="issue.html?id=${esc(g.issueId)}">${esc(g.issueId)}</a>
+              <span class="feed-action">${esc(g.action)}</span>
+            </div>
+            <div class="feed-meta">by <strong>${esc(g.by)}</strong></div>
+          </div>
+          <span class="feed-time">${fmtRelTime(g.at)}</span>
+        </div>`;
     }
 
     function renderFeed(issues) {
-      const entries = buildEntries(issues);
-      const el      = document.getElementById('feed-list');
+      const groups = buildFeed(issues);
+      const el     = document.getElementById('feed-list');
 
-      if (!entries.length) {
+      if (!groups.length) {
         el.innerHTML = '<div class="feed-empty">No activity for this filter.</div>';
         return;
       }
 
-      el.innerHTML = entries.map(e => `
-        <div class="feed-entry">
-          <span class="feed-icon" aria-hidden="true">${actionIcon(e.action)}</span>
-          <div class="feed-body">
-            <div class="feed-top">
-              <a class="feed-issue-id" href="issue.html?id=${esc(e.issueId)}">${esc(e.issueId)}</a>
-              <span class="feed-action">${esc(e.action)}</span>
-            </div>
-            <div class="feed-meta">by <strong>${esc(e.by)}</strong></div>
-          </div>
-          <span class="feed-time">${relTime(e.at)}</span>
-        </div>`).join('');
+      const limit   = feedExpanded ? groups.length : FEED_LIMIT_DEFAULT;
+      const visible = groups.slice(0, limit);
+      const hidden  = groups.length - visible.length;
+
+      const rows = visible.map(feedRowHtml).join('');
+      const more = hidden > 0
+        ? `<button class="feed-load-more" id="feed-load-more">Load ${hidden} more…</button>`
+        : '';
+
+      el.innerHTML = rows + more;
+
+      const btn = document.getElementById('feed-load-more');
+      if (btn) btn.addEventListener('click', () => { feedExpanded = true; renderFeed(getIssues()); });
     }
 
     // ── Token burn ─────────────────────────────────────────────
@@ -290,11 +351,14 @@
       if (!top3.length) {
         topEl.innerHTML = '<span class="token-empty">No issues with usage.</span>';
       } else {
-        topEl.innerHTML = top3.map(i => `
-          <div class="top-issue">
-            <a class="top-issue-title" href="issue.html?id=${esc(i.id)}" title="${esc(i.title)}">${esc(i.title)}</a>
-            <span class="top-issue-tokens">${i.tokens_used.toLocaleString()}</span>
-          </div>`).join('');
+        topEl.innerHTML = top3.map(i => {
+          const truncated = i.title.length > 40 ? i.title.slice(0, 40) + '…' : i.title;
+          return `
+            <div class="top-issue">
+              <a class="top-issue-title" href="issue.html?id=${esc(i.id)}" title="${esc(i.title)}">${esc(truncated)}</a>
+              <span class="top-issue-tokens">${i.tokens_used.toLocaleString()}</span>
+            </div>`;
+        }).join('');
       }
     }
 
@@ -350,24 +414,12 @@
     });
 
     // ── Pill filter ────────────────────────────────────────────
+    // Pills navigate to index.html with the corresponding ?status= filter
+    // so the issues view is the single place to drill into status-specific lists.
     document.querySelectorAll('.pill').forEach(pill => {
       pill.addEventListener('click', () => {
         const f = pill.dataset.filter;
-        activeFilter = activeFilter === f ? null : f;
-
-        document.querySelectorAll('.pill').forEach(p => {
-          p.classList.toggle('active', p.dataset.filter === activeFilter);
-        });
-
-        const tag = document.getElementById('feed-filter-tag');
-        if (activeFilter) {
-          tag.textContent = activeFilter;
-          tag.classList.remove('hidden');
-        } else {
-          tag.classList.add('hidden');
-        }
-
-        renderFeed(getIssues());
+        location.href = 'index.html?status=' + encodeURIComponent(f);
       });
     });
 

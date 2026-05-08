@@ -11,11 +11,22 @@ import { notify } from './slack.js';
 
 const ISSUES_KEY = 'ait_issues';
 
-// ── Seed on first visit ─────────────────────────────────────────
-if (!localStorage.getItem(ISSUES_KEY)) {
+// ── Seed on first visit, or re-seed when ?reset=true ────────────
+const _shouldReset =
+  typeof window !== 'undefined' &&
+  new URLSearchParams(window.location.search).get('reset') === 'true';
+
+if (_shouldReset || !localStorage.getItem(ISSUES_KEY)) {
   const res  = await fetch('api/issues.json');
   const seed = await res.json();
   localStorage.setItem(ISSUES_KEY, JSON.stringify(seed));
+  if (_shouldReset) {
+    // Strip the query param so a refresh doesn't re-wipe the store.
+    const url = new URL(window.location.href);
+    url.searchParams.delete('reset');
+    window.history.replaceState({}, '', url.toString());
+    console.log('[data.js] localStorage re-seeded from api/issues.json');
+  }
 }
 
 // ── Private helpers ─────────────────────────────────────────────

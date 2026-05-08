@@ -135,9 +135,9 @@ const PANEL_HTML = `
       </div>
       <div class="sim-speed-row">
         <div class="sim-speed-btns">
-          <button class="sim-speed-btn" data-speed="5000">Slow 5s</button>
-          <button class="sim-speed-btn active" data-speed="2000">Med 2s</button>
-          <button class="sim-speed-btn" data-speed="500">Fast 0.5s</button>
+          <button class="sim-speed-btn" data-speed="3000">Slow 3s</button>
+          <button class="sim-speed-btn active" data-speed="1500">Med 1.5s</button>
+          <button class="sim-speed-btn" data-speed="400">Fast 0.4s</button>
         </div>
       </div>
       <div class="sim-status" id="sim-status"></div>
@@ -266,92 +266,128 @@ document.getElementById('sim-create').addEventListener('click', () => {
   setStatus(`Created ${issue.id}`);
 });
 
-// ── Auto-run state machine ───────────────────────────────────────
-let autoTimer  = null;
-let autoSpeed  = 2000;
-let autoPhase  = 'seek';   // 'seek' | 'complete'
-let autoTarget = null;     // issue id currently being worked
+// ── Auto-run loop ────────────────────────────────────────────────
+// Sequential, async cycle: claim → pause → complete → pause → close → pause.
+// Re-reads getIssues() at the top of every cycle so a freshly-created issue
+// shows up in the queue without restarting auto-run.
 
-function runStep() {
-  if (autoPhase === 'seek') {
+let autoActive    = false;
+let autoSpeed     = 1500;
+let autoTimerId   = null;
+let autoSleepResolve = null;
+
+function autoSleep(ms, label) {
+  return new Promise(resolve => {
+    if (label) simLog(`⠋ ${label}`);
+    setStatus(label || 'Working…', true);
+    autoSleepResolve = resolve;
+    autoTimerId = setTimeout(() => {
+      autoTimerId = null;
+      autoSleepResolve = null;
+      resolve();
+    }, ms);
+  });
+}
+
+function cancelAutoSleep() {
+  if (autoTimerId !== null) {
+    clearTimeout(autoTimerId);
+    autoTimerId = null;
+  }
+  // Resolve any in-flight sleep so the loop can exit cleanly.
+  if (autoSleepResolve) {
+    const r = autoSleepResolve;
+    autoSleepResolve = null;
+    r();
+  }
+}
+
+async function runAutoLoop() {
+  while (autoActive) {
+    // 1. Read the queue fresh every cycle.
     const queue = getReadyQueue();
     if (!queue.length) {
-      simLog('Queue empty — agent idle. Auto-run stopped.');
-      setStatus('Queue empty — agent idle');
-      stopAuto();
+      simLog('✓ Queue empty — 0 open issues remaining');
+      setStatus('✓ Queue empty — 0 open issues remaining');
+      autoActive = false;
+      const toggle = document.getElementById('sim-auto-toggle');
+      if (toggle) toggle.checked = false;
       return;
     }
+
     const issue = queue[0];
     const name  = getAgentName();
+
+    // 2. Claim — claimIssue() stamps a real ISO timestamp via data.js.
     claimIssue(issue.id, name);
     simLog(`POST /api/claim → ${issue.id} locked by ${name}`);
     notify();
     flash(issue.id);
-    setStatus(`Claimed ${issue.id} (${issue.priority}) — completing next tick…`, true);
-    autoTarget = issue.id;
-    autoPhase  = 'complete';
 
-  } else if (autoPhase === 'complete') {
-    const id = autoTarget;
-    if (!id) { autoPhase = 'seek'; return; }
+    if (!autoActive) return;
+    await autoSleep(autoSpeed, `working on ${issue.id}…`);
+    if (!autoActive) return;
 
+    // 3. Post result.
     const result    = pick(PRESET_RESULTS);
     const tokens    = rand(800, 2400);
     const timeSpent = rand(10, 45);
-    const mode      = getApprovalMode();
+    postResult(issue.id, result, tokens, timeSpent);
+    simLog(`POST /api/complete → ${issue.id} · ${tokens} tok · ${timeSpent}m`);
+    notify();
+    flash(issue.id);
 
-    postResult(id, result, tokens, timeSpent);
-    simLog(`POST /api/complete → ${id} · ${tokens} tok · ${timeSpent}m`);
+    if (!autoActive) return;
+    await autoSleep(autoSpeed, `submitting ${issue.id}…`);
+    if (!autoActive) return;
 
+    // 4. Close if auto-close mode is on; otherwise leave it pending review.
+    const mode = getApprovalMode();
     if (mode === 'auto-close') {
-      closeIssue(id);
-      simLog(`POST /api/close → ${id} closed`);
+      closeIssue(issue.id);
+      simLog(`POST /api/close → ${issue.id} closed`);
+      notify();
+      flash(issue.id);
     } else {
-      simLog(`${id} → pending-review (approval required)`);
+      simLog(`${issue.id} → pending-review (approval required)`);
     }
 
-    notify();
-    flash(id);
-    setStatus('Scanning for next issue…', true);
-    autoTarget = null;
-    autoPhase  = 'seek';
+    if (!autoActive) return;
+    await autoSleep(autoSpeed, 'scanning for next issue…');
   }
 }
 
 function startAuto() {
-  autoPhase  = 'seek';
-  autoTarget = null;
+  if (autoActive) return;
+  autoActive = true;
   simLog('─── auto-run started ───');
   setStatus('Running…', true);
-  runStep();                                      // first step immediately
-  autoTimer = setInterval(runStep, autoSpeed);
+  runAutoLoop();
 }
 
 function stopAuto(updateToggle = true) {
-  clearInterval(autoTimer);
-  autoTimer = null;
+  autoActive = false;
+  cancelAutoSleep();
   if (updateToggle) {
     const toggle = document.getElementById('sim-auto-toggle');
     if (toggle) toggle.checked = false;
   }
   simLog('─── auto-run stopped ───');
-  if (/Running|Scanning|Claim/.test(statusEl.textContent)) setStatus('Stopped.');
+  if (/Running|Scanning|Claim|working|submitting/i.test(statusEl.textContent)) {
+    setStatus('Stopped.');
+  }
 }
 
 document.getElementById('sim-auto-toggle').addEventListener('change', function () {
   this.checked ? startAuto() : stopAuto(false);
 });
 
-// Speed selector
+// Speed selector — adjusts the inter-step pause used by the running loop.
 panel.querySelectorAll('.sim-speed-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     panel.querySelectorAll('.sim-speed-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     autoSpeed = parseInt(btn.dataset.speed, 10);
-    if (autoTimer !== null) {        // restart with new interval if running
-      clearInterval(autoTimer);
-      autoTimer = setInterval(runStep, autoSpeed);
-    }
   });
 });
 

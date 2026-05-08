@@ -18,13 +18,13 @@
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
           <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm8 0A1.5 1.5 0 0 1 10.5 9h3A1.5 1.5 0 0 1 15 10.5v3A1.5 1.5 0 0 1 13.5 15h-3A1.5 1.5 0 0 1 9 13.5z"/>
         </svg>
-        List
+        Issues
       </a>
-      <a class="nav-tab" href="board.html">
+      <a class="nav-tab" href="dashboard.html">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-          <path d="M2 2h3v12H2zm4 0h3v12H6zm4 0h4v12h-4z"/>
+          <path d="M1 11v4h3v-4zm4-4v8h3V7zm4-4v12h3V3z"/>
         </svg>
-        Board
+        Dashboard
       </a>
     </div>
     <div class="nav-actions">
@@ -77,6 +77,17 @@
                       rows="4">The New Issue modal stays open when the user presses Escape. It should close and discard any unsaved input.</textarea>
           </div>
 
+          <!-- Banner: shows for blocked or closed states -->
+          <div class="issue-section card hidden" id="state-banner">
+            <div class="state-banner-row">
+              <span class="state-banner-icon" id="state-banner-icon" aria-hidden="true"></span>
+              <div>
+                <div class="state-banner-title" id="state-banner-title"></div>
+                <div class="state-banner-sub" id="state-banner-sub"></div>
+              </div>
+            </div>
+          </div>
+
           <!-- Result (hidden until pending-review / closed) -->
           <div class="issue-section card hidden" id="result-section">
             <div class="section-label">Result</div>
@@ -115,6 +126,14 @@
           <div class="sidebar-field">
             <div class="sidebar-label">Status</div>
             <span class="badge badge-open" id="status-badge">Open</span>
+          </div>
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Created by</div>
+            <div class="sidebar-created-by">
+              <span class="created-by-icon" id="created-by-icon" aria-hidden="true">✍️</span>
+              <span class="text-sm" id="created-by-label">human-manual</span>
+            </div>
           </div>
 
           <div class="sidebar-field">
@@ -173,8 +192,9 @@
             </div>
           </div>
 
-          <div class="sidebar-action">
+          <div class="sidebar-action" id="action-buttons">
             <button class="btn btn-primary action-btn" id="action-btn">Claim Issue</button>
+            <button class="btn btn-secondary action-btn hidden" id="action-secondary-btn">Send Back</button>
           </div>
 
         </aside>
@@ -211,19 +231,11 @@
   </div>
 
   <script type="module">
-    import { getIssue, claimIssue, postResult, closeIssue, updateIssue, getSettings } from './js/data.js';
+    import { getIssue, claimIssue, postResult, closeIssue, updateIssue, blockIssue, getSettings } from './js/data.js';
+    import { esc, staBadge, staLabel, createdByIcon, fmtRelTime, fmtDateTime } from './js/ui.js';
 
-    // ── Helpers ────────────────────────────────────────────────
-    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const staBadge = s => ({'open':'badge-open','in-progress':'badge-in-progress','pending-review':'badge-pending-review','closed':'badge-closed'})[s] || '';
-    const staLabel = s => ({'open':'Open','in-progress':'In Progress','pending-review':'Pending Review','closed':'Closed'})[s] || s;
-    const fmtDate  = iso => iso ? new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
-    const fmtDT    = iso => {
-      if (!iso) return '—';
-      const d = new Date(iso);
-      return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
-           + ', ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-    };
+    // Redirect to first-time setup if no user is configured.
+    if (!getSettings().ait_user) location.replace('settings.html');
 
     // ── Setup ──────────────────────────────────────────────────
     const id          = new URLSearchParams(window.location.search).get('id') || 'issue-001';
@@ -291,14 +303,18 @@
       if (issue.claimed_by) {
         claimInfo.classList.remove('hidden');
         document.getElementById('claimed-by-val').textContent = issue.claimed_by;
-        document.getElementById('claimed-at-val').textContent = fmtDate(issue.claimed_at);
+        document.getElementById('claimed-at-val').textContent = fmtRelTime(issue.claimed_at);
       } else {
         claimInfo.classList.add('hidden');
       }
 
-      // Dates
-      document.getElementById('created-at-val').textContent = fmtDate(issue.created_at);
-      document.getElementById('updated-at-val').textContent = fmtDate(issue.updated_at);
+      // Dates — relative
+      document.getElementById('created-at-val').textContent = fmtRelTime(issue.created_at);
+      document.getElementById('updated-at-val').textContent = fmtRelTime(issue.updated_at);
+
+      // Created by
+      document.getElementById('created-by-icon').textContent  = createdByIcon(issue.created_by);
+      document.getElementById('created-by-label').textContent = issue.created_by || 'unknown';
 
       // Result section
       const resultSection = document.getElementById('result-section');
@@ -309,28 +325,77 @@
         resultSection.classList.add('hidden');
       }
 
-      // Audit log
+      // Banners (blocked / closed)
+      const banner    = document.getElementById('state-banner');
+      const bIcon     = document.getElementById('state-banner-icon');
+      const bTitle    = document.getElementById('state-banner-title');
+      const bSub      = document.getElementById('state-banner-sub');
+      banner.classList.remove('banner-blocked', 'banner-closed');
+      if (issue.status === 'blocked') {
+        banner.classList.remove('hidden');
+        banner.classList.add('banner-blocked');
+        bIcon.textContent  = '🚫';
+        bTitle.textContent = 'Blocked';
+        bSub.textContent   = issue.blocked_reason || 'No reason given';
+      } else if (issue.status === 'closed') {
+        banner.classList.remove('hidden');
+        banner.classList.add('banner-closed');
+        bIcon.textContent  = '✅';
+        bTitle.textContent = 'Closed';
+        bSub.textContent   = issue.completed_at
+          ? `Completed ${fmtRelTime(issue.completed_at)}`
+          : 'This issue is closed.';
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      // Audit log — show every entry, no collapsing here.
       document.getElementById('audit-log').innerHTML = issue.audit_log.map(entry => `
         <div class="audit-entry">
           <div class="audit-dot"></div>
           <div class="audit-body">
             <span class="audit-action">${esc(entry.action)}</span>
-            <span class="audit-meta">by ${esc(entry.by)} &middot; ${fmtDT(entry.at)}</span>
+            <span class="audit-meta">by ${esc(entry.by)} &middot; ${fmtDateTime(entry.at)}</span>
           </div>
         </div>`).join('');
 
-      // Action button
-      const btn = document.getElementById('action-btn');
-      const BTN = {
-        'open':           { text: 'Claim Issue',    cls: 'btn btn-primary action-btn',   off: false },
-        'in-progress':    { text: 'Post Result',    cls: 'btn btn-primary action-btn',   off: false },
-        'pending-review': { text: 'Approve & Close',cls: 'btn btn-primary action-btn',   off: false },
-        'closed':         { text: 'Closed',         cls: 'btn btn-secondary action-btn', off: true  }
-      };
-      const b    = BTN[issue.status] || BTN['closed'];
-      btn.textContent = b.text;
-      btn.className   = b.cls;
-      btn.disabled    = b.off;
+      // Action buttons
+      const primary   = document.getElementById('action-btn');
+      const secondary = document.getElementById('action-secondary-btn');
+      secondary.classList.add('hidden');
+      primary.classList.remove('hidden');
+
+      switch (issue.status) {
+        case 'open':
+          primary.textContent = 'Claim Issue';
+          primary.className   = 'btn btn-primary action-btn';
+          primary.disabled    = false;
+          break;
+        case 'in-progress':
+          primary.textContent = 'Post Result';
+          primary.className   = 'btn btn-primary action-btn';
+          primary.disabled    = false;
+          break;
+        case 'pending-review':
+          primary.textContent = 'Approve & Close';
+          primary.className   = 'btn btn-primary btn-success action-btn';
+          primary.disabled    = false;
+          secondary.classList.remove('hidden');
+          secondary.textContent = 'Send Back';
+          secondary.className   = 'btn btn-secondary action-btn';
+          break;
+        case 'blocked':
+          primary.textContent = 'Unblock';
+          primary.className   = 'btn btn-primary action-btn';
+          primary.disabled    = false;
+          break;
+        case 'closed':
+          primary.classList.add('hidden');
+          break;
+        default:
+          primary.textContent = 'Closed';
+          primary.disabled    = true;
+      }
     }
 
     // ── Inline edit: title ─────────────────────────────────────
@@ -409,6 +474,19 @@
         document.getElementById('result-textarea').focus();
       } else if (issue.status === 'pending-review') {
         closeIssue(id);
+        render();
+      } else if (issue.status === 'blocked') {
+        // Unblock by clearing reason and sending back to open.
+        updateIssue(id, { status: 'open', blocked_reason: null, updatedBy: currentUser });
+        render();
+      }
+    });
+
+    // Send-back: from pending-review → in-progress (re-open for the agent to address).
+    document.getElementById('action-secondary-btn').addEventListener('click', () => {
+      const issue = getIssue(id);
+      if (issue.status === 'pending-review') {
+        updateIssue(id, { status: 'in-progress', updatedBy: currentUser });
         render();
       }
     });

@@ -253,3 +253,68 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Multiple stacked action buttons in the sidebar */
+.sidebar-action {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+/* Approve & Close uses success color */
+.btn-success {
+  background: var(--status-open) !important;
+  border-color: var(--status-open) !important;
+  color: #FFFFFF !important;
+}
+.btn-success:hover {
+  background: #15803D !important;
+  border-color: #15803D !important;
+}
+
+/* Created-by sidebar field */
+.sidebar-created-by {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.sidebar-created-by .created-by-icon {
+  font-size: 16px;
+}
+
+/* State banner (blocked / closed) */
+.state-banner-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.state-banner-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.state-banner-title {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.state-banner-sub {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.banner-blocked {
+  border-left: 4px solid var(--status-blocked);
+  background: var(--status-blocked-bg);
+}
+
+.banner-closed {
+  border-left: 4px solid var(--status-closed);
+  background: var(--status-closed-bg);
+}

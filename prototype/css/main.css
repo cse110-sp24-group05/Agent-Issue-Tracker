@@ -35,12 +35,14 @@
   --status-open:           #16A34A;
   --status-in-progress:    #CA8A04;
   --status-pending-review: #7C3AED;
+  --status-blocked:        #DC2626;
   --status-closed:         #6B7280;
 
   /* Status badge backgrounds */
   --status-open-bg:           #F0FDF4;
   --status-in-progress-bg:    #FEFCE8;
   --status-pending-review-bg: #F5F3FF;
+  --status-blocked-bg:        #FEF2F2;
   --status-closed-bg:         #F9FAFB;
 
   /* Spacing scale */
@@ -260,6 +262,7 @@ select {
 .badge-open           { color: var(--status-open);           background: var(--status-open-bg); }
 .badge-in-progress    { color: var(--status-in-progress);    background: var(--status-in-progress-bg); }
 .badge-pending-review { color: var(--status-pending-review); background: var(--status-pending-review-bg); }
+.badge-blocked        { color: var(--status-blocked);        background: var(--status-blocked-bg); }
 .badge-closed         { color: var(--status-closed);         background: var(--status-closed-bg); }
 
 /* ─── Buttons ───────────────────────────────────────────────────── */
