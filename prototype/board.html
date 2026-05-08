@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIT — Board</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/board.css">
+</head>
+<body>
+
+  <!-- ── Nav ──────────────────────────────────────────────────── -->
+  <nav class="nav">
+    <a class="nav-logo" href="index.html">A<span>I</span>T</a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="index.html">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm8 0A1.5 1.5 0 0 1 10.5 9h3A1.5 1.5 0 0 1 15 10.5v3A1.5 1.5 0 0 1 13.5 15h-3A1.5 1.5 0 0 1 9 13.5z"/>
+        </svg>
+        List
+      </a>
+      <a class="nav-tab active" href="board.html">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M2 2h3v12H2zm4 0h3v12H6zm4 0h4v12h-4z"/>
+        </svg>
+        Board
+      </a>
+    </div>
+    <div class="nav-actions">
+      <a class="nav-icon-btn" href="settings.html" title="Settings" aria-label="Settings">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+        </svg>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── Page ─────────────────────────────────────────────────── -->
+  <main class="page">
+    <div class="container">
+      <div class="board">
+
+        <!-- ── To Do ─────────────────────────────────────────── -->
+        <div class="board-column">
+          <div class="board-col-header">
+            <span class="board-col-title">To Do</span>
+            <span class="board-col-count" id="count-todo">3</span>
+          </div>
+          <div class="board-cards" id="col-todo" data-status="open">
+            <!-- Populated by data.js on load -->
+          </div>
+        </div>
+
+        <!-- ── In Progress ───────────────────────────────────── -->
+        <div class="board-column">
+          <div class="board-col-header">
+            <span class="board-col-title">In Progress</span>
+            <span class="board-col-count" id="count-progress">1</span>
+          </div>
+          <div class="board-cards" id="col-progress" data-status="in-progress">
+            <!-- Populated by data.js on load -->
+          </div>
+        </div>
+
+        <!-- ── Done ─────────────────────────────────────────── -->
+        <div class="board-column">
+          <div class="board-col-header">
+            <span class="board-col-title">Done</span>
+            <span class="board-col-count" id="count-done">2</span>
+          </div>
+          <div class="board-cards" id="col-done" data-status="pending-review">
+            <!-- Populated by data.js on load -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { getIssues, updateIssue, getSettings } from './js/data.js';
+
+    // ── Helpers ────────────────────────────────────────────────
+    const esc      = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const priBadge = p => ({'P0':'badge-p0','P1':'badge-p1','P2':'badge-p2','P3':'badge-p3'})[p] || 'badge-p3';
+
+    // ── Column mapping ──────────────────────────────────────────
+    const ZONE_ID = { 'open':'col-todo', 'in-progress':'col-progress',
+                      'pending-review':'col-done', 'closed':'col-done' };
+    const COUNT_ID = { 'col-todo':'count-todo', 'col-progress':'count-progress', 'col-done':'count-done' };
+
+    // ── Drag state ──────────────────────────────────────────────
+    let dragging = null;
+
+    // ── Card factory ────────────────────────────────────────────
+    function makeCard(issue) {
+      const div = document.createElement('div');
+      div.className  = 'board-card card';
+      div.draggable  = true;
+      div.dataset.id       = issue.id;
+      div.dataset.priority = issue.priority;
+      div.dataset.status   = issue.status;
+      div.innerHTML = `
+        <div class="board-card-title">${esc(issue.title)}</div>
+        <div class="board-card-meta">
+          <span class="badge ${priBadge(issue.priority)}">${issue.priority}</span>
+          <span class="board-card-assignee${issue.assignee === 'unassigned' ? ' text-muted' : ''}">
+            ${esc(issue.assignee)}
+          </span>
+          <span class="board-card-budget mono">${issue.token_budget.toLocaleString()} tok</span>
+        </div>`;
+
+      div.addEventListener('dragstart', e => {
+        dragging = div;
+        div.classList.add('dragging');
+        e.dataTransfer.setData('text/plain', div.dataset.id);
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      div.addEventListener('dragend', () => { div.classList.remove('dragging'); dragging = null; });
+      div.addEventListener('click',   () => { location.href = 'issue.html?id=' + div.dataset.id; });
+      return div;
+    }
+
+    // ── Count update ────────────────────────────────────────────
+    function updateCounts() {
+      Object.entries(COUNT_ID).forEach(([zoneId, countId]) => {
+        document.getElementById(countId).textContent =
+          document.getElementById(zoneId).querySelectorAll('.board-card').length;
+      });
+    }
+
+    // ── Drop zone handlers ──────────────────────────────────────
+    document.querySelectorAll('.board-cards').forEach(zone => {
+      zone.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        zone.classList.add('drag-over');
+      });
+      zone.addEventListener('dragleave', e => {
+        if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+      });
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('drag-over');
+        if (!dragging || dragging.parentElement === zone) return;
+
+        const newStatus = zone.dataset.status;
+        updateIssue(dragging.dataset.id, { status: newStatus, updatedBy: getSettings().ait_user || 'unknown' });
+        dragging.dataset.status = newStatus;
+        zone.appendChild(dragging);
+        updateCounts();
+      });
+    });
+
+    // ── Render ──────────────────────────────────────────────────
+    function renderBoard() {
+      ['col-todo', 'col-progress', 'col-done'].forEach(id => { document.getElementById(id).innerHTML = ''; });
+      getIssues().forEach(issue => {
+        const zoneId = ZONE_ID[issue.status];
+        if (zoneId) document.getElementById(zoneId).appendChild(makeCard(issue));
+      });
+      updateCounts();
+    }
+
+    renderBoard();
+  </script>
+
+</body>
+</html>

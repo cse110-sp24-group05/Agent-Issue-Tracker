@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIT — issue-001</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/issue.css">
+</head>
+<body>
+
+  <!-- ── Nav ──────────────────────────────────────────────────── -->
+  <nav class="nav">
+    <a class="nav-logo" href="index.html">A<span>I</span>T</a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="index.html">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm8 0A1.5 1.5 0 0 1 10.5 9h3A1.5 1.5 0 0 1 15 10.5v3A1.5 1.5 0 0 1 13.5 15h-3A1.5 1.5 0 0 1 9 13.5z"/>
+        </svg>
+        List
+      </a>
+      <a class="nav-tab" href="board.html">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M2 2h3v12H2zm4 0h3v12H6zm4 0h4v12h-4z"/>
+        </svg>
+        Board
+      </a>
+    </div>
+    <div class="nav-actions">
+      <a class="nav-icon-btn" href="settings.html" title="Settings" aria-label="Settings">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+        </svg>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── Page ─────────────────────────────────────────────────── -->
+  <main class="page">
+    <div class="container">
+
+      <!-- Back link -->
+      <a class="issue-back" href="index.html">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+        </svg>
+        Back to issues
+      </a>
+
+      <!-- Issue header -->
+      <div class="issue-header">
+        <span class="issue-id mono">issue-001</span>
+        <div class="issue-title-wrap">
+          <h1 class="issue-title-text" id="issue-title" title="Click to edit">
+            Bug: modal does not close on Escape key press
+          </h1>
+          <input class="form-input issue-title-input hidden" id="issue-title-input" type="text"
+                 value="Bug: modal does not close on Escape key press">
+        </div>
+      </div>
+
+      <!-- Two-column layout -->
+      <div class="issue-layout">
+
+        <!-- ── Main content ─────────────────────────────────── -->
+        <div class="issue-main">
+
+          <!-- Description -->
+          <div class="issue-section card">
+            <div class="section-label">Description</div>
+            <p class="issue-desc-text" id="issue-desc" title="Click to edit">
+              The New Issue modal stays open when the user presses Escape.
+              It should close and discard any unsaved input.
+            </p>
+            <textarea class="form-textarea issue-desc-input hidden" id="issue-desc-input"
+                      rows="4">The New Issue modal stays open when the user presses Escape. It should close and discard any unsaved input.</textarea>
+          </div>
+
+          <!-- Result (hidden until pending-review / closed) -->
+          <div class="issue-section card hidden" id="result-section">
+            <div class="section-label">Result</div>
+            <p class="issue-result-text" id="result-text"></p>
+          </div>
+
+          <!-- Audit log -->
+          <div class="issue-section card">
+            <div class="section-label">Audit Log</div>
+            <div class="audit-log" id="audit-log">
+
+              <div class="audit-entry">
+                <div class="audit-dot"></div>
+                <div class="audit-body">
+                  <span class="audit-action">created</span>
+                  <span class="audit-meta">by patrick &middot; May 1, 2026, 9:00 AM</span>
+                </div>
+              </div>
+
+              <div class="audit-entry">
+                <div class="audit-dot"></div>
+                <div class="audit-body">
+                  <span class="audit-action">priority-changed from P2 to P1</span>
+                  <span class="audit-meta">by patrick &middot; May 1, 2026, 11:30 AM</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ── Sidebar ───────────────────────────────────────── -->
+        <aside class="issue-sidebar">
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Status</div>
+            <span class="badge badge-open" id="status-badge">Open</span>
+          </div>
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Priority</div>
+            <select class="form-select sidebar-select" id="priority-select">
+              <option value="P0">P0 — Critical</option>
+              <option value="P1" selected>P1 — High</option>
+              <option value="P2">P2 — Medium</option>
+              <option value="P3">P3 — Low</option>
+            </select>
+          </div>
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Assignee</div>
+            <span class="sidebar-editable" id="assignee-display" title="Click to edit">patrick</span>
+            <input class="form-input hidden" id="assignee-input" type="text" value="patrick">
+          </div>
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Token Budget</div>
+            <div class="token-bar">
+              <div class="token-bar-fill" id="token-bar-fill"></div>
+            </div>
+            <div class="token-bar-label mono">
+              <span id="tokens-used-val">0</span> / <span id="token-budget-val">800</span>
+            </div>
+          </div>
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Time</div>
+            <div class="sidebar-kv">
+              <span class="text-muted text-sm">Estimate</span>
+              <span class="text-sm" id="time-estimate-val">30 min</span>
+            </div>
+            <div class="sidebar-kv">
+              <span class="text-muted text-sm">Spent</span>
+              <span class="text-sm" id="time-spent-val">0 min</span>
+            </div>
+          </div>
+
+          <div class="sidebar-field hidden" id="claim-info">
+            <div class="sidebar-label">Claimed by</div>
+            <div class="text-sm" id="claimed-by-val">—</div>
+            <div class="text-muted text-sm" id="claimed-at-val"></div>
+          </div>
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Dates</div>
+            <div class="sidebar-kv">
+              <span class="text-muted text-sm">Created</span>
+              <span class="text-sm" id="created-at-val">—</span>
+            </div>
+            <div class="sidebar-kv">
+              <span class="text-muted text-sm">Updated</span>
+              <span class="text-sm" id="updated-at-val">—</span>
+            </div>
+          </div>
+
+          <div class="sidebar-action">
+            <button class="btn btn-primary action-btn" id="action-btn">Claim Issue</button>
+          </div>
+
+        </aside>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ── Post Result Modal ─────────────────────────────────────── -->
+  <div class="modal-overlay hidden" id="modal-result"
+       role="dialog" aria-modal="true" aria-labelledby="result-modal-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="result-modal-title">Post Result</h2>
+        <button class="modal-close" id="result-modal-close" aria-label="Close">&#10005;</button>
+      </div>
+      <form class="modal-body" id="form-result">
+        <div class="form-group">
+          <label class="form-label" for="result-textarea">Result</label>
+          <textarea class="form-textarea" id="result-textarea" rows="5"
+                    placeholder="Describe what was done and any relevant findings…" required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="result-tokens">Tokens Used</label>
+          <input class="form-input" type="number" id="result-tokens"
+                 placeholder="0" min="0" max="100000">
+        </div>
+      </form>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" id="result-cancel">Cancel</button>
+        <button class="btn btn-primary" type="submit" form="form-result">Submit for Review</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { getIssue, claimIssue, postResult, closeIssue, updateIssue, getSettings } from './js/data.js';
+
+    // ── Helpers ────────────────────────────────────────────────
+    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const staBadge = s => ({'open':'badge-open','in-progress':'badge-in-progress','pending-review':'badge-pending-review','closed':'badge-closed'})[s] || '';
+    const staLabel = s => ({'open':'Open','in-progress':'In Progress','pending-review':'Pending Review','closed':'Closed'})[s] || s;
+    const fmtDate  = iso => iso ? new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+    const fmtDT    = iso => {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+           + ', ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    };
+
+    // ── Setup ──────────────────────────────────────────────────
+    const id          = new URLSearchParams(window.location.search).get('id') || 'issue-001';
+    const currentUser = getSettings().ait_user || 'you';
+
+    // ── Render ─────────────────────────────────────────────────
+    function render() {
+      const issue = getIssue(id);
+      if (!issue) {
+        document.querySelector('.container').innerHTML =
+          `<p class="not-found-msg">${esc(id)} was not found.</p>`;
+        return;
+      }
+
+      document.title = 'AIT — ' + issue.id;
+      document.querySelector('.issue-header .issue-id').textContent = issue.id;
+
+      // Title (skip if in edit mode)
+      const titleText  = document.getElementById('issue-title');
+      const titleInput = document.getElementById('issue-title-input');
+      if (titleInput.classList.contains('hidden')) {
+        titleText.textContent = issue.title;
+        titleInput.value      = issue.title;
+      }
+
+      // Description (skip if in edit mode)
+      const descText  = document.getElementById('issue-desc');
+      const descInput = document.getElementById('issue-desc-input');
+      if (descInput.classList.contains('hidden')) {
+        descText.textContent = issue.description;
+        descInput.value      = issue.description;
+      }
+
+      // Status badge
+      const badge = document.getElementById('status-badge');
+      badge.className   = 'badge ' + staBadge(issue.status);
+      badge.textContent = staLabel(issue.status);
+
+      // Priority
+      document.getElementById('priority-select').value = issue.priority;
+
+      // Assignee (skip if in edit mode)
+      const assigneeDisplay = document.getElementById('assignee-display');
+      const assigneeInput   = document.getElementById('assignee-input');
+      if (assigneeInput.classList.contains('hidden')) {
+        assigneeDisplay.textContent = issue.assignee;
+        assigneeInput.value         = issue.assignee;
+      }
+
+      // Token bar
+      const pct  = issue.token_budget > 0
+        ? Math.min(100, (issue.tokens_used / issue.token_budget) * 100) : 0;
+      const fill = document.getElementById('token-bar-fill');
+      fill.style.width = pct + '%';
+      fill.classList.toggle('token-bar-over', issue.tokens_used > issue.token_budget);
+      document.getElementById('tokens-used-val').textContent  = issue.tokens_used;
+      document.getElementById('token-budget-val').textContent = issue.token_budget;
+
+      // Time
+      document.getElementById('time-estimate-val').textContent = issue.time_estimate + ' min';
+      document.getElementById('time-spent-val').textContent    = issue.time_spent    + ' min';
+
+      // Claim info
+      const claimInfo = document.getElementById('claim-info');
+      if (issue.claimed_by) {
+        claimInfo.classList.remove('hidden');
+        document.getElementById('claimed-by-val').textContent = issue.claimed_by;
+        document.getElementById('claimed-at-val').textContent = fmtDate(issue.claimed_at);
+      } else {
+        claimInfo.classList.add('hidden');
+      }
+
+      // Dates
+      document.getElementById('created-at-val').textContent = fmtDate(issue.created_at);
+      document.getElementById('updated-at-val').textContent = fmtDate(issue.updated_at);
+
+      // Result section
+      const resultSection = document.getElementById('result-section');
+      if (issue.result && (issue.status === 'pending-review' || issue.status === 'closed')) {
+        resultSection.classList.remove('hidden');
+        document.getElementById('result-text').textContent = issue.result;
+      } else {
+        resultSection.classList.add('hidden');
+      }
+
+      // Audit log
+      document.getElementById('audit-log').innerHTML = issue.audit_log.map(entry => `
+        <div class="audit-entry">
+          <div class="audit-dot"></div>
+          <div class="audit-body">
+            <span class="audit-action">${esc(entry.action)}</span>
+            <span class="audit-meta">by ${esc(entry.by)} &middot; ${fmtDT(entry.at)}</span>
+          </div>
+        </div>`).join('');
+
+      // Action button
+      const btn = document.getElementById('action-btn');
+      const BTN = {
+        'open':           { text: 'Claim Issue',    cls: 'btn btn-primary action-btn',   off: false },
+        'in-progress':    { text: 'Post Result',    cls: 'btn btn-primary action-btn',   off: false },
+        'pending-review': { text: 'Approve & Close',cls: 'btn btn-primary action-btn',   off: false },
+        'closed':         { text: 'Closed',         cls: 'btn btn-secondary action-btn', off: true  }
+      };
+      const b    = BTN[issue.status] || BTN['closed'];
+      btn.textContent = b.text;
+      btn.className   = b.cls;
+      btn.disabled    = b.off;
+    }
+
+    // ── Inline edit: title ─────────────────────────────────────
+    const titleText  = document.getElementById('issue-title');
+    const titleInput = document.getElementById('issue-title-input');
+    titleText.addEventListener('click', () => {
+      titleText.classList.add('hidden');
+      titleInput.classList.remove('hidden');
+      titleInput.focus(); titleInput.select();
+    });
+    titleInput.addEventListener('blur', () => {
+      const val = titleInput.value.trim();
+      if (val) updateIssue(id, { title: val, updatedBy: currentUser });
+      titleInput.classList.add('hidden');
+      titleText.classList.remove('hidden');
+      render();
+    });
+    titleInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter')  { e.preventDefault(); titleInput.blur(); }
+      if (e.key === 'Escape') { titleInput.value = getIssue(id)?.title || ''; titleInput.blur(); }
+    });
+
+    // ── Inline edit: description ───────────────────────────────
+    const descText  = document.getElementById('issue-desc');
+    const descInput = document.getElementById('issue-desc-input');
+    descText.addEventListener('click', () => {
+      descText.classList.add('hidden');
+      descInput.classList.remove('hidden');
+      descInput.focus();
+    });
+    descInput.addEventListener('blur', () => {
+      const val = descInput.value.trim();
+      if (val) updateIssue(id, { description: val, updatedBy: currentUser });
+      descInput.classList.add('hidden');
+      descText.classList.remove('hidden');
+      render();
+    });
+    descInput.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { descInput.value = getIssue(id)?.description || ''; descInput.blur(); }
+    });
+
+    // ── Inline edit: assignee ──────────────────────────────────
+    const assigneeDisplay = document.getElementById('assignee-display');
+    const assigneeInput   = document.getElementById('assignee-input');
+    assigneeDisplay.addEventListener('click', () => {
+      assigneeDisplay.classList.add('hidden');
+      assigneeInput.classList.remove('hidden');
+      assigneeInput.focus(); assigneeInput.select();
+    });
+    assigneeInput.addEventListener('blur', () => {
+      const val = assigneeInput.value.trim();
+      if (val) updateIssue(id, { assignee: val, updatedBy: currentUser });
+      assigneeInput.classList.add('hidden');
+      assigneeDisplay.classList.remove('hidden');
+      render();
+    });
+    assigneeInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter')  { e.preventDefault(); assigneeInput.blur(); }
+      if (e.key === 'Escape') { assigneeInput.value = getIssue(id)?.assignee || ''; assigneeInput.blur(); }
+    });
+
+    // ── Priority select ────────────────────────────────────────
+    document.getElementById('priority-select').addEventListener('change', e => {
+      updateIssue(id, { priority: e.target.value, updatedBy: currentUser });
+      render();
+    });
+
+    // ── Action button ──────────────────────────────────────────
+    document.getElementById('action-btn').addEventListener('click', () => {
+      const issue = getIssue(id);
+      if (issue.status === 'open') {
+        claimIssue(id, currentUser);
+        render();
+      } else if (issue.status === 'in-progress') {
+        document.getElementById('modal-result').classList.remove('hidden');
+        document.getElementById('result-textarea').focus();
+      } else if (issue.status === 'pending-review') {
+        closeIssue(id);
+        render();
+      }
+    });
+
+    // ── Post Result modal ──────────────────────────────────────
+    const resultOverlay = document.getElementById('modal-result');
+    const resultForm    = document.getElementById('form-result');
+
+    function closeResultModal() { resultOverlay.classList.add('hidden'); resultForm.reset(); }
+
+    document.getElementById('result-modal-close').addEventListener('click', closeResultModal);
+    document.getElementById('result-cancel').addEventListener('click', closeResultModal);
+    resultOverlay.addEventListener('click', e => { if (e.target === resultOverlay) closeResultModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !resultOverlay.classList.contains('hidden')) closeResultModal();
+    });
+
+    resultForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const result    = document.getElementById('result-textarea').value.trim();
+      const tokens    = parseInt(document.getElementById('result-tokens').value, 10) || 0;
+      const timeSpent = getIssue(id)?.time_spent || 0;
+      postResult(id, result, tokens, timeSpent);
+      closeResultModal();
+      render();
+    });
+
+    // ── Initial render ─────────────────────────────────────────
+    render();
+  </script>
+
+</body>
+</html>

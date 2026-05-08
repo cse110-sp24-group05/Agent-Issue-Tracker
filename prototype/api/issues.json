@@ -1,0 +1,140 @@
+[
+  {
+    "id": "issue-001",
+    "title": "Bug: modal does not close on Escape key press",
+    "description": "The New Issue modal stays open when the user presses Escape. It should close and discard any unsaved input.",
+    "status": "open",
+    "priority": "P1",
+    "assignee": "patrick",
+    "created_at": "2026-05-01T09:00:00Z",
+    "updated_at": "2026-05-01T09:00:00Z",
+    "token_budget": 800,
+    "tokens_used": 0,
+    "time_estimate": 30,
+    "time_spent": 0,
+    "claimed_by": null,
+    "claimed_at": null,
+    "completed_at": null,
+    "result": null,
+    "audit_log": [
+      { "action": "created", "by": "patrick", "at": "2026-05-01T09:00:00Z" },
+      { "action": "priority-changed from P2 to P1", "by": "patrick", "at": "2026-05-01T11:30:00Z" }
+    ]
+  },
+  {
+    "id": "issue-002",
+    "title": "Feature: add filter by assignee on list view",
+    "description": "The filter bar on index.html only supports status. Add a second dropdown to filter issues by assignee name.",
+    "status": "open",
+    "priority": "P2",
+    "assignee": "unassigned",
+    "created_at": "2026-05-02T08:15:00Z",
+    "updated_at": "2026-05-02T08:15:00Z",
+    "token_budget": 1500,
+    "tokens_used": 0,
+    "time_estimate": 60,
+    "time_spent": 0,
+    "claimed_by": null,
+    "claimed_at": null,
+    "completed_at": null,
+    "result": null,
+    "audit_log": [
+      { "action": "created", "by": "alex", "at": "2026-05-02T08:15:00Z" },
+      { "action": "assignee-changed to unassigned", "by": "alex", "at": "2026-05-02T08:20:00Z" },
+      { "action": "description-updated", "by": "patrick", "at": "2026-05-02T10:00:00Z" }
+    ]
+  },
+  {
+    "id": "issue-003",
+    "title": "Refactor: move all date formatting into a shared util function",
+    "description": "ISO timestamps are formatted inline in ui.js and app.js in at least four places. Extract a single formatDate() helper and call it everywhere.",
+    "status": "open",
+    "priority": "P3",
+    "assignee": "unassigned",
+    "created_at": "2026-05-03T14:00:00Z",
+    "updated_at": "2026-05-03T14:00:00Z",
+    "token_budget": 500,
+    "tokens_used": 0,
+    "time_estimate": 20,
+    "time_spent": 0,
+    "claimed_by": null,
+    "claimed_at": null,
+    "completed_at": null,
+    "result": null,
+    "audit_log": [
+      { "action": "created", "by": "patrick", "at": "2026-05-03T14:00:00Z" },
+      { "action": "priority-changed from P2 to P3", "by": "patrick", "at": "2026-05-03T14:05:00Z" },
+      { "action": "title-updated", "by": "patrick", "at": "2026-05-03T14:10:00Z" }
+    ]
+  },
+  {
+    "id": "issue-004",
+    "title": "Feature: implement drag-and-drop on kanban board",
+    "description": "Cards on board.html should be draggable between columns using the HTML5 Drag and Drop API. Dropping a card into a new column updates its status in localStorage.",
+    "status": "in-progress",
+    "priority": "P1",
+    "assignee": "claude-agent",
+    "created_at": "2026-05-03T09:00:00Z",
+    "updated_at": "2026-05-05T13:00:00Z",
+    "token_budget": 2500,
+    "tokens_used": 1100,
+    "time_estimate": 90,
+    "time_spent": 50,
+    "claimed_by": "claude-agent",
+    "claimed_at": "2026-05-05T13:00:00Z",
+    "completed_at": null,
+    "result": null,
+    "audit_log": [
+      { "action": "created", "by": "patrick", "at": "2026-05-03T09:00:00Z" },
+      { "action": "assignee-changed to claude-agent", "by": "patrick", "at": "2026-05-04T10:00:00Z" },
+      { "action": "claimed", "by": "claude-agent", "at": "2026-05-05T13:00:00Z" }
+    ]
+  },
+  {
+    "id": "issue-005",
+    "title": "Bug: token budget not persisting after page reload",
+    "description": "When a user sets a token budget on the New Issue form, the value is lost on reload. The field is being read from the DOM but never written to localStorage.",
+    "status": "pending-review",
+    "priority": "P0",
+    "assignee": "claude-agent",
+    "created_at": "2026-05-04T07:30:00Z",
+    "updated_at": "2026-05-06T11:45:00Z",
+    "token_budget": 1200,
+    "tokens_used": 980,
+    "time_estimate": 45,
+    "time_spent": 40,
+    "claimed_by": "claude-agent",
+    "claimed_at": "2026-05-04T08:00:00Z",
+    "completed_at": null,
+    "result": "Root cause: saveIssue() in data.js was omitting token_budget from the object spread. Fixed by adding the field explicitly. Added a manual test step to the audit log.",
+    "audit_log": [
+      { "action": "created", "by": "alex", "at": "2026-05-04T07:30:00Z" },
+      { "action": "claimed", "by": "claude-agent", "at": "2026-05-04T08:00:00Z" },
+      { "action": "submitted-for-review", "by": "claude-agent", "at": "2026-05-06T11:45:00Z" }
+    ]
+  },
+  {
+    "id": "issue-006",
+    "title": "Refactor: consolidate all localStorage access into data.js",
+    "description": "Several files call localStorage.getItem and localStorage.setItem directly. All reads and writes must go through data.js so there is a single source of truth.",
+    "status": "closed",
+    "priority": "P0",
+    "assignee": "claude-agent",
+    "created_at": "2026-05-01T08:00:00Z",
+    "updated_at": "2026-05-03T16:00:00Z",
+    "token_budget": 3000,
+    "tokens_used": 2340,
+    "time_estimate": 120,
+    "time_spent": 110,
+    "claimed_by": null,
+    "claimed_at": null,
+    "completed_at": "2026-05-03T16:00:00Z",
+    "result": "Removed all direct localStorage calls from app.js and ui.js. All access now goes through getIssues(), saveIssue(), and deleteIssue() in data.js. Verified by grepping the codebase for localStorage — only data.js remains.",
+    "audit_log": [
+      { "action": "created", "by": "patrick", "at": "2026-05-01T08:00:00Z" },
+      { "action": "claimed", "by": "claude-agent", "at": "2026-05-01T09:00:00Z" },
+      { "action": "submitted-for-review", "by": "claude-agent", "at": "2026-05-03T14:00:00Z" },
+      { "action": "approved and closed", "by": "patrick", "at": "2026-05-03T16:00:00Z" }
+    ]
+  }
+]

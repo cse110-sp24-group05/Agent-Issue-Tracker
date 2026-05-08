@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIT — Issues</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/list.css">
+</head>
+<body>
+
+  <!-- ── Nav ──────────────────────────────────────────────────── -->
+  <nav class="nav">
+    <a class="nav-logo" href="index.html">A<span>I</span>T</a>
+    <div class="nav-tabs">
+      <a class="nav-tab active" href="index.html">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm8 0A1.5 1.5 0 0 1 10.5 9h3A1.5 1.5 0 0 1 15 10.5v3A1.5 1.5 0 0 1 13.5 15h-3A1.5 1.5 0 0 1 9 13.5z"/>
+        </svg>
+        List
+      </a>
+      <a class="nav-tab" href="board.html">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M2 2h3v12H2zm4 0h3v12H6zm4 0h4v12h-4z"/>
+        </svg>
+        Board
+      </a>
+    </div>
+    <div class="nav-actions">
+      <a class="nav-icon-btn" href="settings.html" title="Settings" aria-label="Settings">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+        </svg>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── Page ─────────────────────────────────────────────────── -->
+  <main class="page">
+    <div class="container">
+
+      <!-- Summary bar -->
+      <div class="summary-bar">
+        <div class="stat-card card stat-open">
+          <div class="stat-number">3</div>
+          <div class="stat-label">Open</div>
+        </div>
+        <div class="stat-card card stat-progress">
+          <div class="stat-number">1</div>
+          <div class="stat-label">In Progress</div>
+        </div>
+        <div class="stat-card card stat-review">
+          <div class="stat-number">1</div>
+          <div class="stat-label">Pending Review</div>
+        </div>
+        <div class="stat-card card stat-closed">
+          <div class="stat-number">1</div>
+          <div class="stat-label">Closed</div>
+        </div>
+      </div>
+
+      <!-- Toolbar: filters + new issue -->
+      <div class="list-toolbar">
+        <div class="filter-bar">
+          <select class="form-select filter-select" id="filter-status" aria-label="Filter by status">
+            <option value="">All statuses</option>
+            <option value="open">Open</option>
+            <option value="in-progress">In Progress</option>
+            <option value="pending-review">Pending Review</option>
+            <option value="closed">Closed</option>
+          </select>
+
+          <select class="form-select filter-select" id="filter-priority" aria-label="Filter by priority">
+            <option value="">All priorities</option>
+            <option value="P0">P0</option>
+            <option value="P1">P1</option>
+            <option value="P2">P2</option>
+            <option value="P3">P3</option>
+          </select>
+
+          <select class="form-select filter-select" id="filter-assignee" aria-label="Filter by assignee">
+            <option value="">All assignees</option>
+            <option value="patrick">patrick</option>
+            <option value="claude-agent">claude-agent</option>
+            <option value="unassigned">unassigned</option>
+          </select>
+
+          <input class="form-input filter-search" type="text" id="filter-search"
+                 placeholder="Search issues…" aria-label="Search issues">
+        </div>
+
+        <button class="btn btn-primary" id="btn-new-issue">+ New Issue</button>
+      </div>
+
+      <!-- Issue table -->
+      <div class="card issue-table-wrapper">
+        <table class="issue-table">
+          <colgroup>
+            <col class="col-id">
+            <col class="col-title">
+            <col class="col-pri">
+            <col class="col-status">
+            <col class="col-assign">
+            <col class="col-budget">
+            <col class="col-date">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Assignee</th>
+              <th class="align-right">Token Budget</th>
+              <th class="align-right">Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Populated by data.js on load -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ── New Issue Modal ───────────────────────────────────────── -->
+  <div class="modal-overlay hidden" id="modal-new-issue" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">New Issue</h2>
+        <button class="modal-close" id="modal-close" aria-label="Close">&#10005;</button>
+      </div>
+
+      <form class="modal-body" id="form-new-issue">
+        <div class="form-group">
+          <label class="form-label" for="new-title">Title</label>
+          <input class="form-input" type="text" id="new-title"
+                 placeholder="Short description of the issue" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="new-description">Description</label>
+          <textarea class="form-textarea" id="new-description"
+                    placeholder="What needs to be done and why?" rows="3"></textarea>
+        </div>
+
+        <div class="modal-row">
+          <div class="form-group">
+            <label class="form-label" for="new-priority">Priority</label>
+            <select class="form-select" id="new-priority">
+              <option value="P1">P1</option>
+              <option value="P0">P0</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="new-assignee">Assignee</label>
+            <input class="form-input" type="text" id="new-assignee"
+                   placeholder="e.g. claude-agent">
+          </div>
+        </div>
+
+        <div class="modal-row">
+          <div class="form-group">
+            <label class="form-label" for="new-budget">Token Budget</label>
+            <input class="form-input" type="number" id="new-budget"
+                   placeholder="2000" min="0" max="100000">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="new-estimate">Time Estimate (min)</label>
+            <input class="form-input" type="number" id="new-estimate"
+                   placeholder="60" min="0">
+          </div>
+        </div>
+      </form>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" id="modal-cancel">Cancel</button>
+        <button class="btn btn-primary" type="submit" form="form-new-issue">Create Issue</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { getIssues, createIssue, getSettings } from './js/data.js';
+
+    // ── Helpers ────────────────────────────────────────────────
+    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const priBadge = p => ({'P0':'badge-p0','P1':'badge-p1','P2':'badge-p2','P3':'badge-p3'})[p] || 'badge-p3';
+    const staBadge = s => ({'open':'badge-open','in-progress':'badge-in-progress','pending-review':'badge-pending-review','closed':'badge-closed'})[s] || '';
+    const staLabel = s => ({'open':'Open','in-progress':'In Progress','pending-review':'Pending Review','closed':'Closed'})[s] || s;
+    const fmtDate  = iso => iso ? new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—';
+
+    // ── Render ─────────────────────────────────────────────────
+    function renderRows(issues) {
+      const tbody = document.querySelector('.issue-table tbody');
+      if (!issues.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-row">No issues match the current filters.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = issues.map(i => `
+        <tr data-issue-row data-id="${esc(i.id)}"
+            data-status="${i.status}" data-priority="${i.priority}"
+            data-assignee="${esc(i.assignee)}">
+          <td><span class="issue-id mono">${esc(i.id)}</span></td>
+          <td><span class="issue-title">${esc(i.title)}</span></td>
+          <td><span class="badge ${priBadge(i.priority)}">${i.priority}</span></td>
+          <td><span class="badge ${staBadge(i.status)}">${staLabel(i.status)}</span></td>
+          <td class="${i.assignee === 'unassigned' ? 'text-muted' : ''}">${esc(i.assignee)}</td>
+          <td class="align-right">${i.token_budget.toLocaleString()}</td>
+          <td class="align-right text-muted">${fmtDate(i.updated_at)}</td>
+        </tr>`).join('');
+
+      tbody.querySelectorAll('[data-issue-row]').forEach(row => {
+        row.addEventListener('click', () => { location.href = 'issue.html?id=' + row.dataset.id; });
+      });
+    }
+
+    function updateSummary() {
+      const all = getIssues();
+      const c = { open: 0, 'in-progress': 0, 'pending-review': 0, closed: 0 };
+      all.forEach(i => { if (i.status in c) c[i.status]++; });
+      document.querySelector('.stat-open .stat-number').textContent     = c['open'];
+      document.querySelector('.stat-progress .stat-number').textContent = c['in-progress'];
+      document.querySelector('.stat-review .stat-number').textContent   = c['pending-review'];
+      document.querySelector('.stat-closed .stat-number').textContent   = c['closed'];
+    }
+
+    function applyFilters() {
+      const status   = document.getElementById('filter-status').value;
+      const priority = document.getElementById('filter-priority').value;
+      const assignee = document.getElementById('filter-assignee').value;
+      const search   = document.getElementById('filter-search').value.toLowerCase();
+      const filtered = getIssues().filter(i =>
+        (!status   || i.status   === status)   &&
+        (!priority || i.priority === priority) &&
+        (!assignee || i.assignee === assignee) &&
+        (!search   || i.title.toLowerCase().includes(search))
+      );
+      renderRows(filtered);
+    }
+
+    // ── Init ───────────────────────────────────────────────────
+    updateSummary();
+    renderRows(getIssues());
+
+    // ── Modal ──────────────────────────────────────────────────
+    const overlay  = document.getElementById('modal-new-issue');
+    const form     = document.getElementById('form-new-issue');
+
+    function openModal()  { overlay.classList.remove('hidden'); document.getElementById('new-title').focus(); }
+    function closeModal() { overlay.classList.add('hidden'); form.reset(); }
+
+    document.getElementById('btn-new-issue').addEventListener('click', openModal);
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('modal-cancel').addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !overlay.classList.contains('hidden')) closeModal();
+    });
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      createIssue({
+        title:         document.getElementById('new-title').value.trim(),
+        description:   document.getElementById('new-description').value.trim(),
+        priority:      document.getElementById('new-priority').value,
+        assignee:      document.getElementById('new-assignee').value.trim() || 'unassigned',
+        token_budget:  parseInt(document.getElementById('new-budget').value,   10) || 2000,
+        time_estimate: parseInt(document.getElementById('new-estimate').value, 10) || 60,
+        creator:       getSettings().ait_user || 'unknown'
+      });
+      updateSummary();
+      applyFilters();
+      closeModal();
+    });
+
+    // ── Filters ────────────────────────────────────────────────
+    ['filter-status','filter-priority','filter-assignee'].forEach(id => {
+      document.getElementById(id).addEventListener('change', applyFilters);
+    });
+    document.getElementById('filter-search').addEventListener('input', applyFilters);
+  </script>
+
+</body>
+</html>
