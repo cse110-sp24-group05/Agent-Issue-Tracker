@@ -62,8 +62,8 @@
   "status": "open",
   "priority": "high",
   "assignedTo": "USR-001",
-  "createdAt": 1747170000000,
-  "updatedAt": 1747170000000,
+  "createdAt": "2026-05-13T15:25:43.511Z",
+  "updatedAt": "2026-05-13T15:25:43.511Z",
   "closedAt": null
 }
 ```
