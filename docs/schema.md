@@ -95,7 +95,7 @@ This schema includes:
 | description | string | Detailed description |
 | status | string | open/in_progress/review/closed |
 | priority | string | low/medium/high/critical |
-| assignedTo | string/null | Assigned user ID |
+| assignedTo | string/null | Assigned user/agent ID |
 | claimExpiresAt | string/null | Claim expiration ISO timestamp |
 | retryCount | number | How many times this issue has been claimed and expired |
 | claimTimeoutMinutes | number | How long a claim is valid before expiring |
