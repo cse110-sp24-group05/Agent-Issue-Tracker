@@ -77,7 +77,7 @@
 | description | string | Detailed description |
 | status | string | open/in_progress/review/closed |
 | priority | string | low/medium/high/critical |
-| assignedTo | string/null | Assigned user ID |
+| assignedTo | string/null | Assigned user/agent ID |
 | createdAt | number | Creation timestamp |
 | updatedAt | number | Last updated timestamp |
 | closedAt | number/null | Close timestamp |
