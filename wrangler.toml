@@ -1,0 +1,8 @@
+name = "agent-issue-tracker"
+main = "src/js/worker.js"
+compatibility_date = "2026-01-01"
+
+[[d1_databases]]
+binding = "issues_db"
+database_name = "issues-db"
+database_id = "c7f9f4d5-9057-4d21-b632-c68fd9eb2450"
