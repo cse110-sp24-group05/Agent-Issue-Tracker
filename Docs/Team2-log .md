@@ -4,25 +4,23 @@
 - Week 7 / Week 8
 
 ## Team Members
-- Name
-- Name
+- Nick Mitroff
+- Nikolas Malek
+- Hien Tran
+- Lisa Tran
 
 ---
 
 ## Completed
-- completed task
-- completed task
-- completed task
+- Created wireframes for dashboard, issues list, Kanban, and settings pages, which are on our Figma page.
 
 ---
 
 ## In Progress
-- current task
-- current task
+- Create HTML/CSS frontend for all pages.
+- Design more wireframes if needed.
 
 ---
 
 ## Notes
-- important updates
-- workflow changes
-- things other teams should know
+- For any little icons in the page, make sure to use the SVG icons uploaded to src/assets/svg. If there's icons you want that aren't in the folder, you can download more from the "Xnix circular interface icons" set, or from other icon sets as a last resort.
