@@ -1,0 +1,53 @@
+name: CD
+# cd.yml — Continuous Deployment
+#
+# Automatically deploys the app to Cloudflare every time
+# code merges to main. Runs the database migrations first,
+# then deploys the Worker so the two are always in sync.
+#
+# Before this works you need to add two secrets in:
+# GitHub repo → Settings → Secrets and variables → Actions
+#   CLOUDFLARE_API_TOKEN   → get from Cloudflare dashboard > API Tokens
+#   CLOUDFLARE_ACCOUNT_ID  → get from Cloudflare dashboard homepage
+
+
+# only fires when something merges to main
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy to Cloudflare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # applies any new schema changes to the live D1 database
+      # always runs before deploying worker code so the db is
+      # ready for whatever the new code expects
+      - name: Apply D1 migrations
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: d1 migrations apply issues-db --remote
+
+      # deploys src/js/worker.js to Cloudflare Workers
+      # wrangler.toml already has the right config so this just works
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
