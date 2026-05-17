@@ -9,16 +9,16 @@ export default {
     const url = new URL(request.url);
     const method = request.method;
 
-    console.log("PATH:", url.pathname);
-    console.log("METHOD:", request.method);
+    console.log('PATH:', url.pathname);
+    console.log('METHOD:', request.method);
 
     // GET /api/issues
-    if (url.pathname === "/api/issues" && method === "GET") {
+    if (url.pathname === '/api/issues' && method === 'GET') {
       return getAllIssues(env);
     }
 
     // POST /api/issues
-    if (url.pathname === "/api/issues" && method === "POST") {
+    if (url.pathname === '/api/issues' && method === 'POST') {
       return createIssue(request, env);
     }
     
@@ -28,7 +28,7 @@ export default {
     //  return deleteIssue(id, env);
     //}
 
-    return new Response("Not Found", { status: 404 });
+    return new Response('Not Found', { status: 404 });
   }
 };
 
@@ -40,7 +40,7 @@ export default {
  * If there is an error during the process, it will return an appropriate error
  * message.
  * @param {Request} request - The incoming request containing the issue details in the body.
- * @param {Object} env - The environment object containing bindings and configurations.
+ * @param {object} env - The environment object containing bindings and configurations.
  * @returns {Response} - A response object containing the created issue or an error message.
  */
 async function createIssue(request, env) {
@@ -65,14 +65,14 @@ async function createIssue(request, env) {
       closed_at
     } = issueData;
 
-     // Validate required fields
+    // Validate required fields
     if (!id || !title || ! issue_status || ! issue_priority 
-      || retry_count == undefined || claim_timeout_minutes == undefined 
+      || retry_count === undefined || claim_timeout_minutes === undefined 
       || !created_at || !updated_at) {
       return Response.json(
         {
           success: false,
-          error: "Missing required fields"
+          error: 'Missing required fields'
         },
         {
           status: 400
@@ -85,7 +85,7 @@ async function createIssue(request, env) {
       return Response.json(
         {
           success: false,
-          error: "Issue cannot be assigned to both a user and an agent"
+          error: 'Issue cannot be assigned to both a user and an agent'
         },
         {
           status: 400
@@ -112,28 +112,28 @@ async function createIssue(request, env) {
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `)
-    .bind( // fill in the values for the placeholders
-      id,
-      title,
-      issue_description || null,
-      issue_status,
-      issue_priority,
-      assigned_to_user || null,
-      assigned_to_agent || null,
-      claim_expires_at || null,
-      retry_count,
-      claim_timeout_minutes,
-      created_at,
-      updated_at,
-      closed_at || null
-    )
-    .run();
+      .bind( // fill in the values for the placeholders
+        id,
+        title,
+        issue_description || null,
+        issue_status,
+        issue_priority,
+        assigned_to_user || null,
+        assigned_to_agent || null,
+        claim_expires_at || null,
+        retry_count,
+        claim_timeout_minutes,
+        created_at,
+        updated_at,
+        closed_at || null
+      )
+      .run();
 
     // Return a response containing the created issue
     return Response.json(
       {
         success: true,
-        message: "Issue created successfully",
+        message: 'Issue created successfully',
         issue: issueData
       },
       {
@@ -160,13 +160,13 @@ async function createIssue(request, env) {
  * and handle any potential errors that may occur during the retrieval process.
  * The response will include an array of issues, each containing relevant details such as title, 
  * description, status, priority, and assignment information.
- * @param {Object} env - The environment object containing bindings and configurations, including the database connection.
+ * @param {object} env - The environment object containing bindings and configurations, including the database connection.
  * @returns {Response} - A JSON response containing the list of all issues or an error message if the retrieval fails. 
-*/
+ */
 async function getAllIssues(env) {
   try {
     const { results } = await env.issues_db
-      .prepare("SELECT * FROM issues")
+      .prepare('SELECT * FROM issues')
       .all();
 
     return Response.json(results);
@@ -178,31 +178,60 @@ async function getAllIssues(env) {
   }
 }
 
+/**
+ *
+ */
 function getIssueById() {
 
 }
 
+/**
+ *
+ */
 function updateIssue() {
 
 }
+/**
+ *
+ * @param id
+ * @param env
+ */
 function deleteIssue(id, env) {
 
 }
+/**
+ *
+ */
 function claimIssue(){
 
 }
+/**
+ *
+ */
 function postResult(){
 
 }
+/**
+ *
+ */
 function closeIssue(){
     
 }
+/**
+ *
+ */
 function blockIssue(){
 
 }
+/**
+ *
+ */
 function filterIssues(){
 
 }
+/**
+ *
+ */
 function sortIssues(){
     
 }

@@ -1,6 +1,13 @@
+import jsdoc from 'eslint-plugin-jsdoc';
+
 export default [
-  js.configs.recommended,
   {
+    ignores: ['prototype/**', 'node_modules/**'],
+    files: ['**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
     plugins: { jsdoc },
     rules: {
       // code style
@@ -13,7 +20,7 @@ export default [
       'curly': 'error',
       'no-var': 'error',
       'prefer-const': 'error',
- 
+
       // jsdoc — require comments on all exported functions and classes
       'jsdoc/require-jsdoc': ['warn', {
         require: {
@@ -36,4 +43,3 @@ export default [
     }
   }
 ];
- 
