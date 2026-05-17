@@ -1,0 +1,31 @@
+name: SemVer
+
+# semver.yml — Automated Versioning & Changelog
+#
+# Watches every merge to main and reads commit messages
+# to figure out the next version number automatically.
+#   feat: anything   → minor bump (1.0.0 → 1.1.0)
+#   fix: anything    → patch bump (1.0.0 → 1.0.1)
+#   BREAKING CHANGE  → major bump (1.0.0 → 2.0.0)
+#
+# Opens a Release PR with the bumped version and updated
+# CHANGELOG.md. Merge that PR to create the GitHub release.
+
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  semver:
+    name: Compute SemVer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run SemVer
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
