@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS issues (
     title TEXT NOT NULL,
     issue_description TEXT,
     issue_status TEXT NOT NULL CHECK (
-        issue_status IN ('open', 'in_progress', 'review', 'closed')
+        issue_status IN ('open', 'in_progress', 'blocked', 'review', 'closed')
     ),
     issue_priority TEXT NOT NULL CHECK (
         issue_priority IN ('low', 'medium', 'high', 'critical')
