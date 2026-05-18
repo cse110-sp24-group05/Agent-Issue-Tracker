@@ -17,7 +17,7 @@ Field names in API responses match the `schema.sql` columns exactly.
 | id | TEXT PRIMARY KEY | Unique issue ID |
 | title | TEXT NOT NULL | Issue title |
 | issue_description | TEXT | Issue details |
-| issue_status | TEXT NOT NULL | `open` · `in_progress` · `review` · `closed` |
+| issue_status | TEXT NOT NULL | `open` · `in_progress` · `review` · `blocked` · `closed` |
 | issue_priority | TEXT NOT NULL | `low` · `medium` · `high` · `critical` |
 | assigned_to_user | TEXT | FK → users.id. Null if unassigned or agent-assigned |
 | assigned_to_agent | TEXT | FK → agents.id. Null if unassigned or user-assigned |
