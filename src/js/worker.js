@@ -577,7 +577,7 @@ async function closeIssue(id, env) {
       WHERE id = ?
     `)
       .bind(
-        "closed",
+        'closed',
         now,
         now,
         id
