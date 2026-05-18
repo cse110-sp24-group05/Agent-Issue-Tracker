@@ -17,16 +17,28 @@ export default {
       return getAllIssues(env);
     }
 
+    // GET /api/issues/:id
+    if(url.pathname.startsWith("/api/issues/") && method == "GET") {
+      const id = url.pathname.split("/").pop();
+      return getIssueById(id, env);
+    }
+
     // POST /api/issues
     if (url.pathname === '/api/issues' && method === 'POST') {
       return createIssue(request, env);
     }
+
+    // // PUT (UPDATE) /api/issues/:id
+    // if(url.pathname.startsWith("/api/issues/") && method == "PUT") {
+    //   const id = url.pathname.split("/").pop();
+    //   return updateIssue(id, request, env);
+    // }
     
     // DELETE /api/issues/:id
-    //if (url.pathname.startsWith("/api/issues/") && method === "DELETE") {
-    //  const id = url.pathname.split("/").pop();
-    //  return deleteIssue(id, env);
-    //}
+    if (url.pathname.startsWith("/api/issues/") && method === "DELETE") {
+      const id = url.pathname.split("/").pop();
+      return deleteIssue(id, env);
+    }
 
     return new Response('Not Found', { status: 404 });
   }
@@ -178,60 +190,332 @@ async function getAllIssues(env) {
   }
 }
 
-/**
- *
- */
-function getIssueById() {
+
+/** 
+ * getIssueByID will retrieve an issue from the database given a specified id.
+ * It will query the database the corresponding issue, and format the results into a JSON response,
+ * and also handle any potential errors that may occur during the retrieval process.
+ * The response will include an entry in the array of issues, which contains relevant details 
+ * such as title, description, status, priority, and assignment information.
+ * @param {string} id - a unique identifier for an issue
+ * @param {Object} env - The environment object containing bindings and configurations, including the database connection.
+ * @returns {Response} - A JSON response containing the issue with the specified id or an error message if the retrieval fails. 
+*/
+async function getIssueById(id, env) {
+  try {
+    const issue = await env.issues_db
+      .prepare("SELECT * FROM issues WHERE id = ?")
+      .bind(id)
+      .first();
+
+    if (!issue) {
+      return Response.json(
+        {
+          success: false,
+          error: "Issue not found"
+        },
+        {
+          status: 404
+        }
+      );
+    }
+
+    return Response.json({
+      success: true,
+      issue
+    });
+
+  } catch (error) {
+    return Response.json(
+      {
+        success: false,
+        error: error.message
+      },
+      {
+        status: 500
+      }
+    );
+  }
+}
+
+// TODO
+async function updateIssue() {
 
 }
 
+/** 
+ * deleteIssue will delete an issue given a specified id
+ * It will query the database for the corresponding issue, and format the results into a JSON response,
+ * and also handle any potential errors that may occur during the retrieval process.
+ * The response will be whether we successfully delete the specified issue or fail to do so.
+ * @param {string} id - a unique identifier for an issue
+ * @param {Object} env - The environment object containing bindings and configurations, including the database connection.
+ * @returns {Response} - A JSON response indicating success or failure 
+*/
+async function deleteIssue(id, env) {
+  try {
+
+    await env.issues_db
+      .prepare("DELETE FROM issues WHERE id = ?")
+      .bind(id)
+      .run();
+
+    return Response.json({
+      success: true,
+      message: "Issue deleted successfully"
+    });
+
+  } catch (error) {
+    return Response.json(
+      {
+        success: false,
+        error: error.message
+      },
+      {
+        status: 500
+      }
+    );
+  }
+}
+
 /**
- *
+ * claimIssue assigns an issue to an agent and transitions the issue
+ * from an "open" state into the "in_progress" state.
+ * 
+ * The function checks if the issue exists, and whether the issue is claimable or open.
+ * When an issue is claimed, an agent is assigned to it, and the status and timestamps 
+ * are updated, along with a claim expiration unix timestamp.
+ * 
+ * @param {string} id - The unique identifier of the issue.
+ * @param {string} agentId - the claiming agent's id.
+ * @param {Object} env - Environment bindings containing the database connection.
+ * @returns {Response} A JSON response indicating success or failure.
  */
-function updateIssue() {
+async function claimIssue(id, agentId, env){
+  try {
+
+    const expiration = new Date(
+      Date.now() + 15 * 60 * 1000
+    ).toISOString();
+
+    await env.issues_db.prepare(`
+      UPDATE issues
+      SET
+        assigned_to_agent = ?,
+        claim_expires_at = ?,
+        issue_status = ?
+      WHERE id = ?
+    `)
+    .bind(
+      agentId,
+      expiration,
+      "claimed",
+      id
+    )
+    .run();
+
+    return Response.json({
+      success: true,
+      message: "Issue claimed successfully"
+    });
+
+  } catch (error) {
+    return Response.json(
+      {
+        success: false,
+        error: error.message
+      },
+      {
+        status: 500
+      }
+    );
+  }
+}
+
+/**
+ * postResult processes the outcome of a claimed issue and transitions
+ * the issue into a new status such as "closed", or "blocked".
+ * 
+ * The function checks whether the issue exists and if the issue's status is 
+ * valid for status transition purposes.
+ * The function updates the issue status and the timestamp
+ * 
+ * @param {string} id - The unique identifier of the issue.
+ * @param {Request} request - The incoming request containing the desired result state.
+ * @param {Object} env - Environment bindings containing the database connection.
+ * @returns {Response} A JSON response indicating success or failure.
+ */
+async function postResult(id, request, env){
+  try {
+    const data = await request.json();
+    const {
+      new_status
+    } = data;
+
+    // Allowed statuses after processing
+    const validStatuses = [
+      "blocked",
+      "review",
+    ];
+
+    if (!validStatuses.includes(new_status)) {
+      return Response.json(
+        {
+          success: false,
+          error: "Invalid result status"
+        },
+        {
+          status: 400
+        }
+      );
+    }
+
+    // Check issue exists
+    const issue = await env.issues_db
+      .prepare(`
+        SELECT *
+        FROM issues
+        WHERE id = ?
+      `)
+      .bind(id)
+      .first();
+
+    if (!issue) {
+      return Response.json(
+        {
+          success: false,
+          error: "Issue not found"
+        },
+        {
+          status: 404
+        }
+      );
+    }
+
+    // Filter for only issues that are currently in progress
+    if (
+      issue.issue_status !== "in_progress"
+    ) {
+      return Response.json(
+        {
+          success: false,
+          error: "Issue must be in progress before posting results."
+        },
+        {
+          status: 400
+        }
+      );
+    }
+
+    const updatedAt = new Date().toISOString();
+
+    await env.issues_db.prepare(`
+      UPDATE issues
+      SET
+        issue_status = ?,
+        updated_at = ?
+      WHERE id = ?
+    `)
+    .bind(
+      new_status,
+      updatedAt,
+      id
+    )
+    .run();
+
+    return Response.json({
+      success: true,
+      message: "Result posted successfully"
+    });
+
+  } catch (error) {
+
+    return Response.json(
+      {
+        success: false,
+        error: error.message
+      },
+      {
+        status: 500
+      }
+    );
+  }
+}
+
+/**
+ * closeIssue finalizes a resolved issue and transitions it into
+ * the closed state.
+ * 
+ * The function checks whether the issue exists, and whether we can transition to 
+ * the issue status "closed".
+ * 
+ * The function updates the issue status, the closed_at and updated_at timestamps.
+ * 
+ * @param {string} id - The unique identifier of the issue.
+ * @param {Object} env - Environment bindings containing the database connection.
+ * @returns {Response} A JSON response indicating success or failure.
+ */
+async function closeIssue(id, env){
+  try {
+
+    const closedAt = new Date().toISOString();
+
+    await env.issues_db.prepare(`
+      UPDATE issues
+      SET
+        issue_status = ?,
+        closed_at = ?
+      WHERE id = ?
+    `)
+    .bind(
+      "closed",
+      closedAt,
+      id
+    )
+    .run();
+
+    return Response.json({
+      success: true,
+      message: "Issue closed successfully"
+    });
+
+  } catch (error) {
+    return Response.json(
+      {
+        success: false,
+        error: error.message
+      },
+      {
+        status: 500
+      }
+    );
+  }
+}
+
+/**
+ * blockIssue transitions an issue into a blocked state when processing
+ * cannot continue due to some unresolved problem or prereq
+ * 
+ * The function first checks whether the issue in question exists and 
+ * whether the current workflow state allows the state transition of blocking
+ * 
+ * The function updates the issue status to blocked, and also updates timestamp
+ * 
+ * @param {string} id - The unique identifier of the issue.
+ * @param {Object} env - Environment bindings containing the database connection.
+ * @returns {Response} A JSON response indicating success or failure.
+ */
+// TODO
+async function blockIssue(){
 
 }
-/**
- *
- * @param id
- * @param env
- */
-function deleteIssue(id, env) {
+
+// TODO
+async function filterIssues(){
 
 }
-/**
- *
- */
-function claimIssue(){
 
-}
-/**
- *
- */
-function postResult(){
-
-}
-/**
- *
- */
-function closeIssue(){
-    
-}
-/**
- *
- */
-function blockIssue(){
-
-}
-/**
- *
- */
-function filterIssues(){
-
-}
-/**
- *
- */
-function sortIssues(){
+// TODO
+async function sortIssues(){
     
 }
