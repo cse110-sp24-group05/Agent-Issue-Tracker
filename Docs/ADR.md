@@ -347,3 +347,52 @@ As of the 05/15 meeting:
 * wrangler.toml has been added for environment configuration  
 * workers.js replaces data.js
 
+
+
+# ADR 006: Consolidate non-code folders under /docs and enforce lowercase naming
+
+**Status:** Accepted
+**Date:** 2026-05-19
+**Decision-makers:** Patrick Chung
+
+## Context and Problem Statement
+
+Non-code folders (`Docs/`, `Meetings/`, `Research/`) were scattered at the repo root alongside code infrastructure, making the root noisy and inconsistent. Folder names used mixed case, which causes path resolution failures on Linux (CI/CD, Cloudflare) even when paths work locally on macOS.
+
+## Decision Outcome
+
+Consolidate all non-code planning and documentation folders under `/docs`. Rename all folders and files to lowercase with hyphens for multi-word names. Config files and conventionally uppercase files (`README.md`, `CHANGELOG.md`, `CLAUDE.md`, `LICENSE`) are not affected.
+
+## Consequences
+
+### Good
+
+- Root is cleaner and the code/non-code split is immediately obvious
+- Eliminates case-sensitivity bugs between local macOS development and Linux CI/CD
+- Consistent with open-source conventions
+
+### Bad
+
+- Existing links or references to old paths need updating
+- Contributors need to be informed of the new structure
+
+## New structure
+
+```
+docs/
+  meetings/
+  research/
+  decisions/
+  api-contract.md
+  architecture.md
+  workflow.md
+  schema.md
+src/
+migrations/
+.github/
+README.md
+CHANGELOG.md
+CLAUDE.md
+wrangler.toml
+package.json
+```
