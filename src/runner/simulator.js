@@ -155,14 +155,14 @@ async function runSimulator() {
   await sleep(MIN_DELAY_BETWEEN_CALLS_MS);
 
   // STEP 3: Claim the issue
-  // calls POST /api/issues/:id/claim
+  // calls PUT /api/issues/:id/claim
   // the issue ID goes in the URL, not the request body
   log('CLAIM', `Claiming ${target.id} as ${AGENT_ID}...`);
 
   try {
-    // send a POST request with our agent ID
+    // send a PUT request with our agent ID
     const claimResponse = await fetch(`${BASE_URL}/api/issues/${target.id}/claim`, {
-      method: 'POST',
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         agent_id: AGENT_ID,
@@ -210,15 +210,15 @@ async function runSimulator() {
   await sleep(MIN_DELAY_BETWEEN_CALLS_MS);
 
   // STEP 5: Post the result back to the API
-  // calls POST /api/issues/:id/result
+  // calls PUT /api/issues/:id/result
   // sends { new_status } — the agent decides if work is done ("review") or stuck ("blocked")
   // we always send "review" since our fake work always "succeeds"
   log('RESULT', `Posting result for ${target.id}...`);
 
   try {
-    // send a POST request with the new status
+    // send a PUT request with the new status
     const resultResponse = await fetch(`${BASE_URL}/api/issues/${target.id}/result`, {
-      method: 'POST',
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         new_status: 'review',
@@ -258,13 +258,13 @@ async function runSimulator() {
   await sleep(MIN_DELAY_BETWEEN_CALLS_MS);
 
   // STEP 6: Close the issue
-  // calls POST /api/issues/:id/close
+  // calls PUT /api/issues/:id/close
   // in a real workflow, a human would review first, but for testing we close it right away
   log('CLOSE', `Closing ${target.id}...`);
 
   try {
     const closeResponse = await fetch(`${BASE_URL}/api/issues/${target.id}/close`, {
-      method: 'POST',
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
     });
 

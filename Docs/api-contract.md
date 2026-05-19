@@ -57,9 +57,9 @@ Only one of `assigned_to_user` or `assigned_to_agent` can be set. The other must
 | POST | /api/issues | Create a new issue |
 | PUT | /api/issues/:id | Update fields on an existing issue |
 | DELETE | /api/issues/:id | Delete an issue |
-| POST | /api/issues/:id/claim | Agent claims an issue |
-| POST | /api/issues/:id/result | Agent posts work result |
-| POST | /api/issues/:id/close | Close a reviewed issue |
+| PUT | /api/issues/:id/claim | Agent claims an issue |
+| PUT | /api/issues/:id/result | Agent posts work result |
+| PUT | /api/issues/:id/close | Close a reviewed issue |
 
 ---
 
@@ -265,7 +265,7 @@ Delete an issue permanently.
 
 ---
 
-## 6. POST /api/issues/:id/claim
+## 6. PUT /api/issues/:id/claim
 
 An agent claims an open issue, locking it for work. Sets `issue_status` to `in_progress`, assigns the agent, and sets a 15-minute claim expiration.
 
@@ -319,7 +319,7 @@ The issue must have `issue_status = 'open'` to be claimed.
 
 ---
 
-## 7. POST /api/issues/:id/result
+## 7. PUT /api/issues/:id/result
 
 The agent posts the outcome of its work. Transitions the issue from `in_progress` to either `review` or `blocked`.
 
@@ -373,7 +373,7 @@ The issue must have `issue_status = 'in_progress'` before posting a result.
 
 ---
 
-## 8. POST /api/issues/:id/close
+## 8. PUT /api/issues/:id/close
 
 Closes an issue that has been reviewed. Sets `issue_status` to `closed` and records the `closed_at` timestamp.
 
