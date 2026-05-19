@@ -96,7 +96,7 @@
 @font-face {
     font-family: 'HeadingFont';
     src:
-        url('../Assets/fonts/InclusiveSans-Regular.ttf') format('truetype');
+        url('../assets/fonts/InclusiveSans-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -104,7 +104,7 @@
 @font-face {
     font-family: 'HeadingFontBold';
     src:
-        url('../Assets/fonts/InclusiveSans-Bold.ttf') format('truetype');
+        url('../assets/fonts/InclusiveSans-Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: bold;
 }
@@ -112,7 +112,7 @@
 @font-face {
     font-family: 'SmallFont';
     src:
-        url('../Assets/fonts/IBMPlexSans-Regular.ttf') format('truetype');
+        url('../assets/fonts/IBMPlexSans-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -120,7 +120,7 @@
 @font-face {
     font-family: 'SmallFontBold';
     src:
-        url('../Assets/fonts/IBMPlexSans-Bold.ttf') format('truetype');
+        url('../assets/fonts/IBMPlexSans-Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: bold;
 }
