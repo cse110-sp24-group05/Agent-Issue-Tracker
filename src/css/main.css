@@ -16,17 +16,25 @@
     --color-fill-highlight: rgb(251 251 251);
 
     /* issue status */
-    --color-issue-closed: rgb(107 106 123);
-    --color-issue-closed-dark: rgb(180 179 207);
-    --color-issue-in-progress: rgb(214 168 52);
     --color-issue-open: rgb(7 189 56);
-    --color-issue-pending: rgb(143 50 223);
+    --color-issue-pending: rgb(143, 50, 223);
     --color-issue-blocked: rgb(225 15 15);
+    --color-issue-in-progress: hsl(43, 66%, 52%);
+    --color-issue-closed-dark: rgb(107 106 123);
+    --color-issue-closed: rgb(180 179 207);
+
+    /* filters: used for SVG icons since they don't play nice with colors */
+    --filter-issue-open: invert(46%) sepia(13%) saturate(7421%) hue-rotate(113deg) brightness(91%) contrast(83%);
+    --filter-issue-pending: invert(27%) sepia(74%) saturate(4817%) hue-rotate(264deg) brightness(90%) contrast(93%);
+    --filter-issue-blocked: invert(13%) sepia(90%) saturate(6703%) hue-rotate(357deg) brightness(90%) contrast(96%);
+    --filter-issue-in-progress: invert(87%) sepia(46%) saturate(2772%) hue-rotate(330deg) brightness(89%) contrast(87%);
+    --filter-issue-closed-dark: invert(41%) sepia(17%) saturate(362%) hue-rotate(204deg) brightness(95%) contrast(81%);
+    --filter-issue-closed: invert(79%) sepia(11%) saturate(487%) hue-rotate(203deg) brightness(92%) contrast(86%);
 
     /* miscellaneous */
     --color-button: rgb(19 10 214);
     --color-nav-bar: rgb(3 2 25);
-    --color-outline: rgb(142 142 142);
+    --color-border: rgb(142 142 142);
     --color-priority-high: rgb(193 0 0);
     --color-priority-low: rgb(112 112 112);
     --color-priority-low-dark: rgb(210 210 210);
@@ -88,7 +96,7 @@
 @font-face {
     font-family: 'HeadingFont';
     src:
-        url('../Assets/fonts/IBMPlexSans-Regular.ttf') format('truetype');
+        url('../Assets/fonts/InclusiveSans-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -96,13 +104,29 @@
 @font-face {
     font-family: 'HeadingFontBold';
     src:
+        url('../Assets/fonts/InclusiveSans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: bold;
+}
+
+@font-face {
+    font-family: 'SmallFont';
+    src:
+        url('../Assets/fonts/IBMPlexSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SmallFontBold';
+    src:
         url('../Assets/fonts/IBMPlexSans-Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: bold;
 }
 
-head {
-    font-family: 'HeadingFont';
+body {
+    font-family: 'SmallFont';
 }
 
 /* ─── Top Nav ───────────────────────────────────────────────────── */

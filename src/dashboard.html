@@ -22,23 +22,134 @@
       <!-- ── Sidebar ──────────────────────────────────────────────────── -->
       <div class="sidebar">
         <div class="sidebar-tabs">
-      <a class="sidebar-tab" href="index.html">
-        Issues
-      </a>
-      <a class="sidebar-tab active" href="dashboard.html">
-        Dashboard
-      </a>
-      <a class="sidebar-tab" href="agents.html">
-        Agents
-      </a>
-      <a class="sidebar-tab" href="reports.html">
-        Reports
-      </a>
-      <a class="sidebar-tab" href="settings.html">
-        Settings
-      </a>
-    </div>
+          <a class="sidebar-tab" href="index.html">
+            Issues
+          </a>
+          <a class="sidebar-tab active" href="dashboard.html">
+            Dashboard
+          </a>
+          <a class="sidebar-tab" href="agents.html">
+            Agents
+          </a>
+          <a class="sidebar-tab" href="reports.html">
+            Reports
+          </a>
+          <a class="sidebar-tab" href="settings.html">
+            Settings
+          </a>
+        </div>
       </div>
+
+       <!-- ── Page ─────────────────────────────────────────────────── -->
+        <main class="dashboard-page">
+          <div class="dashboard-wrap">
+            <!-- ── Sprint Health Bar ──────────────────────────────────────── -->
+            <div class="sprint-bar">
+              <span class="sprint-bar-label">Sprint</span>
+              <div class="sprint-pills">
+                <button class="pill" data-filter="open">
+                  <img src="./Assets/svg/todo.svg" class="pill-dot">
+                  <span class="pill-count" id="pc-open">0</span>
+                  <span class="pill-label">Open</span>
+                </button>
+                <button class="pill" data-filter="in-progress">
+                  <img src="./Assets/svg/in-progress.svg" class="pill-dot">
+                  <span class="pill-count" id="pc-progress">0</span>
+                  <span class="pill-label">In Progress</span>
+                </button>
+                <button class="pill" data-filter="pending-review">
+                  <img src="./Assets/svg/pending.svg" class="pill-dot">
+                  <span class="pill-count" id="pc-review">0</span>
+                  <span class="pill-label">Pending Review</span>
+                </button>
+                <button class="pill" data-filter="blocked">
+                  <img src="./Assets/svg/blocked.svg" class="pill-dot">
+                  <span class="pill-count" id="pc-blocked">0</span>
+                  <span class="pill-label">Blocked</span>
+                </button>
+                <button class="pill" data-filter="closed">
+                  <img src="./Assets/svg/closed.svg" class="pill-dot">
+                  <span class="pill-count" id="pc-closed">0</span>
+                  <span class="pill-label">Closed</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Two-column: feed + token burn -->
+            <div class="dashboard-grid">
+
+              <!-- ── Live Activity Feed ───────────────────────────── -->
+              <section class="dash-section">
+                <div class="dash-section-head">
+                  <h2 class="dash-section-title">
+                    <span class="live-dot" aria-hidden="true"></span>
+                    Live Activity
+                  </h2>
+                </div>
+                <div class="feed-list" id="feed-list">
+                  <!-- Rendered by JS -->
+                </div>
+              </section>
+
+              <!-- ── Token Burn ────────────────────────────────────── -->
+              <aside class="dash-section">
+                <div class="dash-section-head">
+                  <h2 class="dash-section-title">Token Burn</h2>
+                </div>
+                <div class="token-body">
+
+                  <div class="token-section">
+                    <div class="token-section-label">Sprint Budget</div>
+                    <div class="budget-row">
+                      <label for="sprint-budget-input">Tokens</label>
+                      <input class="budget-input" type="number" id="sprint-budget-input"
+                            min="0" step="1000" aria-label="Sprint token budget">
+                    </div>
+                  </div>
+
+                  <div class="token-section">
+                    <div class="token-section-label">Used This Sprint</div>
+                    <div class="token-total-num mono" id="token-total">0</div>
+                    <div class="token-total-sub" id="token-total-sub">of 20,000 budget</div>
+                    <div class="sprint-track">
+                      <div class="sprint-fill" id="sprint-fill"></div>
+                    </div>
+                    <div class="sprint-pct" id="sprint-pct">0%</div>
+                  </div>
+
+                  <div class="token-section">
+                    <div class="token-section-label">By Agent</div>
+                    <div id="agent-breakdown">
+                      <span class="token-empty">No tokens used yet.</span>
+                    </div>
+                  </div>
+
+                  <div class="token-section">
+                    <div class="token-section-label">Top 3 by Cost</div>
+                    <div id="top-issues">
+                      <span class="token-empty">No issues with usage.</span>
+                    </div>
+                  </div>
+
+                </div>
+              </aside>
+
+            </div>
+
+            <!-- ── Recent Completions ──────────────────────────────── -->
+            <section class="dash-section dash-completions-section">
+              <div class="dash-section-head">
+                <h2 class="dash-section-title">Recent Completions</h2>
+              </div>
+              <div class="completions-grid" id="completions-grid">
+                <!-- Rendered by JS -->
+              </div>
+            </section>
+
+          </div>
+        </main>
+
+        
     </header>
     <main></main>
     <footer></footer>
