@@ -1,0 +1,242 @@
+/* CSS VARAIBLES */
+:root {
+    /* ──── COLORS ────────────────────────────────────────────── */
+
+    /* text */
+    /* Note that I swapped text-dark and text-light, because the old way was confusing */
+    --color-text-dark: rgb(13 13 13);
+    --color-text-light: rgb(255 255 255);
+    --color-text-gray: rgb(142 142 142);
+
+    /* backgrounds */
+    --color-background-light: rgb(255 255 255);
+    --color-background-dark: rgb(56 56 56);
+    --color-fill-light: rgb(238 239 250);
+    --color-fill-dark: rgb(99 100 106);
+    --color-fill-highlight: rgb(251 251 251);
+
+    /* issue status */
+    --color-issue-open: rgb(7 189 56);
+    --color-issue-pending: rgb(143, 50, 223);
+    --color-issue-blocked: rgb(225 15 15);
+    --color-issue-in-progress: hsl(43, 66%, 52%);
+    --color-issue-closed-dark: rgb(107 106 123);
+    --color-issue-closed: rgb(180 179 207);
+
+    /* filters: used for SVG icons since they don't play nice with colors */
+    --filter-issue-open: invert(46%) sepia(13%) saturate(7421%) hue-rotate(113deg) brightness(91%) contrast(83%);
+    --filter-issue-pending: invert(27%) sepia(74%) saturate(4817%) hue-rotate(264deg) brightness(90%) contrast(93%);
+    --filter-issue-blocked: invert(13%) sepia(90%) saturate(6703%) hue-rotate(357deg) brightness(90%) contrast(96%);
+    --filter-issue-in-progress: invert(87%) sepia(46%) saturate(2772%) hue-rotate(330deg) brightness(89%) contrast(87%);
+    --filter-issue-closed-dark: invert(41%) sepia(17%) saturate(362%) hue-rotate(204deg) brightness(95%) contrast(81%);
+    --filter-issue-closed: invert(79%) sepia(11%) saturate(487%) hue-rotate(203deg) brightness(92%) contrast(86%);
+
+    /* miscellaneous */
+    --color-button: rgb(19 10 214);
+    --color-nav-bar: rgb(3 2 25);
+    --color-border: rgb(142 142 142);
+    --color-priority-high: rgb(193 0 0);
+    --color-priority-low: rgb(112 112 112);
+    --color-priority-low-dark: rgb(210 210 210);
+    --color-priority-medium: rgb(199 146 12);
+
+
+    /* ──── ELEMENT PROPORTIONS ────────────────────────────────────────────── */
+    /* TODO: Tweak these if necessary, I copied them from the prototype to make editing easier */
+    /* Spacing scale */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+
+    /* Border radius */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+    --radius-full: 9999px;
+
+    /* Font sizes */
+    --text-xs: 11px;
+    --text-sm: 13px;
+    --text-base: 14px;
+    --text-md: 16px;
+    --text-lg: 18px;
+    --text-xl: 22px;
+    --text-2xl: 28px;
+
+    /* Font weights */
+    --weight-normal: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+    /* Nav dimensions */
+    --nav-height: 56px;
+
+    /* Sidebar */
+    --sidebar-width: 180px;
+    --sidebar-border-width: 4px;
+
+    /* Transitions */
+    --transition-fast: 120ms ease;
+    --transition-base: 200ms ease;
+}
+
+@font-face {
+    font-family: 'HeadingFont';
+    src:
+        url('../Assets/fonts/InclusiveSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'HeadingFontBold';
+    src:
+        url('../Assets/fonts/InclusiveSans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: bold;
+}
+
+@font-face {
+    font-family: 'SmallFont';
+    src:
+        url('../Assets/fonts/IBMPlexSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SmallFontBold';
+    src:
+        url('../Assets/fonts/IBMPlexSans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: bold;
+}
+
+body {
+    font-family: 'SmallFont';
+}
+
+/* ─── Top Nav ───────────────────────────────────────────────────── */
+.nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-height);
+    background: var(--color-nav-bar);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-6);
+    z-index: 100;
+    gap: var(--space-6);
+    font-family: 'HeadingFont';
+}
+
+.nav-logo {
+    font-size: var(--text-md);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-light);
+    letter-spacing: -0.3px;
+    flex-shrink: 0;
+    font-family: ui-monospace, "Cascadia Code", "Fira Code", monospace;
+}
+
+.nav-logo span {
+    color: var(--color-accent);
+}
+
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    gap: var(--space-2);
+    flex-shrink: 0;
+}
+
+.nav-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: transparent;
+    color: #9CA3AF;
+    font-size: var(--text-md);
+    cursor: pointer;
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.nav-icon-btn:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Sidebar ───────────────────────────────────────────────────── */
+.sidebar {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100%;
+    background: var(--color-fill-light);
+    display: flex;
+    align-items: flex-start;
+    z-index: 90;
+    gap: var(--space-6);
+    font-family: 'HeadingFont';
+    border: var(--color-nav-bar);
+    border-right-width: var(--sidebar-border-width);
+    border-top-width: 0px;
+    border-style: solid;
+}
+
+.sidebar-tabs {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  margin-top: var(--space-4);
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.sidebar-tab {
+  display: flex;
+  align-items: center;
+  padding-left: var(--space-4);
+  padding-top: var(--space-1);
+  padding-bottom: var(--space-1);
+  color: var(--color-text-dark);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  border: none;
+  width: 100%;
+  box-sizing: border-box;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-tab:hover {
+  font-weight: var(--weight-bold);
+  
+}
+
+.sidebar-tab.active {
+  background-color: var(--color-fill-highlight);
+  font-family: 'HeadingFontBold';
+}
