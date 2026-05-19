@@ -5,6 +5,10 @@
 // - Create, read, update, and delete operations for Issues, Users, and Agents
 
 
+const VALID_STATUSES = ['open', 'in_progress', 'blocked', 'review', 'closed'];
+const VALID_PRIORITIES = ['low', 'medium', 'high', 'critical'];
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -23,7 +27,7 @@ export default {
 
     // GET /api/issues/:id
     if (url.pathname.startsWith('/api/issues/') && method === 'GET') {
-      const id = url.pathname.split('/').pop();
+      const id = url.pathname.split('/')[3];
       return getIssueById(id, env);
     }
 
@@ -58,16 +62,20 @@ export default {
     }
 
 
-    // // PUT (UPDATE) /api/issues/:id
-    // if(url.pathname.startsWith("/api/issues/") && method == "PUT") {
-    //   const id = url.pathname.split("/").pop();
-    //   return updateIssue(id, request, env);
-    // }
+    // PUT /api/issues/:id
+    const isPlainIssuePath = url.pathname.startsWith('/api/issues/')
+      && !url.pathname.endsWith('/claim')
+      && !url.pathname.endsWith('/result')
+      && !url.pathname.endsWith('/close');
+    if (isPlainIssuePath && method === 'PUT') {
+      const id = url.pathname.split('/')[3];
+      return updateIssue(id, request, env);
+    }
 
 
     // DELETE /api/issues/:id
     if (url.pathname.startsWith('/api/issues/') && method === 'DELETE') {
-      const id = url.pathname.split('/').pop();
+      const id = url.pathname.split('/')[3];
       return deleteIssue(id, env);
     }
 
@@ -119,6 +127,32 @@ async function createIssue(request, env) {
         {
           success: false,
           error: 'Missing required fields'
+        },
+        {
+          status: 400
+        }
+      );
+    }
+
+
+    // Validate enum values
+    if (!VALID_STATUSES.includes(issue_status)) {
+      return Response.json(
+        {
+          success: false,
+          error: `Invalid issue_status (must be one of: ${VALID_STATUSES.join(', ')})`
+        },
+        {
+          status: 400
+        }
+      );
+    }
+
+    if (!VALID_PRIORITIES.includes(issue_priority)) {
+      return Response.json(
+        {
+          success: false,
+          error: `Invalid issue_priority (must be one of: ${VALID_PRIORITIES.join(', ')})`
         },
         {
           status: 400
@@ -281,13 +315,146 @@ async function getIssueById(id, env) {
 }
 
 
-/*
-// TODO
-async function updateIssue() {
+/**
+ * updateIssue updates one or more editable fields on an existing issue.
+ * Only fields present in the request body are modified; unspecified fields
+ * are left as-is. The updated_at timestamp is always refreshed. The id,
+ * created_at fields are immutable and ignored if present in the body.
+ *
+ * Validates enum values for issue_status and issue_priority when supplied,
+ * and enforces the user/agent assignment mutex against the merged state
+ * (incoming values combined with existing row).
+ *
+ * @param {string} id - The unique identifier of the issue to update.
+ * @param {Request} request - The incoming request containing fields to update.
+ * @param {object} env - Environment bindings containing the database connection.
+ * @returns {Response} A JSON response containing the updated issue or an error message.
+ */
+async function updateIssue(id, request, env) {
+  try {
+    const updates = await request.json();
 
+    // Verify the issue exists
+    const existing = await env.issues_db
+      .prepare('SELECT * FROM issues WHERE id = ?')
+      .bind(id)
+      .first();
 
+    if (!existing) {
+      return Response.json(
+        { success: false, error: 'Issue not found' },
+        { status: 404 }
+      );
+    }
+
+    // Whitelist of fields that PUT may modify
+    const ALLOWED = [
+      'title',
+      'issue_description',
+      'issue_status',
+      'issue_priority',
+      'assigned_to_user',
+      'assigned_to_agent',
+      'claim_expires_at',
+      'retry_count',
+      'claim_timeout_minutes',
+      'closed_at'
+    ];
+
+    // Collect provided updatable fields
+    const fields = {};
+    for (const key of ALLOWED) {
+      if (Object.hasOwn(updates, key)) {
+        fields[key] = updates[key];
+      }
+    }
+
+    if (Object.keys(fields).length === 0) {
+      return Response.json(
+        { success: false, error: 'No updatable fields provided' },
+        { status: 400 }
+      );
+    }
+
+    // Validate enum values when supplied
+    if (fields.issue_status !== undefined
+      && !VALID_STATUSES.includes(fields.issue_status)) {
+      return Response.json(
+        {
+          success: false,
+          error: `Invalid issue_status (must be one of: ${VALID_STATUSES.join(', ')})`
+        },
+        { status: 400 }
+      );
+    }
+
+    if (fields.issue_priority !== undefined
+      && !VALID_PRIORITIES.includes(fields.issue_priority)) {
+      return Response.json(
+        {
+          success: false,
+          error: `Invalid issue_priority (must be one of: ${VALID_PRIORITIES.join(', ')})`
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate user/agent assignment mutex against the merged state.
+    // Use === undefined (not ??) so callers can intentionally clear an
+    // assignment by sending null.
+    const mergedUser = fields.assigned_to_user === undefined
+      ? existing.assigned_to_user
+      : fields.assigned_to_user;
+    const mergedAgent = fields.assigned_to_agent === undefined
+      ? existing.assigned_to_agent
+      : fields.assigned_to_agent;
+    if (mergedUser && mergedAgent) {
+      return Response.json(
+        {
+          success: false,
+          error: 'Issue cannot be assigned to both a user and an agent'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Build dynamic UPDATE
+    const setClauses = Object.keys(fields).map(key => `${key} = ?`);
+    setClauses.push('updated_at = ?');
+    const values = [
+      ...Object.keys(fields).map(key => fields[key] ?? null),
+      new Date().toISOString(),
+      id
+    ];
+
+    await env.issues_db
+      .prepare(`UPDATE issues SET ${setClauses.join(', ')} WHERE id = ?`)
+      .bind(...values)
+      .run();
+
+    const updated = await env.issues_db
+      .prepare('SELECT * FROM issues WHERE id = ?')
+      .bind(id)
+      .first();
+
+    return Response.json({
+      success: true,
+      message: 'Issue updated successfully',
+      issue: updated
+    });
+
+  } catch (error) {
+    return Response.json(
+      {
+        success: false,
+        error: error.message
+      },
+      {
+        status: 500
+      }
+    );
+  }
 }
-*/
 
 
 /**
