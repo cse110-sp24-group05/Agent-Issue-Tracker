@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIT — Schema preview (issue-005)</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/issue.css">
+  <link rel="stylesheet" href="css/issue-preview.css">
+</head>
+<body>
+
+  <!-- ── Nav ──────────────────────────────────────────────────── -->
+  <nav class="nav">
+    <a class="nav-logo" href="index.html">A<span>I</span>T</a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="index.html">Issues</a>
+      <a class="nav-tab" href="dashboard.html">Dashboard</a>
+    </div>
+    <div class="nav-actions">
+      <span class="preview-tag">🔬 schema preview</span>
+      <a class="nav-icon-btn" href="settings.html" title="Settings" aria-label="Settings">⚙</a>
+    </div>
+  </nav>
+
+  <!-- ── Banner ──────────────────────────────────────────────── -->
+  <div class="preview-banner">
+    <strong>Schema preview — not wired to live data.</strong>
+    Compare against the current page at
+    <a href="issue.html?id=issue-005">issue.html?id=issue-005</a>.
+    Schema lives at <code>api/schema.preview.json</code>.
+  </div>
+
+  <main class="page">
+    <div class="container">
+
+      <a class="issue-back" href="index.html">← Back to issues</a>
+
+      <!-- State toggle -->
+      <div class="preview-toggle" role="group" aria-label="Preview state">
+        <button class="preview-toggle-btn active" data-state="incoming">
+          1 · Incoming (just claimed)
+        </button>
+        <button class="preview-toggle-btn" data-state="submitted">
+          2 · Submitted (pending review)
+        </button>
+      </div>
+
+      <!-- Header -->
+      <div class="issue-header preview-header">
+        <span class="type-badge" id="type-badge">BUG</span>
+        <span class="issue-id mono" id="issue-id">issue-005</span>
+        <h1 class="issue-title-text" id="issue-title">…</h1>
+      </div>
+
+      <div class="issue-layout">
+
+        <!-- ── Main ──────────────────────────────────────────── -->
+        <div class="issue-main">
+
+          <!-- Context (replaces description) -->
+          <div class="issue-section card">
+            <div class="section-label">Context</div>
+            <p class="issue-desc-text" id="ctx-text"></p>
+          </div>
+
+          <!-- Acceptance criteria -->
+          <div class="issue-section card">
+            <div class="section-label section-label-row">
+              <span>Acceptance Criteria</span>
+              <span class="ac-progress mono" id="ac-progress">0 / 0</span>
+            </div>
+            <div class="ac-bar"><div class="ac-bar-fill" id="ac-bar-fill"></div></div>
+            <ul class="ac-list" id="ac-list"></ul>
+            <div class="ac-gate-msg" id="ac-gate-msg">
+              <span class="ac-gate-dot"></span>
+              <span id="ac-gate-text"></span>
+            </div>
+          </div>
+
+          <!-- Files in / out of scope -->
+          <div class="issue-section card">
+            <div class="section-label">Scope</div>
+            <div class="scope-row">
+              <div class="scope-label">In scope</div>
+              <div class="scope-chips" id="scope-in"></div>
+            </div>
+            <div class="scope-row">
+              <div class="scope-label">Out of scope</div>
+              <div class="scope-chips scope-chips-bad" id="scope-out"></div>
+            </div>
+          </div>
+
+          <!-- Result (only for submitted state) -->
+          <div class="issue-section card hidden" id="result-card">
+            <div class="section-label">Submitted Result</div>
+            <div class="result-grid">
+              <div class="result-row">
+                <span class="result-key">PR</span>
+                <a class="result-link mono" id="r-pr" href="#" target="_blank" rel="noreferrer"></a>
+              </div>
+              <div class="result-row">
+                <span class="result-key">Tests</span>
+                <span class="result-pill" id="r-tests"></span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">Tokens</span>
+                <span class="mono" id="r-tokens"></span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">Files changed</span>
+                <div class="scope-chips" id="r-files"></div>
+              </div>
+              <div class="result-row result-row-block">
+                <span class="result-key">Notes</span>
+                <p id="r-notes"></p>
+              </div>
+              <div class="result-row result-row-block">
+                <span class="result-key">Criteria attestation</span>
+                <ul class="ac-list ac-list-mirror" id="r-criteria"></ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Audit log -->
+          <div class="issue-section card">
+            <div class="section-label">Audit Log</div>
+            <div class="audit-log" id="audit-log"></div>
+          </div>
+
+        </div>
+
+        <!-- ── Sidebar ───────────────────────────────────────── -->
+        <aside class="issue-sidebar">
+          <div class="sidebar-field">
+            <div class="sidebar-label">Status</div>
+            <span class="badge" id="sb-status"></span>
+          </div>
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Priority</div>
+            <span class="badge" id="sb-priority"></span>
+          </div>
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Type</div>
+            <span class="text-sm mono" id="sb-type"></span>
+          </div>
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Assignee</div>
+            <span class="text-sm" id="sb-assignee"></span>
+          </div>
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Token Budget</div>
+            <div class="token-bar"><div class="token-bar-fill" id="sb-token-fill"></div></div>
+            <div class="token-bar-label mono">
+              <span id="sb-tok-used">0</span> / <span id="sb-tok-budget">0</span>
+            </div>
+          </div>
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Time</div>
+            <div class="sidebar-kv">
+              <span class="text-muted text-sm">Estimate</span>
+              <span class="text-sm" id="sb-est">—</span>
+            </div>
+            <div class="sidebar-kv">
+              <span class="text-muted text-sm">Spent</span>
+              <span class="text-sm" id="sb-spent">—</span>
+            </div>
+          </div>
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Dependencies</div>
+            <div class="text-sm" id="sb-deps"></div>
+          </div>
+
+          <div class="sidebar-field">
+            <div class="sidebar-label">Escalate when</div>
+            <p class="text-sm text-muted" id="sb-escalate"></p>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Footnote -->
+      <div class="preview-footnote">
+        See <code>api/schema.preview.json</code> for the full JSON Schema, or
+        <code>api/issue-005.preview.json</code> for both states as raw data.
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module">
+    import { esc, staBadge, staLabel, fmtDateTime } from './js/ui.js';
+
+    const STATES = await fetch('api/issue-005.preview.json').then(r => r.json());
+    const PRI_BADGE = { P0: 'badge-p0', P1: 'badge-p1', P2: 'badge-p2', P3: 'badge-p3' };
+
+    function chips(arr, container) {
+      container.innerHTML = arr.length
+        ? arr.map(p => `<span class="scope-chip mono">${esc(p)}</span>`).join('')
+        : '<span class="text-muted text-sm">none</span>';
+    }
+
+    function render(stateKey) {
+      const i = STATES[stateKey];
+
+      // Header
+      document.getElementById('type-badge').textContent  = i.type.toUpperCase();
+      document.getElementById('type-badge').className    = 'type-badge type-' + i.type;
+      document.getElementById('issue-id').textContent    = i.id;
+      document.getElementById('issue-title').textContent = i.title;
+      document.getElementById('ctx-text').textContent    = i.context;
+
+      // Acceptance criteria + gate
+      const acList = document.getElementById('ac-list');
+      const total  = i.acceptance_criteria.length;
+      const done   = i.acceptance_criteria.filter(c => c.done).length;
+      acList.innerHTML = i.acceptance_criteria.map(c => `
+        <li class="ac-item ${c.done ? 'done' : ''}">
+          <span class="ac-check" aria-hidden="true">${c.done ? '✓' : '○'}</span>
+          <span class="ac-text">${esc(c.text)}</span>
+        </li>`).join('');
+      document.getElementById('ac-progress').textContent = `${done} / ${total}`;
+      document.getElementById('ac-bar-fill').style.width = total ? (done / total * 100) + '%' : '0%';
+
+      const gateText = document.getElementById('ac-gate-text');
+      const gateMsg  = document.getElementById('ac-gate-msg');
+      if (done < total) {
+        gateMsg.className = 'ac-gate-msg gate-block';
+        gateText.textContent = `postResult will be rejected with HTTP 422 — ${total - done} criterion(s) still open.`;
+      } else {
+        gateMsg.className = 'ac-gate-msg gate-pass';
+        gateText.textContent = `All criteria met. status → pending-review allowed.`;
+      }
+
+      // Scope
+      chips(i.files_in_scope || [], document.getElementById('scope-in'));
+      chips(i.out_of_scope   || [], document.getElementById('scope-out'));
+
+      // Result
+      const rcard = document.getElementById('result-card');
+      if (i.result) {
+        rcard.classList.remove('hidden');
+        document.getElementById('r-pr').textContent = i.result.pr_url;
+        document.getElementById('r-pr').href        = i.result.pr_url;
+        const tests = document.getElementById('r-tests');
+        tests.textContent = i.result.tests_passed ? '✓ passing' : '✗ failing';
+        tests.className   = 'result-pill ' + (i.result.tests_passed ? 'pill-pass' : 'pill-fail');
+        document.getElementById('r-tokens').textContent = i.result.tokens_used.toLocaleString();
+        chips(i.result.files_changed, document.getElementById('r-files'));
+        document.getElementById('r-notes').textContent  = i.result.notes;
+        document.getElementById('r-criteria').innerHTML = i.result.acceptance_criteria.map(c => `
+          <li class="ac-item ${c.done ? 'done' : ''}">
+            <span class="ac-check" aria-hidden="true">${c.done ? '✓' : '○'}</span>
+            <span class="ac-text">${esc(c.text)}</span>
+          </li>`).join('');
+      } else {
+        rcard.classList.add('hidden');
+      }
+
+      // Audit log
+      document.getElementById('audit-log').innerHTML = i.audit_log.map(e => `
+        <div class="audit-entry">
+          <div class="audit-dot"></div>
+          <div class="audit-body">
+            <span class="audit-action">${esc(e.action)}</span>
+            <span class="audit-meta">by ${esc(e.by)} · ${fmtDateTime(e.at)}</span>
+          </div>
+        </div>`).join('');
+
+      // Sidebar
+      const sb = document.getElementById('sb-status');
+      sb.className   = 'badge ' + staBadge(i.status);
+      sb.textContent = staLabel(i.status);
+      const pri = document.getElementById('sb-priority');
+      pri.className   = 'badge ' + (PRI_BADGE[i.priority] || '');
+      pri.textContent = i.priority;
+      document.getElementById('sb-type').textContent     = i.type;
+      document.getElementById('sb-assignee').textContent = i.assignee;
+      const pct = i.token_budget ? Math.min(100, i.tokens_used / i.token_budget * 100) : 0;
+      document.getElementById('sb-token-fill').style.width = pct + '%';
+      document.getElementById('sb-tok-used').textContent   = i.tokens_used.toLocaleString();
+      document.getElementById('sb-tok-budget').textContent = i.token_budget.toLocaleString();
+      document.getElementById('sb-est').textContent   = i.time_estimate + ' min';
+      document.getElementById('sb-spent').textContent = i.time_spent + ' min';
+      document.getElementById('sb-deps').textContent  = i.dependencies.length ? i.dependencies.join(', ') : 'none';
+      document.getElementById('sb-escalate').textContent = i.escalate_when || '—';
+    }
+
+    document.querySelectorAll('.preview-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.preview-toggle-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render(btn.dataset.state);
+      });
+    });
+
+    render('incoming');
+  </script>
+
+</body>
+</html>
