@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "test": "echo 'No tests yet' && exit 0"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
@@ -9,6 +9,7 @@
     "dotenv-cli": "^11.0.0",
     "eslint": "^9.0.0",
     "eslint-plugin-jsdoc": "^48.0.0",
+    "jest": "^30.4.2",
     "wrangler": "^4.92.0"
   }
 }
