@@ -87,6 +87,7 @@ describe('Issues API Tests', () => {
 
   // GET BY ID
   describe('GET /api/issues/:id', () => {
+    //success case for GET BY ID
     test('returns issue with full schema fields', async () => {
       mockD1Response({
         id: '2',
@@ -97,24 +98,127 @@ describe('Issues API Tests', () => {
         assigned_to_agent: null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
-      });
+      },'first');
 
-      const res = await worker.fetch(new Request('http://localhost/api/issues/2', { method: 'GET' }), env);
-      const data = await res.json();
+      const response = await worker.fetch(new Request('http://localhost/api/issues/2', { method: 'GET' }), env);
+      const data = await response.json();
 
-      expect(res.status).toBe(200);
+      expect(response.status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.issue.id).toBe('2');
     });
 
+    //failure case for GET BY ID
     test('returns 404 when issue does not exist', async () => {
       mockD1Response(null);
 
-      const res = await worker.fetch(new Request('http://localhost/api/issues/999', { method: 'GET' }), env);
-      const data = await res.json();
+      const response = await worker.fetch(new Request('http://localhost/api/issues/999', { method: 'GET' }), env);
+      const data = await response.json();
 
-      expect(res.status).toBe(404);
+      expect(response.status).toBe(404);
       expect(data.success).toBe(false);
+    });
+  });
+
+  // Tests for POST
+
+  // Test for POST /api/issues
+  describe('POST /api/issues', () => {
+    // success case for POST /api/issues
+    test('creates a new issue and returns it', async () => {
+      mockD1Response({ success: true }, 'run');
+      const request = new Request('http://localhost/api/issues', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: '4',
+          title: 'POST Try Issue',
+          issue_status: 'open',
+          issue_priority: 'high',
+          retry_count: 0,
+          claim_timeout_minutes: 30,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }),
+      });
+
+      const response = await worker.fetch(request, env);
+      const data = await response.json();
+
+      expect(response.status).toBe(201);
+      expect(data.success).toBe(true);
+      expect(data.issue).toHaveProperty('id');
+      expect(data.issue.id).toBe('4');
+      expect(data.issue).toHaveProperty('title');
+      expect(data.issue.title).toBe('POST Try Issue');
+      expect(data.issue).toHaveProperty('issue_status');
+      expect(data.issue.issue_status).toBe('open');
+      expect(data.issue).toHaveProperty('issue_priority');
+      expect(data.issue.issue_priority).toBe('high');
+      expect(data.issue).toHaveProperty('retry_count');
+      expect(data.issue.retry_count).toBe(0);
+      expect(data.issue).toHaveProperty('claim_timeout_minutes');
+      expect(data.issue.claim_timeout_minutes).toBe(30);
+
+    });
+
+    // failure case for POST /api/issues
+    test('returns 400 for invalid request body', async () => {
+      
+      const request = new Request('http://localhost/api/issues', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Invalid Issue'
+        }),
+      });
+
+      const response = await worker.fetch(request, env);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.success).toBe(false);
+    });
+  });
+
+  // test PUT /api/issues/:id/claim
+  describe('PUT /api/issues/:id/claim', () => {
+    // success case for PUT /api/issues/:id/claim
+    test('claims an issue successfully', async () => {
+      mockD1Response(
+        {
+          id: '5',
+          title: 'Claimable Issue',
+          issue_status: 'open',
+          issue_priority: 'medium',
+          retry_count: 0,
+          claim_timeout_minutes: 30,
+          assigned_to_user: null,
+          assigned_to_agent: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        'first'
+      );
+
+      const request = new Request('http://localhost/api/issues/5/claim', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          agent_id: 'agent-123'
+        })
+      });
+
+      const response = await worker.fetch(request, env);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+
+      expect(data.issue).toHaveProperty('id', '5');
+      expect(data.issue.title).toBe('Claimable Issue');
     });
   });
 });

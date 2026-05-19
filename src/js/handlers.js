@@ -255,13 +255,16 @@ export async function deleteIssue(id, env) {
  * When an issue is claimed, an agent is assigned to it, and the status and timestamps
  * are updated, along with a claim expiration unix timestamp.
  *
- * @param {string} id - The unique identifier of the issue.
  * @param {Request} request - validates agent_id
  * @param {object} env - Environment bindings containing the database connection.
  * @returns {Response} A JSON response indicating success or failure.
  */
-export async function claimIssue(id, request, env) {
+export async function claimIssue(request, env) {
   try {
+
+    const url = new URL(request.url);
+    const id = url.pathname.split('/')[3];
+
     const { agent_id } = await request.json();
 
     if (!agent_id) {
@@ -282,7 +285,10 @@ export async function claimIssue(id, request, env) {
 
     await claimIssueRow(env, id, agent_id, expiration, new Date().toISOString());
 
-    return ok({ success: true, message: 'Issue claimed successfully' });
+    const updatedIssue = await selectIssueById(env, id);
+    console.log('Updated Issue after claim:', updatedIssue.agent_id);
+
+    return ok({ success: true, message: 'Issue claimed successfully', issue: updatedIssue });
   } catch (error) {
     return serverError(error.message);
   }
@@ -290,7 +296,7 @@ export async function claimIssue(id, request, env) {
 
 
 /**
- * postResult processes the outcome of a claimed issue and transitions
+ * putResult processes the outcome of a claimed issue and transitions
  * the issue into a new status such as "review", or "blocked".
  * PREREQUISITE: in_progress status, then afterwards becomes blocked or review
  * The function checks whether the issue exists and if the issue's status is
@@ -302,7 +308,7 @@ export async function claimIssue(id, request, env) {
  * @param {object} env - Environment bindings containing the database connection.
  * @returns {Response} A JSON response indicating success or failure.
  */
-export async function postResult(id, request, env) {
+export async function putResult(id, request, env) {
   try {
     const { new_status } = await request.json();
 
