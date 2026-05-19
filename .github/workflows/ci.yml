@@ -1,0 +1,95 @@
+name: CI
+
+# ─────────────────────────────────────────────
+# ci.yml — Continuous Integration
+#
+# Runs on every push and PR to main or develop.
+# Checks commit messages, lints code, enforces JSDoc,
+# and runs tests. If anything fails, the PR is blocked.
+# ─────────────────────────────────────────────
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+
+  # checks that commit messages follow the "feat: ..." / "fix: ..." format
+  # we need this so semver.yml can figure out version bumps later
+  # only runs on PRs, not direct pushes
+  commitlint:
+    name: Lint Commit Messages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # need full history, not just the latest commit
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install commitlint
+        run: npm install --save-dev @commitlint/cli @commitlint/config-conventional
+
+      # checks every commit in this PR, not just the latest one
+      - name: Lint commits in this PR
+        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+  # runs eslint across all js files
+  # the jsdoc plugin is included so missing function comments also fail here
+  # warnings are reported but don't block merges until the stubs are filled in
+  lint:
+    name: ESLint & JSDoc
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npx eslint "**/*.js"
+
+  # runs after lint passes - no point running tests on code that doesn't even lint
+  # saves the coverage report as an artifact so we can look at it later
+  test:
+    name: Unit & E2E Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test  # make sure "test" script exists in package.json
+
+      # uploads even if tests fail so we can see what broke
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/

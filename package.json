@@ -1,0 +1,13 @@
+{
+  "type": "module",
+  "scripts": {
+    "test": "echo 'No tests yet' && exit 0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.92.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-jsdoc": "^48.0.0",
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0"
+  }
+}
