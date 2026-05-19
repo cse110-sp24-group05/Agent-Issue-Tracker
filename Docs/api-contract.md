@@ -118,7 +118,7 @@ Create a new issue. Used by the frontend when a human creates an issue.
 | id | string | yes | Unique issue ID |
 | title | string | yes | Issue title |
 | issue_description | string | no | Defaults to null |
-| issue_status | string | yes | Must be `open`, `in_progress`, `review`, or `closed` |
+| issue_status | string | yes | Must be `open`, `in_progress`, `review`, `blocked `, or `closed` |
 | issue_priority | string | yes | Must be `low`, `medium`, `high`, or `critical` |
 | assigned_to_user | string | no | Cannot set both this and assigned_to_agent |
 | assigned_to_agent | string | no | Cannot set both this and assigned_to_user |
