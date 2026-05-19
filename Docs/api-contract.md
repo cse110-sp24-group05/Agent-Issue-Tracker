@@ -307,13 +307,17 @@ Returned when the requesting agent does not match the assigned claimant.
 ## Status Flow
 
 ```
+                    blocked ───▸ manual intervention edit ───▸ review ───▸ closed
+                       |
+                       |
+                       | 
 open ──(claim)──▸ in_progress ──(complete low/medium)──▸ closed
                        │
                        ├──(complete high/critical)──▸ review ──(approve)──▸ closed
                        │                                │
                        │                           (reject)
                        │                                │
-                       ◂────────────────────────────────┘
+                       ◂────────────────────-───────────┘
 ```
 
 ---
