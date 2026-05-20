@@ -24,7 +24,8 @@ const BASE_URL =
 // Randomize the simulator agent ID so it doesn't clash with real agents
 // in production or staging. Each run gets a unique ID like "sim-agent-a3f1b2"
 const RANDOM_SUFFIX = Math.random().toString(36).substring(2, 8);
-const AGENT_ID = `sim-agent-${RANDOM_SUFFIX}`;
+// const AGENT_ID = `sim-agent-${RANDOM_SUFFIX}`;
+const AGENT_ID = 'agent-simulator-01';
 
 // minimum seconds between API calls to avoid overloading the API
 const MIN_DELAY_BETWEEN_CALLS_MS = 500;
