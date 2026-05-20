@@ -4,25 +4,25 @@
 - Week 7 / Week 8
 
 ## Team Members
-- Name
-- Name
+- Hanwen
+- Jaylen
+- Pranav
 
 ---
 
 ## Completed
-- completed task
-- completed task
-- completed task
+- Set up a D1 SQL database using Cloudflare D1
+- Resolved CI workflow and linting issues
+- Connecting application endpoints to the D1 database
 
 ---
 
 ## In Progress
-- current task
-- current task
+- Finish CRUD functions in the worker.js
 
 ---
 
 ## Notes
-- important updates
-- workflow changes
-- things other teams should know
+- Commit messages must follow Conventional Commits format for CI checks to pass
+- Coordinate before modifying shared workflow or deployment configuration files
+- Database schema changes should be communicated to the team before deployment
