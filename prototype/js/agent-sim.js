@@ -10,7 +10,7 @@ import {
   getIssues, claimIssue, postResult, closeIssue, createIssue,
   getApprovalMode, saveApprovalMode
 } from './data.js';
-import { flashEntity } from './ui.js';
+import { flashEntity } from '../../js/ui.js';
 
 // ── Constants ────────────────────────────────────────────────────
 const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };

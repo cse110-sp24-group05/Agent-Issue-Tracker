@@ -15,7 +15,7 @@ import {
   createIssue, claimIssue, postResult, closeIssue,
   getIssues, saveApprovalMode,
 } from './data.js';
-import { flashEntity } from './ui.js';
+import { flashEntity } from '../../js/ui.js';
 
 const DEMO_STEP  = 'ait_demo_step';
 const DEMO_ISSUE = 'ait_demo_issue';

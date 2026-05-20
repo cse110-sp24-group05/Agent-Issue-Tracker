@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AIT — Issues</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/list.css" />
+  </head>
+  <body>
+    <!-- ── Navigation ──────────────────────────────────────────────────── -->
+    <nav class="nav">
+      <a class="nav-logo" href="index.html">A<span>I</span>T</a>
+      <div class="nav-tabs">
+      </div>
+      <div class="nav-actions">
+      <a class="nav-icon-btn" href="profile.html" title="Profile" aria-label="Profile">
+      <img src="Assets/svg/profile.svg" alt="Profile" width="20" height="20">
+      </a>
+      <a class="nav-icon-btn" href="settings.html" title="Setiings" aria-label="Settings">
+        <img src="Assets/svg/settings.svg" alt="Settings" width="25" height="25">
+      </a>
+      </div>
+    </nav>
+
+    <!-- ── Page ──────────────────────────────────────────────────── -->
+    <main class="page">
+      <div class="container">
+        <!-- ── Sidebar ──────────────────────────────────────────────────── -->
+
+        <div class="sidebar">
+          <div class="sidebar-tabs">
+            <a class="sidebar-tab active" href="index.html">
+              Issues
+            </a>
+            <a class="sidebar-tab" href="dashboard.html">
+              Dashboard
+            </a>
+            <a class="sidebar-tab" href="agents.html">
+              Agents
+            </a>
+            <a class="sidebar-tab" href="reports.html">
+              Reports
+            </a>
+          </div>
+        </div>
+        <!-- Summary bar -->
+        <div class="summary-bar">
+          <!-- Open Card -->
+          <button class="stat-card card stat-open" data-filter="open">
+            <!-- container: pushes text left, icon right -->
+            <div class="stat-card-content">
+              <!-- left side: label on top, number below -->
+              <div class="stat-card-text">
+                <div class="stat-number" id="sum-open">0</div>
+                <div class="stat-label">Open</div>
+              </div>
+
+              <!-- Checkmark icon -->
+              <svg
+                class="stat-icon"
+                width="35"
+                height="35"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="12"
+                  fill="var(--status-open)"
+                  opacity="0.15"
+                />
+                <path
+                  d="M6 12L10 16L18 8"
+                  stroke="var(--status-open)"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+          </button>
+
+          <!-- In Progress Card -->
+          <button
+            class="stat-card card stat-progress"
+            data-filter="in-progress"
+          >
+            <div class="stat-card-content">
+              <div class="stat-card-text">
+                <div class="stat-number" id="sum-progress">0</div>
+                <div class="stat-label">In Progress</div>
+              </div>
+              <!-- Clock icon -->
+              <svg width="35" height="35" viewBox="0 0 24 24" fill="none">
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="12"
+                  fill="var(--status-in-progress)"
+                  aria-hidden="true"
+                />
+                <line
+                  x1="12"
+                  y1="7"
+                  x2="12"
+                  y2="13"
+                  stroke="white"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <line
+                  x1="12"
+                  y1="13"
+                  x2="16"
+                  y2="13"
+                  stroke="white"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+          </button>
+
+          <!-- Pending Review Card -->
+          <button
+            class="stat-card card stat-review"
+            data-filter="pending-review"
+          >
+            <div class="stat-card-content">
+              <div class="stat-card-text">
+                <div class="stat-number" id="sum-review">0</div>
+                <div class="stat-label">Pending Review</div>
+              </div>
+              <!-- Review clipboard icon -->
+              <svg
+                width="45"
+                height="45"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="12"
+                  fill="var(--status-pending-review)"
+                  opacity="0.15"
+                />
+                <rect
+                  x="7"
+                  y="6"
+                  width="10"
+                  height="13"
+                  rx="1.5"
+                  stroke="var(--status-pending-review)"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="9"
+                  y1="10"
+                  x2="15"
+                  y2="10"
+                  stroke="var(--status-pending-review)"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <line
+                  x1="9"
+                  y1="13"
+                  x2="15"
+                  y2="13"
+                  stroke="var(--status-pending-review)"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <line
+                  x1="9"
+                  y1="16"
+                  x2="12"
+                  y2="16"
+                  stroke="var(--status-pending-review)"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <rect
+                  x="10"
+                  y="5"
+                  width="4"
+                  height="2.5"
+                  rx="1"
+                  fill="var(--status-pending-review)"
+                />
+              </svg>
+            </div>
+          </button>
+
+          <!-- Blocked Card -->
+          <button class="stat-card card stat-blocked" data-filter="blocked">
+            <div class="stat-card-content">
+              <div class="stat-card-text">
+                <div class="stat-number" id="sum-blocked">0</div>
+                <div class="stat-label">Blocked</div>
+              </div>
+              <!-- Blocked circle icon -->
+              <svg
+                width="38"
+                height="38"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="12"
+                  fill="var(--status-blocked)"
+                  opacity="0.15"
+                />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="7"
+                  stroke="var(--status-blocked)"
+                  stroke-width="2"
+                />
+                <line
+                  x1="6.5"
+                  y1="17.5"
+                  x2="17.5"
+                  y2="6.5"
+                  stroke="var(--status-blocked)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+          </button>
+
+          <!-- Closed Card -->
+          <button class="stat-card card stat-closed" data-filter="closed">
+            <div class="stat-card-content">
+              <div class="stat-card-text">
+                <div class="stat-number" id="sum-closed">0</div>
+                <div class="stat-label">Closed</div>
+              </div>
+              <!-- Circle with dot icon -->
+              <svg
+                width="35"
+                height="35"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="12"
+                  fill="var(--status-closed)"
+                  opacity="0.15"
+                />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="7"
+                  stroke="var(--status-closed)"
+                  stroke-width="2"
+                />
+                <circle cx="12" cy="12" r="2.5" fill="var(--status-closed)" />
+              </svg>
+            </div>
+          </button>
+        </div>
+        <!--  -->
+        <!-- Toolbar: filters + view toggle + new issue -->
+        <div class="list-toolbar">
+          <div class="filter-bar">
+            <select
+              class="form-select filter-select"
+              id="filter-status"
+              aria-label="Filter by status"
+            >
+              <option value="">All statuses</option>
+              <option value="open">Open</option>
+              <option value="in-progress">In Progress</option>
+              <option value="pending-review">Pending Review</option>
+              <option value="blocked">Blocked</option>
+              <option value="closed">Closed</option>
+            </select>
+
+            <select
+              class="form-select filter-select"
+              id="filter-priority"
+              aria-label="Filter by priority"
+            >
+              <option value="">All priorities</option>
+              <option value="P0">P0</option>
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+            </select>
+
+            <input
+              class="form-input filter-input"
+              type="text"
+              id="filter-assignee"
+              placeholder="Assignee…"
+              aria-label="Filter by assignee"
+            />
+
+            <input
+              class="form-input filter-search"
+              type="text"
+              id="filter-search"
+              placeholder="Search issues…"
+              aria-label="Search issues"
+            />
+          </div>
+
+          <div class="toolbar-right">
+            <div class="view-toggle" role="group" aria-label="View toggle">
+              <button
+                class="view-toggle-btn active"
+                id="view-toggle-list"
+                data-view="list"
+                aria-label="List view"
+              >
+                <span aria-hidden="true">≡</span> List
+              </button>
+              <button
+                class="view-toggle-btn"
+                id="view-toggle-board"
+                data-view="board"
+                aria-label="Board view"
+              >
+                <span aria-hidden="true">⊞</span> Board
+              </button>
+            </div>
+            <button class="btn btn-primary" id="btn-new-issue">
+              + New Issue
+            </button>
+          </div>
+        </div>
+        <!-- ── List view ───────────────────────────────────────── -->
+        <div id="list-view" class="view-container">
+          <div class="card issue-table-wrapper">
+            <table class="issue-table">
+              <colgroup>
+                <col class="col-id" />
+                <col class="col-pri" />
+                <col class="col-title" />
+                <col class="col-status" />
+                <col class="col-assign" />
+                <col class="col-budget" />
+                <col class="col-date" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Pri</th>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Assignee</th>
+                  <th class="align-center">Tokens</th>
+                  <th class="align-center">Updated</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- ── End Container ──────────────────────────────────────── -->
+      </div>
+
+      <div class="container-board">
+        <!-- ── Board view ──────────────────────────────────────── -->
+        <div id="board-view" class="view-container hidden">
+          <div class="board">
+            <div class="board-column">
+              <div class="board-col-header">
+                <span class="board-col-title">Open</span>
+                <span class="board-col-count" id="count-open">0</span>
+              </div>
+              <div class="board-cards" id="col-open" data-status="open">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+            <div class="board-column">
+              <div class="board-col-header">
+                <span class="board-col-title">In Progress</span>
+                <span class="board-col-count" id="count-progress">0</span>
+              </div>
+              <div
+                class="board-cards"
+                id="col-progress"
+                data-status="in-progress"
+              >
+                <!-- Populated by JS -->
+              </div>
+            </div>
+            <div class="board-column">
+              <div class="board-col-header">
+                <span class="board-col-title">Pending Review</span>
+                <span class="board-col-count" id="count-review">0</span>
+              </div>
+              <div
+                class="board-cards"
+                id="col-review"
+                data-status="pending-review"
+              >
+                <!-- Populated by JS -->
+              </div>
+            </div>
+            <div class="board-column">
+              <div class="board-col-header">
+                <span class="board-col-title">Blocked</span>
+                <span class="board-col-count" id="count-blocked">0</span>
+              </div>
+              <div class="board-cards" id="col-blocked" data-status="blocked">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+            <div class="board-column">
+              <div class="board-col-header">
+                <span class="board-col-title">Closed</span>
+                <span class="board-col-count" id="count-closed">0</span>
+              </div>
+              <div class="board-cards" id="col-closed" data-status="closed">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- ── End Main ──────────────────────────────────────────────────── -->
+    <!-- ── New Issue Modal ───────────────────────────────────────── -->
+    <div
+      class="modal-overlay hidden"
+      id="modal-new-issue"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modal-title">New Issue</h2>
+          <button class="modal-close" id="modal-close" aria-label="Close">
+            &#10005;
+          </button>
+        </div>
+
+        <!-- Screen: Choice -->
+        <div class="modal-body screen" id="screen-choice">
+          <p class="choice-intro text-muted text-sm">
+            How would you like to create this issue?
+          </p>
+          <div class="choice-grid">
+            <button class="choice-card" id="choice-manual">
+              <span class="choice-emoji">✍️</span>
+              <span class="choice-name">Create Manually</span>
+              <span class="choice-hint">Fill in the fields yourself</span>
+            </button>
+            <button class="choice-card choice-card-ai" id="choice-ai">
+              <span class="choice-emoji">✨</span>
+              <span class="choice-name">Create with AI</span>
+              <span class="choice-hint">Describe it, AI structures it</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Screen: Manual form -->
+         
+        <div class="screen hidden" id="screen-manual">
+          <form class="modal-body" id="form-new-manual">
+            <div class="form-group">
+              <label for="form" for="create-issue">Create new issue in:</label>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="project">Project*</label>
+              <select class="form-select" id="new-project"></select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="issues-types">Issue Types*</label>
+              <select class="form-select" id="new-issues-types">
+                <option value="bug" selected>Bug</option>
+                <option value="feature">Feature</option>
+                <option value="functionality">Functionality</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="new-title">Title</label>
+              <input
+                class="form-input"
+                type="text"
+                id="new-title"
+                placeholder="Short description of the issue"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="new-description"
+                >Description</label
+              >
+              <textarea
+                class="form-textarea"
+                id="new-description"
+                placeholder="What needs to be done and why?"
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="modal-row">
+              <div class="form-group">
+                <label class="form-label" for="new-priority">Priority</label>
+                <select class="form-select" id="new-priority">
+                  <option value="P0">P0</option>
+                  <option value="P1">P1</option>
+                  <option value="P2" selected>P2</option>
+                  <option value="P3">P3</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="new-assignee">Assignee</label>
+                <select class="form-select" id="new-assignee">
+                  <option value="open-to-all">Open-to-all</option>
+                  <option value="human-only">Human-only</option>
+                  <option value="ai-only">AI-only</option>
+                </select>
+              </div>  
+
+              
+              <div class="form-group">
+                <label class="form-label" for="new-budget">Token Budget</label>
+                <input class="form-input" type="number" id="new-budget"
+                      placeholder="2000" min="0" max="100000">
+              </div>
+              
+                   
+              <div class="form-group">
+                <label class="form-label" for="new-estimate"
+                  >Time Estimate (min)</label>
+                <input
+                  class="form-input"
+                  type="number"
+                  id="new-estimate"
+                  placeholder="60"
+                  min="0"
+                />
+              </div>
+            </div>
+          </form>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" id="manual-cancel">
+              Cancel
+            </button>
+            <button
+              class="btn btn-primary"
+              type="submit"
+              form="form-new-manual"
+            >
+              Create Issue
+            </button>
+          </div>
+        </div>
+
+        <!-- Screen: AI Input -->
+        <div class="screen hidden" id="screen-ai-input">
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label" for="ai-desc-input"
+                >Describe the issue in plain language</label
+              >
+              <textarea
+                class="form-textarea ai-desc-textarea"
+                id="ai-desc-input"
+                rows="5"
+                placeholder="e.g. The login button breaks on mobile Safari, users can't sign in on iPhone"
+              ></textarea>
+            </div>
+            <p class="ai-hint text-muted text-sm">
+              AI will structure this into a proper issue with title,
+              description, and priority.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" id="ai-input-back">
+              ← Back
+            </button>
+            <button class="btn btn-primary" id="ai-analyze-btn">
+              Analyze →
+            </button>
+          </div>
+        </div>
+
+        <!-- Screen: AI Loading -->
+        <div class="screen hidden" id="screen-ai-loading">
+          <div class="modal-body ai-loading-body">
+            <div class="ai-spinner" aria-hidden="true"></div>
+            <p class="ai-loading-text">Analyzing with Claude...</p>
+          </div>
+        </div>
+
+        <!-- Screen: AI Preview -->
+        <div class="screen hidden" id="screen-ai-preview">
+          <div class="modal-body">
+            <div class="ai-created-by-badge">✨ AI-assisted</div>
+            <div class="form-group">
+              <label class="form-label" for="ai-title">Title</label>
+              <input class="form-input" type="text" id="ai-title" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ai-description">Description</label>
+              <textarea
+                class="form-textarea"
+                id="ai-description"
+                rows="5"
+              ></textarea>
+            </div>
+            <div class="modal-row">
+              <div class="form-group">
+                <label class="form-label" for="ai-priority">Priority</label>
+                <select class="form-select" id="ai-priority">
+                  <option value="P0">P0 — Critical</option>
+                  <option value="P1">P1 — High</option>
+                  <option value="P2">P2 — Medium</option>
+                  <option value="P3">P3 — Low</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="ai-budget">Token Budget</label>
+                <input
+                  class="form-input"
+                  type="number"
+                  id="ai-budget"
+                  min="0"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" id="ai-back-btn">← Back</button>
+            <button class="btn btn-primary" id="ai-confirm-btn">
+              Confirm & Create
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="js/list-app.js"></script>
+    <script type="module" src="js/agent-sim.js"></script>
+    <script type="module" src="js/demo.js"></script>
+    <!-- ── End Body ──────────────────────────────────────────────────── -->
+  </body>
+</html>

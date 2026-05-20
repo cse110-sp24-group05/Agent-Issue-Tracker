@@ -2,7 +2,7 @@
 .summary-bar {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: var(--space-4);
+  gap: var(--space-8);
   margin-bottom: var(--space-6);
 }
 
@@ -12,6 +12,20 @@
   border: 1px solid var(--color-border);
   cursor: pointer;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.stat-card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: var(--space-4);
+}
+
+.stat-card-text {
+  display: flex;
+  flex-direction: column;   /* stacks label on the top, of number */
+  gap: var(--space-1);
 }
 
 .stat-card:hover {
@@ -37,10 +51,34 @@
   margin-top: var(--space-1);
 }
 
-.stat-open     .stat-number { color: var(--status-open); }
+.stat-open {
+  background: var(--status-open-bg);
+  border-color: var(--status-open);
+}
+.stat-open .stat-number { color: var(--status-open); }
+
+.stat-progress {
+  background: var(--status-in-progress-bg);
+  border-color: var(--status-in-progress);
+}
 .stat-progress .stat-number { color: var(--status-in-progress); }
+
+.stat-review {
+  background: var(--status-pending-review-bg);
+  border-color: var(--status-pending-review);
+}
 .stat-review   .stat-number { color: var(--status-pending-review); }
+
+.stat-blocked {
+  background: var(--status-blocked-bg);
+  border-color: var(--status-blocked);
+}
 .stat-blocked  .stat-number { color: var(--status-blocked); }
+
+.stat-closed {
+  background: var(--status-closed-bg);
+  border-color: var(--status-closed);
+}
 .stat-closed   .stat-number { color: var(--status-closed); }
 
 /* ─── Toolbar ───────────────────────────────────────────────────── */
@@ -57,9 +95,10 @@
 .filter-bar {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-10);
   flex: 1;
   flex-wrap: wrap;
+
 }
 
 .filter-bar .form-select,
@@ -85,7 +124,7 @@
 .toolbar-right {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-10);
 }
 
 .view-toggle {
@@ -132,6 +171,7 @@
 
 .issue-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: var(--text-sm);
 }
@@ -150,6 +190,14 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
+}
+
+.align-center{
+  text-align: center;
+}
+
+.issue-table th.align-center{
+  text-align: center;
 }
 
 .issue-table td {
@@ -181,6 +229,12 @@
 }
 
 .issue-title-link {
+  display: inline-block;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
   color: var(--color-text);
   font-weight: var(--weight-medium);
 }
@@ -199,12 +253,12 @@
 }
 
 /* ─── Column Widths ─────────────────────────────────────────────── */
-.col-pri    { width: 56px; }
-.col-id     { width: 96px; }
-.col-title  { min-width: 220px; }
+.col-pri    { width: 70px; }
+.col-id     { width: 60px; }
+.col-title  { width: 300px; }
 .col-status { width: 130px; }
 .col-assign { width: 120px; }
-.col-budget { width: 130px; }
+.col-budget { width: 110px; }
 .col-date   { width: 90px; }
 
 /* ─── Cell Content ──────────────────────────────────────────────── */
@@ -355,7 +409,7 @@
 /* ─── Board view (merged from former board.css) ─────────────────── */
 .board {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: var(--space-5);
   align-items: start;
 }
