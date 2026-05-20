@@ -349,7 +349,7 @@ As of the 05/15 meeting:
 
 
 
-# ADR 006: Consolidate non-code folders under /docs and enforce lowercase naming
+# **ADR 006: Consolidate non-code folders under /docs and enforce lowercase naming**
 
 **Status:** Accepted
 **Date:** 2026-05-19
@@ -396,3 +396,41 @@ CLAUDE.md
 wrangler.toml
 package.json
 ```
+
+
+# ADR 007: Workspace ID for User Isolation
+
+**Status:** Accepted
+**Date:** 2026-05-19
+**Decision-makers:** Whole Team
+
+## Context and Problem Statement
+
+AIT is deployed on Cloudflare with a shared D1 database. Each user needs isolated data without a login flow.
+
+## Considered Options
+
+### Random UUID stored in localStorage
+On first visit, generate a UUID and store it in localStorage. Send it as a header on every request. Worker scopes all queries by it.
+
+### Full authentication (email/password or magic link)
+User signs up, logs in, server issues a session token. Standard auth flow.
+
+## Decision Outcome
+
+Chosen option: **Random UUID stored in localStorage**, because it requires three lines of code, no auth provider, no session management, and no signup friction. The UUID is the user. Every D1 query filters by `workspace_id` so data is fully isolated.
+
+## Consequences
+
+### Good
+
+- Trivial to implement
+- No signup or login flow for the user
+- Works immediately on first visit
+- Agent workflow is identical — runner receives the workspace ID and sends it as a header
+
+### Bad
+
+- Identity is browser-bound — clearing localStorage loses access to the workspace
+- No recovery flow if the ID is lost
+- Not suitable if AIT ever needs real identity verification
