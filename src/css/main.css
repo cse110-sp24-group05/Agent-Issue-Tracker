@@ -135,7 +135,8 @@
     --nav-height: 56px;
 
     /* Sidebar */
-    --sidebar-width: 220px;
+    --sidebar-width: 12%;
+    --sidebar-hidden-width: 6%;
     --sidebar-border-width: 1px;
 
     /* Transitions */
@@ -314,7 +315,7 @@ select {
     display: flex;
     flex-direction: column;
     z-index: 90;
-    gap: var(--space-6);
+    gap: var(--space-3);
     font-family: 'HeadingFont';
     border: var(--color-nav-bar);
     border-right-width: var(--sidebar-border-width);
@@ -322,15 +323,36 @@ select {
     border-style: solid;
   }
   
-  .sidebar-tabs {
-  display: flex;
-  align-items: stretch;
-  flex-direction: column;
-  margin-top: var(--space-4);
-  flex: 17;
-  justify-content: flex-start;
+  .sidebar-hidden {
+    width: var(--sidebar-hidden-width);
+  }
+
+  .sidebar-active {
+    width: var(--sidebar-width);
   }
   
+  .sidebar-tabs {
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    margin-top: var(--space-4);
+    justify-content: flex-start;
+  }
+  
+  .sidebar-toggle {
+    height: 5%;
+    display: flex;
+    border: none;
+    align-self: flex-end;
+    background: none;
+    transition: all 0.3s;
+    border-radius: var(--radius-md);
+  }
+
+  .sidebar-toggle:hover {
+    background: var(--color-background-light);
+  }
+
   .sidebar-tab {
   display: flex;
   align-items: center;
