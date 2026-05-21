@@ -15,7 +15,6 @@
     <!-- ── Page ──────────────────────────────────────────────────── -->
     <main class="page">
       <div class="container">
-        
         <!-- Summary bar -->
         <div class="summary-bar">
           <!-- Open Card -->
@@ -349,10 +348,10 @@
       </div>
 
       <div class="container-board">
-        <!-- ── Board view ──────────────────────────────────────── -->
+        <!-- ── Kanban Board view ──────────────────────────────────────── -->
         <div id="board-view" class="view-container hidden">
           <div class="board">
-            <div class="board-column">
+            <div class="board-column board-column-open">
               <div class="board-col-header">
                 <span class="board-col-title">Open</span>
                 <span class="board-col-count" id="count-open">0</span>
@@ -361,7 +360,7 @@
                 <!-- Populated by JS -->
               </div>
             </div>
-            <div class="board-column">
+            <div class="board-column board-column-progress">
               <div class="board-col-header">
                 <span class="board-col-title">In Progress</span>
                 <span class="board-col-count" id="count-progress">0</span>
@@ -374,7 +373,7 @@
                 <!-- Populated by JS -->
               </div>
             </div>
-            <div class="board-column">
+            <div class="board-column board-column-review">
               <div class="board-col-header">
                 <span class="board-col-title">Pending Review</span>
                 <span class="board-col-count" id="count-review">0</span>
@@ -387,7 +386,7 @@
                 <!-- Populated by JS -->
               </div>
             </div>
-            <div class="board-column">
+            <div class="board-column board-column-blocked">
               <div class="board-col-header">
                 <span class="board-col-title">Blocked</span>
                 <span class="board-col-count" id="count-blocked">0</span>
@@ -396,7 +395,7 @@
                 <!-- Populated by JS -->
               </div>
             </div>
-            <div class="board-column">
+            <div class="board-column board-column-closed">
               <div class="board-col-header">
                 <span class="board-col-title">Closed</span>
                 <span class="board-col-count" id="count-closed">0</span>
@@ -420,7 +419,7 @@
     >
       <div class="modal">
         <div class="modal-header">
-          <h2 class="modal-title" id="modal-title">New Issue</h2>
+          <h2 class="modal-title" id="modal-title">Create New Issue</h2>
           <button class="modal-close" id="modal-close" aria-label="Close">
             &#10005;
           </button>
@@ -446,19 +445,23 @@
         </div>
 
         <!-- Screen: Manual form -->
-         
+
         <div class="screen hidden" id="screen-manual">
           <form class="modal-body" id="form-new-manual">
+            <!-- <div class="form-group">
+              <label for="form" for="create-issue">Create New Issue</label>
+            </div> -->
             <div class="form-group">
-              <label for="form" for="create-issue">Create new issue in:</label>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="project">Project*</label>
+              <label class="form-label" for="project"
+                >Project<span class="required">*</span></label
+              >
               <select class="form-select" id="new-project"></select>
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="issues-types">Issue Types*</label>
+              <label class="form-label" for="issues-types"
+                >Issue Types<span class="required">*</span></label
+              >
               <select class="form-select" id="new-issues-types">
                 <option value="bug" selected>Bug</option>
                 <option value="feature">Feature</option>
@@ -466,7 +469,9 @@
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" for="new-title">Title</label>
+              <label class="form-label" for="new-title"
+                >Title<span class="required">*</span></label
+              >
               <input
                 class="form-input"
                 type="text"
@@ -503,19 +508,24 @@
                   <option value="human-only">Human-only</option>
                   <option value="ai-only">AI-only</option>
                 </select>
-              </div>  
+              </div>
 
-              
               <div class="form-group">
                 <label class="form-label" for="new-budget">Token Budget</label>
-                <input class="form-input" type="number" id="new-budget"
-                      placeholder="2000" min="0" max="100000">
+                <input
+                  class="form-input"
+                  type="number"
+                  id="new-budget"
+                  placeholder="2000"
+                  min="0"
+                  max="100000"
+                />
               </div>
-              
-                   
+
               <div class="form-group">
                 <label class="form-label" for="new-estimate"
-                  >Time Estimate (min)</label>
+                  >Time Estimate (min)</label
+                >
                 <input
                   class="form-input"
                   type="number"
