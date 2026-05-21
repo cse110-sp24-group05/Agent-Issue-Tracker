@@ -282,6 +282,66 @@
   font-size: var(--text-sm);
 }
 
+.empty-row .empty-state-icon {
+  font-size: var(--text-2xl);
+  line-height: 2;
+}
+
+.empty-row .empty-state-title {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  font-style: normal;
+}
+
+.empty-row .empty-state-desc {
+  font-size: var(--text-sm);
+  font-style: normal;
+  color: var(--color-text-muted);
+  line-height: 3;
+}
+
+/* ─── Kanban Board Empty State for No Issues ──────────────────────────────────────────────── */
+
+.board-empty-state {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-4);
+  flex: 1;
+  gap: var(--space-3);
+}
+
+.board-empty-state p{
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-style: italic;
+}
+
+.board-empty-cta {
+  padding: var(--space-10) var(--space-5);
+}
+
+.board-empty-cta .empty-state-icon {
+  font-size: var(--text-2xl);
+  line-height: 1;
+}
+
+.board-empty-cta .empty-state-title {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  font-style: normal;
+}
+
+.board-empty-cta .empty-state-desc {
+  font-size: var(--text-sm);
+  font-style: normal;
+  color: var(--color-text-muted);
+}
+
 /* ─── Modal Row (two columns inside modal body) ─────────────────── */
 .modal-row {
   display: grid;
@@ -347,6 +407,10 @@
   color: var(--color-text-muted);
   display: block;
   line-height: 1.4;
+}
+
+.required {
+  color: var(--color-danger);
 }
 
 /* ─── AI Input screen ────────────────────────────────────────────── */
@@ -530,4 +594,70 @@
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.4px;
+}
+
+/* Color for the Board Columns (Open, In Progress, Pending Review, Blocked, Closed */
+.board-column-open {
+  background: var(--status-open-bg);
+  border-color: var(--status-open);
+}
+.board-column-open .board-col-title {
+  color: var(--color-text);
+}
+
+.board-column-open .board-col-count {
+  color: var(--color-text-light);
+  background-color: var(--status-open);
+}
+
+.board-column-progress {
+  background: var(--status-in-progress-bg);
+  border-color: var(--status-in-progress);
+}
+.board-column-progress .board-col-title {
+  color: var(--color-text);
+}
+
+.board-column-progress .board-col-count {
+  color: var(--color-text-light);
+  background-color: var(--status-in-progress);
+}
+
+.board-column-review {
+  background: var(--status-pending-review-bg);
+  border-color: var(--status-pending-review);
+}
+.board-column-review .board-col-title {
+  color: var(--color-text);
+}
+
+.board-column-review .board-col-count {
+  color: var(--color-text-light);
+  background-color: var(--status-pending-review);
+}
+
+.board-column-blocked {
+  background: var(--status-blocked-bg);
+  border-color: var(--status-blocked);
+}
+.board-column-blocked .board-col-title {
+  color: var(--color-text);
+}
+
+.board-column-blocked .board-col-count {
+  color: var(--color-text-light);
+  background-color: var(--status-blocked);
+}
+
+.board-column-closed {
+  background: var(--status-closed-bg);
+  border-color: var(--status-closed);
+}
+.board-column-closed .board-col-title {
+  color: var(--color-text);
+}
+
+.board-column-closed .board-col-count {
+  color: var(--color-text-light);
+  background-color: var(--status-closed);
 }
