@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="css/dashboard.css">
   </head>
   <body>
-    <script src="./js/sidebar.js"></script>
-    <script src="./js/navbar.js"></script>
+    <script src="./js/dashboard-app.js" type="module"></script>
+    <script src="./js/components/navbar.js"></script>
+    <script src="./js/components/sidebar.js"></script>
     <my-navbar></my-navbar>
     <my-sidebar></my-sidebar>
 
@@ -22,27 +23,27 @@
                 <span class="sprint-bar-label">Sprint</span>
                 <div class="sprint-pills">
                   <button class="pill" data-filter="open">
-                    <img src="./Assets/svg/todo.svg" class="pill-dot">
+                    <img src="./Assets/svg/todo.svg" class="status-icon">
                     <span class="pill-count" id="pc-open">0</span>
                     <span class="pill-label">Open</span>
                   </button>
                   <button class="pill" data-filter="in-progress">
-                    <img src="./Assets/svg/in-progress.svg" class="pill-dot">
+                    <img src="./Assets/svg/in-progress.svg" class="status-icon">
                     <span class="pill-count" id="pc-progress">0</span>
                     <span class="pill-label">In Progress</span>
                   </button>
                   <button class="pill" data-filter="pending-review">
-                    <img src="./Assets/svg/pending.svg" class="pill-dot">
+                    <img src="./Assets/svg/pending.svg" class="status-icon">
                     <span class="pill-count" id="pc-review">0</span>
                     <span class="pill-label">Pending Review</span>
                   </button>
                   <button class="pill" data-filter="blocked">
-                    <img src="./Assets/svg/blocked.svg" class="pill-dot">
+                    <img src="./Assets/svg/blocked.svg" class="status-icon">
                     <span class="pill-count" id="pc-blocked">0</span>
                     <span class="pill-label">Blocked</span>
                   </button>
                   <button class="pill" data-filter="closed">
-                    <img src="./Assets/svg/closed.svg" class="pill-dot">
+                    <img src="./Assets/svg/closed.svg" class="status-icon">
                     <span class="pill-count" id="pc-closed">0</span>
                     <span class="pill-label">Closed</span>
                   </button>
