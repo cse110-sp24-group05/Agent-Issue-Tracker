@@ -19,7 +19,7 @@ class Sidebar extends HTMLElement {
 						<a class="sidebar-tab" href="index.html">
 							Issues
 						</a>
-						<a class="sidebar-tab active" href="dashboard.html">
+						<a class="sidebar-tab" href="dashboard.html">
 							Dashboard
 						</a>
 						<a class="sidebar-tab" href="agents.html">
@@ -31,21 +31,38 @@ class Sidebar extends HTMLElement {
 					</div>
 				</div>
 		`
+
+		// initialize variables
 		const sidebar = this.querySelector('.sidebar');
 		const toggle = this.querySelector('.sidebar-toggle');
 		const tabs = this.querySelector('.sidebar-tabs');
+		const root = document.querySelector(':root');
+		const rootStyle = getComputedStyle(root);
+		const widthActive = rootStyle.getPropertyValue("--sidebar-width");
+		const widthHidden = rootStyle.getPropertyValue("--sidebar-width-hidden");
+		const tabButtons = tabs.querySelectorAll(".sidebar-tab");
+
+		// sidebar toggle behavior: hide tabs, make sidebar narrower
 		toggle.addEventListener('click', () => {
 			if (this.toggled) {
 				tabs.style.display = 'none';
 				this.toggled = false;
-				document.documentElement.style.setProperty("--sidebar-width", "4%");
+				sidebar.style.setProperty("width", widthHidden);
 			}
 			else {
 				tabs.style.display = 'flex';
 				this.toggled = true;
-				document.documentElement.style.setProperty("--sidebar-width", "12%");
+				sidebar.style.setProperty("width", widthActive);
 			}
 		})
+
+		tabButtons.forEach((button) => {
+			if (window.location.pathname.includes(button.getAttribute("href"))) {
+				button.classList.add("active");
+			}
+		})
+		
+
 	}
 
 }

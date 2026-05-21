@@ -81,8 +81,7 @@
   padding-top: calc(var(--nav-height) + 45px); /* nav + sprint bar height */
   min-height: 100vh;
   background: var(--color-bg-subtle);
-  margin-left: calc(var(--sidebar-width));
-  padding-left: 2%;
+  padding-left: calc(var(--sidebar-width));
 }
 
 .dashboard-wrap {
