@@ -53,7 +53,27 @@ import {
   function renderList(issues) {
         const tbody = document.querySelector('.issue-table tbody');
         if (!issues.length) {
-          tbody.innerHTML = '<tr><td colspan="7" class="empty-row">No issues match the current filters.</td></tr>';
+        const allIssues = getIssues();
+        if (allIssues.length === 0) {
+          // no issues at all
+          tbody.innerHTML = `
+            <tr><td colspan="7">
+              <div class="empty-row">
+                <div class="empty-state-icon">📋</div>
+                <div class="empty-state-title">No issues yet!</div>
+                <div class="empty-state-desc">Create your first issue to get started</div>
+                <button class="btn btn-primary" id="list-empty-new-btn">
+                  + New Issue
+                </button>
+              </div>
+            </td></tr>`;
+            document.getElementById('list-empty-new-btn')
+              ?.addEventListener('click', () => {
+                document.getElementById('btn-new-issue').click();
+              });
+          } else {
+            tbody.innerHTML = '<tr><td colspan="7" class="empty-row">No issues match the current filters.</td></tr>';
+          }
           return;
         }
         tbody.innerHTML = issues.map(i => `
@@ -141,14 +161,53 @@ import {
         // a previous status, route blocked issues into "To Do".
         issues.forEach(issue => {
           let zoneId = ZONE_ID[issue.status];
-          // if (zoneId === null) zoneId = 'col-todo';
-          // if (zoneId) document.getElementById(zoneId).appendChild(makeCard(issue));
           if (zoneId) {
               const col = document.getElementById(zoneId);
               if (col) col.appendChild(makeCard(issue));
           }
         });
         updateBoardCounts();
+        // Empty state for new users or no issues at all
+        // check if ALl columns are empty 
+        const allEmpty = ['col-open', 'col-progress', 'col-review', 'col-blocked', 'col-closed']
+          .every(id => document.getElementById(id).querySelectorAll('.board-card').length === 0);
+        
+        // empty state message 
+        const emptyMessage = {
+          'col-open': 'No open issues yet',
+          'col-progress': 'No issues in progress',
+          'col-review': 'No issues pending review',
+          'col-blocked': 'No blocked issues yet',
+          'col-closed': 'No closed issues yet',
+        };
+
+        Object.entries(emptyMessage).forEach(([colId, message]) => {
+          const col = document.getElementById(colId);
+          if (!col || col.querySelectorAll('.board-card').length > 0) return;
+
+          if (colId === 'col-review' && allEmpty) {
+            // only show CTA button when ALL columns are empty
+            col.innerHTML = `
+              <div class="board-empty-state board-empty-cta">
+                <div class="empty-state-icon">📋</div>
+                <p class="empty-state-title">No issues yet!</p>
+                <p class="empty-state-desc">Create your first issue to get started</p>
+                <button class="btn btn-primary btn-sm" id="empty-new-issue-btn">
+                  + New Issue
+                </button>
+              </div>`;
+            document.getElementById('empty-new-issue-btn')
+              ?.addEventListener('click', () => {
+                document.getElementById('btn-new-issue').click();
+              });
+          } else {
+            // regular empty state — just a message, no button
+            col.innerHTML = `
+              <div class="board-empty-state">
+                <p>${message}</p>
+              </div>`;
+          }
+        });
       }
   
       document.querySelectorAll('.board-cards').forEach(zone => {
