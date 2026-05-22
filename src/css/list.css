@@ -207,6 +207,11 @@
   color: var(--color-text);
 }
 
+.col-date,
+.issue-table td:nth-child(7){
+  text-align: right;
+}
+
 .issue-table tbody tr:last-child td {
   border-bottom: none;
 }
@@ -220,6 +225,17 @@
   background: #F5F7FF;
 }
 
+.issue-table tbody tr:hover .row-action-btn,
+.row-action-btn:focus-visible{
+  opacity: 1;
+}
+
+.col-date   { width: 72px; }
+.col-edit   { width: 36px;}
+.col-edit-cell {
+  text-align: center;
+  padding-left: 0;
+}
 /* Created-by icon inside title cell */
 .created-by-icon {
   display: inline-block;
@@ -260,6 +276,12 @@
 .col-assign { width: 120px; }
 .col-budget { width: 110px; }
 .col-date   { width: 90px; }
+.col-date   { width: 72px; }
+.col-edit   { width: 36px;}
+.col-edit-cell {
+  text-align: center;
+  padding-left: 0;
+}
 
 /* ─── Cell Content ──────────────────────────────────────────────── */
 .issue-title {
