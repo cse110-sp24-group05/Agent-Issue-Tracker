@@ -11,7 +11,7 @@ import {
   updateIssue,
   deleteIssue,
   claimIssue,
-  postResult,
+  putResult,
   closeIssue
 } from './handlers.js';
 
@@ -45,25 +45,24 @@ export default {
     }
 
 
-    // POST /api/issues/:id/claim
+    // PUT /api/issues/:id/claim
     const isClaim = url.pathname.startsWith('/api/issues/') && url.pathname.endsWith('/claim');
-    if (isClaim && method === 'POST') {
-      const id = url.pathname.split('/')[3];
-      return claimIssue(id, request, env);
+    if (isClaim && method === 'PUT') {
+      return claimIssue(request, env);
     }
 
 
-    // POST /api/issues/:id/result
+    // PUT /api/issues/:id/result
     const isResult = url.pathname.startsWith('/api/issues/') && url.pathname.endsWith('/result');
-    if (isResult && method === 'POST') {
+    if (isResult && method === 'PUT') {
       const id = url.pathname.split('/')[3];
-      return postResult(id, request, env);
+      return putResult(id, request, env);
     }
 
 
-    // POST /api/issues/:id/close
+    // PUT /api/issues/:id/close
     const isClose = url.pathname.startsWith('/api/issues/') && url.pathname.endsWith('/close');
-    if (isClose && method === 'POST') {
+    if (isClose && method === 'PUT') {
       const id = url.pathname.split('/')[3];
       return closeIssue(id, env);
     }
