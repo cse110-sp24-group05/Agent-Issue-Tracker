@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ait.local/schema/issue.preview.json",
+  "title": "AIT Structured Issue (preview)",
+  "description": "Proposed v2 schema. Free-text description is replaced with structured sections so success criteria are machine-checkable. Result mirrors acceptance_criteria so closing an issue requires explicit attestation against each item.",
+  "type": "object",
+  "required": [
+    "id", "type", "title", "context", "acceptance_criteria",
+    "status", "priority", "created_by", "created_at", "updated_at",
+    "token_budget", "tokens_used", "audit_log"
+  ],
+  "properties": {
+    "id":          { "type": "string", "pattern": "^issue-[0-9]{3,}$" },
+    "type":        { "enum": ["bug", "feature", "refactor", "docs", "security", "perf"] },
+    "title":       { "type": "string", "minLength": 8, "maxLength": 120 },
+
+    "context":     {
+      "type": "string",
+      "minLength": 30,
+      "description": "Why this issue exists. Replaces free-text description's 'why' paragraph."
+    },
+
+    "acceptance_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Checklist that defines done. Each item must be flippable to done:true before status can advance to pending-review.",
+      "items": {
+        "type": "object",
+        "required": ["text", "done"],
+        "properties": {
+          "text": { "type": "string", "minLength": 5 },
+          "done": { "type": "boolean" }
+        }
+      }
+    },
+
+    "files_in_scope": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths the agent is allowed to modify. Empty array means no restriction."
+    },
+    "out_of_scope": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths the agent must not touch. Hard boundary — server-side check on PR diff."
+    },
+
+    "status": {
+      "enum": ["open", "in-progress", "pending-review", "blocked", "closed"]
+    },
+    "priority":    { "enum": ["P0", "P1", "P2", "P3"] },
+    "assignee":    { "type": "string" },
+
+    "created_by":  { "type": "string", "description": "human-manual | llm-assist | <agent-name>" },
+    "created_at":  { "type": "string", "format": "date-time" },
+    "updated_at":  { "type": "string", "format": "date-time" },
+    "claimed_by":  { "type": ["string", "null"] },
+    "claimed_at":  { "type": ["string", "null"], "format": "date-time" },
+    "completed_at":{ "type": ["string", "null"], "format": "date-time" },
+
+    "token_budget":  { "type": "integer", "minimum": 1 },
+    "tokens_used":   { "type": "integer", "minimum": 0 },
+    "time_estimate": { "type": "integer", "minimum": 1, "description": "minutes" },
+    "time_spent":    { "type": "integer", "minimum": 0, "description": "minutes" },
+
+    "blocked_reason": { "type": ["string", "null"] },
+    "dependencies":   {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^issue-[0-9]{3,}$" },
+      "description": "Soft prerequisite issue ids. Agent should refuse to claim until dependencies are 'closed'."
+    },
+    "escalate_when":  {
+      "type": "string",
+      "description": "Plain-English condition that should trigger the agent to stop and request help. Read by the agent's system prompt; not enforced server-side."
+    },
+
+    "result": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/Result" }
+      ],
+      "description": "Required to be non-null when status is 'pending-review' or 'closed'. Server rejects status transitions that don't satisfy this."
+    },
+
+    "audit_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["action", "by", "at"],
+        "properties": {
+          "action": { "type": "string" },
+          "by":     { "type": "string" },
+          "at":     { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "Result": {
+      "type": "object",
+      "required": ["pr_url", "tests_passed", "acceptance_criteria", "tokens_used"],
+      "properties": {
+        "pr_url":  {
+          "type": "string",
+          "format": "uri",
+          "description": "Required. The link CI status will be checked against."
+        },
+        "tests_passed": {
+          "type": "boolean",
+          "description": "The agent's attestation. AIT does not verify; reviewer or external CI does."
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "minItems": 1,
+          "description": "MUST mirror the issue's acceptance_criteria array. Every item.done must be true; otherwise postResult is rejected with HTTP 422.",
+          "items": {
+            "type": "object",
+            "required": ["text", "done"],
+            "properties": {
+              "text": { "type": "string" },
+              "done": { "type": "boolean" }
+            }
+          }
+        },
+        "files_changed": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "tokens_used": { "type": "integer", "minimum": 0 },
+        "notes":       { "type": "string" }
+      }
+    }
+  }
+}

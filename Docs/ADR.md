@@ -347,3 +347,90 @@ As of the 05/15 meeting:
 * wrangler.toml has been added for environment configuration  
 * workers.js replaces data.js
 
+
+
+# **ADR 006: Consolidate non-code folders under /docs and enforce lowercase naming**
+
+**Status:** Accepted
+**Date:** 2026-05-19
+**Decision-makers:** Patrick Chung
+
+## Context and Problem Statement
+
+Non-code folders (`Docs/`, `Meetings/`, `Research/`) were scattered at the repo root alongside code infrastructure, making the root noisy and inconsistent. Folder names used mixed case, which causes path resolution failures on Linux (CI/CD, Cloudflare) even when paths work locally on macOS.
+
+## Decision Outcome
+
+Consolidate all non-code planning and documentation folders under `/docs`. Rename all folders and files to lowercase with hyphens for multi-word names. Config files and conventionally uppercase files (`README.md`, `CHANGELOG.md`, `CLAUDE.md`, `LICENSE`) are not affected.
+
+## Consequences
+
+### Good
+
+- Root is cleaner and the code/non-code split is immediately obvious
+- Eliminates case-sensitivity bugs between local macOS development and Linux CI/CD
+- Consistent with open-source conventions
+
+### Bad
+
+- Existing links or references to old paths need updating
+- Contributors need to be informed of the new structure
+
+## New structure
+
+```
+docs/
+  meetings/
+  research/
+  decisions/
+  api-contract.md
+  architecture.md
+  workflow.md
+  schema.md
+src/
+migrations/
+.github/
+README.md
+CHANGELOG.md
+CLAUDE.md
+wrangler.toml
+package.json
+```
+
+
+# ADR 007: Workspace ID for User Isolation
+
+**Status:** Accepted
+**Date:** 2026-05-19
+**Decision-makers:** Whole Team
+
+## Context and Problem Statement
+
+AIT is deployed on Cloudflare with a shared D1 database. Each user needs isolated data without a login flow.
+
+## Considered Options
+
+### Random UUID stored in localStorage
+On first visit, generate a UUID and store it in localStorage. Send it as a header on every request. Worker scopes all queries by it.
+
+### Full authentication (email/password or magic link)
+User signs up, logs in, server issues a session token. Standard auth flow.
+
+## Decision Outcome
+
+Chosen option: **Random UUID stored in localStorage**, because it requires three lines of code, no auth provider, no session management, and no signup friction. The UUID is the user. Every D1 query filters by `workspace_id` so data is fully isolated.
+
+## Consequences
+
+### Good
+
+- Trivial to implement
+- No signup or login flow for the user
+- Works immediately on first visit
+- Agent workflow is identical — runner receives the workspace ID and sends it as a header
+
+### Bad
+
+- Identity is browser-bound — clearing localStorage loses access to the workspace
+- No recovery flow if the ID is lost
+- Not suitable if AIT ever needs real identity verification
