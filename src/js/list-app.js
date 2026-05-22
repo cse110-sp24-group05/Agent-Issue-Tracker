@@ -88,8 +88,21 @@ import {
             </td>
             <td><span class="badge ${staBadge(i.status)}">${staLabel(i.status)}</span></td>
             <td class="${i.assignee === 'unassigned' ? 'text-muted' : ''}">${esc(i.assignee)}</td>
-            <td class="align-center mono text-muted">${i.tokens_used.toLocaleString()} / ${i.token_budget.toLocaleString()}</td>
-            <td class="align-center text-muted">${fmtRelTime(i.updated_at)}</td>
+            <td class="token-cell">
+            <div class="token-wrap"
+              <div class="token-text mono text-muted">${i.tokens_used.toLocaleString()} / ${i.token_budget.toLocaleString()}</div>
+              <div class="token-bar">
+                <div class="token-fill ${tokenLevel(i.tokens_used, i.token_budget)}"
+                    style="width: ${Math.max(0, Math.round(( 1 - (i.tokens_used / i.token_budget)) * 100))}%"></div>
+              </div>
+              </div>
+            </td>
+            <td class="align-right text-muted">${fmtRelTime(i.updated_at)}</td>
+            <td class="col-edit-cell">
+              <a class="row-action-btn" href="issue.html?id=${esc(i.id)}" aria-label="Edit issue ${esc(i.id)}">
+                <img src="./Assets/svg/edit.svg" alt="" width="16" height="16">
+              </a>
+            </td>
           </tr>`).join('');
   
         tbody.querySelectorAll('[data-issue-row]').forEach(row => {
@@ -99,6 +112,20 @@ import {
           });
         });
       }
+
+      function tokenLevel(used, budget){
+        const remaining = budget ? 1 - (used/ budget) : 1;
+        if (remaining < 0.3){
+          return 'token-over';
+        }
+    
+        if (remaining < 0.6){
+          return 'token-warn';
+        }
+    
+        return 'token-ok';
+      }
+    
   
   // ── 5. BOARD RENDER ────────────────────────────────────
   // builds the kanban cards and handles drag and drop
