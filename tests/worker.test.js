@@ -40,6 +40,17 @@ describe('Issues API Tests', () => {
     jest.clearAllMocks();
   });
 
+  test('responds to CORS preflight for API routes', async () => {
+    const response = await worker.fetch(
+      new Request('http://localhost/api/issues', { method: 'OPTIONS' }),
+      env
+    );
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*');
+    expect(response.headers.get('Access-Control-Allow-Methods')).toContain('GET');
+  });
+
   // Tests for GET 
 
   // GET ALL ISSUES
@@ -73,6 +84,7 @@ describe('Issues API Tests', () => {
       const data = await res.json();
 
       expect(res.status).toBe(200);
+      expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*');
       expect(data.length).toBe(2);
       expect(data[0]).toHaveProperty('issue_status');
       expect(data[0]).toHaveProperty('issue_priority');
@@ -104,6 +116,7 @@ describe('Issues API Tests', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
+      expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*');
       expect(data.success).toBe(true);
       expect(data.issue.id).toBe('2');
     });
@@ -146,6 +159,7 @@ describe('Issues API Tests', () => {
       const data = await response.json();
 
       expect(response.status).toBe(201);
+      expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*');
       expect(data.success).toBe(true);
       expect(data.issue).toHaveProperty('id');
       expect(data.issue.id).toBe('4');
