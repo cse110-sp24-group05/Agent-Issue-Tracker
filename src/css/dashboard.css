@@ -1,6 +1,6 @@
 /* ─── Sprint Health Bar ─────────────────────────────────────────── */
 .sprint-bar {
-  background: var(--color-background-light);
+  background: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   margin-bottom: 50px;
   z-index: 90;
@@ -12,6 +12,7 @@
 .sprint-bar-label {
     font-family: 'HeadingFont';
     font-weight: var(--weight-bold);
+    background: none;
 }
 
 .sprint-pills {

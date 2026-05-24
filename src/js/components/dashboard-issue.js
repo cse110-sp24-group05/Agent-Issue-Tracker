@@ -28,8 +28,7 @@ export class DashboardIssue extends HTMLElement {
    *
    */
   set data(data) {
-
-    console.log(this.feedEntry);
+    this.issueData = data;
     const statusIcon = new StatusIcon();
     statusIcon.status = data.status;
     this.feedEntry.appendChild(statusIcon);
