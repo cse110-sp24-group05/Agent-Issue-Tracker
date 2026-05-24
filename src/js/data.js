@@ -42,6 +42,9 @@ async function request(path, options = {}) {
   return body;
 }
 
+/**
+ *
+ */
 function notifyChange() {
   document.dispatchEvent(new CustomEvent('ait:data-changed'));
 }

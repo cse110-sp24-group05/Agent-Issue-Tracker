@@ -34,40 +34,48 @@ export const staLabel = s => STA_LABEL[s] || s;
  *   human-manual → ✍️
  *   llm-assist   → ✨
  *   any other (treated as agent name) → 🤖
+ * @param createdBy
  */
 export function createdByIcon(createdBy) {
-  if (createdBy === 'human-manual') return '✍️';
-  if (createdBy === 'llm-assist')   return '✨';
+  if (createdBy === 'human-manual') {return '✍️';}
+  if (createdBy === 'llm-assist')   {return '✨';}
   return '🤖';
 }
 
 /**
  * Relative time string: "just now", "32s ago", "5m ago", "3h ago", "2d ago".
  * Single source of truth — pages must import this rather than re-implementing.
+ * @param iso
  */
 export function fmtRelTime(iso) {
-  if (!iso) return '—';
+  if (!iso) {return '—';}
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (s < 0)   return 'just now';
-  if (s < 10)  return 'just now';
-  if (s < 60)  return `${s}s ago`;
+  if (s < 0)   {return 'just now';}
+  if (s < 10)  {return 'just now';}
+  if (s < 60)  {return `${s}s ago`;}
   const m = Math.floor(s / 60);
-  if (m < 60)  return `${m}m ago`;
+  if (m < 60)  {return `${m}m ago`;}
   const h = Math.floor(m / 60);
-  if (h < 24)  return `${h}h ago`;
+  if (h < 24)  {return `${h}h ago`;}
   const d = Math.floor(h / 24);
   return d === 1 ? '1d ago' : `${d}d ago`;
 }
 
-/** Short calendar date, e.g. "May 7". */
+/**
+ * Short calendar date, e.g. "May 7".
+ * @param iso
+ */
 export function fmtShortDate(iso) {
-  if (!iso) return '—';
+  if (!iso) {return '—';}
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-/** Date + time, e.g. "May 7, 2026, 8:30 AM". */
+/**
+ * Date + time, e.g. "May 7, 2026, 8:30 AM".
+ * @param iso
+ */
 export function fmtDateTime(iso) {
-  if (!iso) return '—';
+  if (!iso) {return '—';}
   const d = new Date(iso);
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
        + ', ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
@@ -99,8 +107,13 @@ const FLASH_KIND = {
 
 const ALL_FLASH_CLASSES = Object.values(FLASH_KIND).map(c => c.cls);
 
+/**
+ *
+ * @param id
+ * @param kind
+ */
 export function flashEntity(id, kind = 'update') {
-  if (!id) return;
+  if (!id) {return;}
   const cfg = FLASH_KIND[kind] || FLASH_KIND.update;
   document.querySelectorAll(`[data-id="${CSS.escape(id)}"]`).forEach(el => {
     el.classList.remove(...ALL_FLASH_CLASSES);

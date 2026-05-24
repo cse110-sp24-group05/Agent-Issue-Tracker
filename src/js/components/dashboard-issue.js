@@ -6,20 +6,28 @@ import {
   fmtRelTime,
   esc,
   flashEntity,
-} from "../ui.js";
-import { StatusIcon } from "./status-icon.js";
+} from '../ui.js';
+import { StatusIcon } from './status-icon.js';
 
+/**
+ *
+ */
 export class DashboardIssue extends HTMLElement {
-	
-	
-	constructor() {
-		super(); 
-		this.feedEntry = document.createElement("div");
-    this.feedEntry.classList.add("feed-entry");
-    this.appendChild(this.feedEntry);
-	}
 
-	set data(data) {
+  /**
+   *
+   */
+  constructor() {
+    super(); 
+    this.feedEntry = document.createElement('div');
+    this.feedEntry.classList.add('feed-entry');
+    this.appendChild(this.feedEntry);
+  }
+
+  /**
+   *
+   */
+  set data(data) {
 
     console.log(this.feedEntry);
     const statusIcon = new StatusIcon();
@@ -40,4 +48,4 @@ export class DashboardIssue extends HTMLElement {
 
 }
 
-customElements.define("dashboard-issue", DashboardIssue);
+customElements.define('dashboard-issue', DashboardIssue);

@@ -1,10 +1,13 @@
+/**
+ *
+ */
 function _read() {
   return JSON.parse(testJson);
 }
 
 /**
  * Returns all issues from localStorage.
- * @returns {Object[]}
+ * @returns {object[]}
  */
 export function getIssues() {
   return _read();
@@ -204,4 +207,4 @@ const testJson = `[
     ]
   }
 ]
-`
+`;
