@@ -2,7 +2,7 @@
 .summary-bar {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: var(--space-4);
+  gap: var(--space-8);
   margin-bottom: var(--space-6);
 }
 
@@ -12,6 +12,20 @@
   border: 1px solid var(--color-border);
   cursor: pointer;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.stat-card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: var(--space-4);
+}
+
+.stat-card-text {
+  display: flex;
+  flex-direction: column;   /* stacks label on the top, of number */
+  gap: var(--space-1);
 }
 
 .stat-card:hover {
@@ -37,10 +51,34 @@
   margin-top: var(--space-1);
 }
 
-.stat-open     .stat-number { color: var(--status-open); }
+.stat-open {
+  background: var(--status-open-bg);
+  border-color: var(--status-open);
+}
+.stat-open .stat-number { color: var(--status-open); }
+
+.stat-progress {
+  background: var(--status-in-progress-bg);
+  border-color: var(--status-in-progress);
+}
 .stat-progress .stat-number { color: var(--status-in-progress); }
+
+.stat-review {
+  background: var(--status-pending-review-bg);
+  border-color: var(--status-pending-review);
+}
 .stat-review   .stat-number { color: var(--status-pending-review); }
+
+.stat-blocked {
+  background: var(--status-blocked-bg);
+  border-color: var(--status-blocked);
+}
 .stat-blocked  .stat-number { color: var(--status-blocked); }
+
+.stat-closed {
+  background: var(--status-closed-bg);
+  border-color: var(--status-closed);
+}
 .stat-closed   .stat-number { color: var(--status-closed); }
 
 /* ─── Toolbar ───────────────────────────────────────────────────── */
@@ -57,9 +95,10 @@
 .filter-bar {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-10);
   flex: 1;
   flex-wrap: wrap;
+
 }
 
 .filter-bar .form-select,
@@ -85,7 +124,7 @@
 .toolbar-right {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-10);
 }
 
 .view-toggle {
@@ -132,6 +171,7 @@
 
 .issue-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: var(--text-sm);
 }
@@ -152,11 +192,24 @@
   white-space: nowrap;
 }
 
+.align-center{
+  text-align: center;
+}
+
+.issue-table th.align-center{
+  text-align: center;
+}
+
 .issue-table td {
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--color-border);
   vertical-align: middle;
   color: var(--color-text);
+}
+
+.col-date,
+.issue-table td:nth-child(7){
+  text-align: right;
 }
 
 .issue-table tbody tr:last-child td {
@@ -172,6 +225,17 @@
   background: #F5F7FF;
 }
 
+.issue-table tbody tr:hover .row-action-btn,
+.row-action-btn:focus-visible{
+  opacity: 1;
+}
+
+.col-date   { width: 72px; }
+.col-edit   { width: 36px;}
+.col-edit-cell {
+  text-align: center;
+  padding-left: 0;
+}
 /* Created-by icon inside title cell */
 .created-by-icon {
   display: inline-block;
@@ -181,6 +245,12 @@
 }
 
 .issue-title-link {
+  display: inline-block;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
   color: var(--color-text);
   font-weight: var(--weight-medium);
 }
@@ -199,13 +269,19 @@
 }
 
 /* ─── Column Widths ─────────────────────────────────────────────── */
-.col-pri    { width: 56px; }
-.col-id     { width: 96px; }
-.col-title  { min-width: 220px; }
+.col-pri    { width: 70px; }
+.col-id     { width: 60px; }
+.col-title  { width: 300px; }
 .col-status { width: 130px; }
 .col-assign { width: 120px; }
-.col-budget { width: 130px; }
+.col-budget { width: 110px; }
 .col-date   { width: 90px; }
+.col-date   { width: 72px; }
+.col-edit   { width: 36px;}
+.col-edit-cell {
+  text-align: center;
+  padding-left: 0;
+}
 
 /* ─── Cell Content ──────────────────────────────────────────────── */
 .issue-title {
@@ -226,6 +302,66 @@
   color: var(--color-text-muted);
   padding: var(--space-10) var(--space-4) !important;
   font-size: var(--text-sm);
+}
+
+.empty-row .empty-state-icon {
+  font-size: var(--text-2xl);
+  line-height: 2;
+}
+
+.empty-row .empty-state-title {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  font-style: normal;
+}
+
+.empty-row .empty-state-desc {
+  font-size: var(--text-sm);
+  font-style: normal;
+  color: var(--color-text-muted);
+  line-height: 3;
+}
+
+/* ─── Kanban Board Empty State for No Issues ──────────────────────────────────────────────── */
+
+.board-empty-state {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-4);
+  flex: 1;
+  gap: var(--space-3);
+}
+
+.board-empty-state p{
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-style: italic;
+}
+
+.board-empty-cta {
+  padding: var(--space-10) var(--space-5);
+}
+
+.board-empty-cta .empty-state-icon {
+  font-size: var(--text-2xl);
+  line-height: 1;
+}
+
+.board-empty-cta .empty-state-title {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  font-style: normal;
+}
+
+.board-empty-cta .empty-state-desc {
+  font-size: var(--text-sm);
+  font-style: normal;
+  color: var(--color-text-muted);
 }
 
 /* ─── Modal Row (two columns inside modal body) ─────────────────── */
@@ -295,6 +431,10 @@
   line-height: 1.4;
 }
 
+.required {
+  color: var(--color-danger);
+}
+
 /* ─── AI Input screen ────────────────────────────────────────────── */
 .ai-desc-textarea {
   min-height: 120px;
@@ -355,7 +495,7 @@
 /* ─── Board view (merged from former board.css) ─────────────────── */
 .board {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: var(--space-5);
   align-items: start;
 }
@@ -476,4 +616,70 @@
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.4px;
+}
+
+/* Color for the Board Columns (Open, In Progress, Pending Review, Blocked, Closed */
+.board-column-open {
+  background: var(--status-open-bg);
+  border-color: var(--status-open);
+}
+.board-column-open .board-col-title {
+  color: var(--color-text);
+}
+
+.board-column-open .board-col-count {
+  color: var(--color-text-light);
+  background-color: var(--status-open);
+}
+
+.board-column-progress {
+  background: var(--status-in-progress-bg);
+  border-color: var(--status-in-progress);
+}
+.board-column-progress .board-col-title {
+  color: var(--color-text);
+}
+
+.board-column-progress .board-col-count {
+  color: var(--color-text-light);
+  background-color: var(--status-in-progress);
+}
+
+.board-column-review {
+  background: var(--status-pending-review-bg);
+  border-color: var(--status-pending-review);
+}
+.board-column-review .board-col-title {
+  color: var(--color-text);
+}
+
+.board-column-review .board-col-count {
+  color: var(--color-text-light);
+  background-color: var(--status-pending-review);
+}
+
+.board-column-blocked {
+  background: var(--status-blocked-bg);
+  border-color: var(--status-blocked);
+}
+.board-column-blocked .board-col-title {
+  color: var(--color-text);
+}
+
+.board-column-blocked .board-col-count {
+  color: var(--color-text-light);
+  background-color: var(--status-blocked);
+}
+
+.board-column-closed {
+  background: var(--status-closed-bg);
+  border-color: var(--status-closed);
+}
+.board-column-closed .board-col-title {
+  color: var(--color-text);
+}
+
+.board-column-closed .board-col-count {
+  color: var(--color-text-light);
+  background-color: var(--status-closed);
 }

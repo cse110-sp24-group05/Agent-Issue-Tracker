@@ -49,6 +49,7 @@
   
 }
 
+/* TODO: delete pill dot CSS since it's being unified into status icon */
 .pill-dot {
   width: 20px;
   height: 20px;
@@ -58,11 +59,11 @@
 }
 
 /* This is jank, but it's the only way to apply colors to SVGs without modifying the SVGs themselves*/
-.pill[data-filter="open"]           .pill-dot { filter: var(--filter-issue-open) }
-.pill[data-filter="in-progress"]    .pill-dot { filter: var(--filter-issue-in-progress); }
-.pill[data-filter="pending-review"] .pill-dot { filter: var(--filter-issue-pending); }
-.pill[data-filter="blocked"]        .pill-dot { filter: var(--filter-issue-blocked); }
-.pill[data-filter="closed"]         .pill-dot { filter: var(--filter-issue-closed-dark); }
+[data-filter="open"]           .pill-dot { filter: var(--filter-issue-open) }
+[data-filter="in-progress"]    .pill-dot { filter: var(--filter-issue-in-progress); }
+[data-filter="pending-review"] .pill-dot { filter: var(--filter-issue-pending); }
+[data-filter="blocked"]        .pill-dot { filter: var(--filter-issue-blocked); }
+[data-filter="closed"]         .pill-dot { filter: var(--filter-issue-closed-dark); }
 
 .pill-count {
   font-family: ui-monospace, "Cascadia Code", monospace;
@@ -81,7 +82,7 @@
   padding-top: calc(var(--nav-height) + 45px); /* nav + sprint bar height */
   min-height: 100vh;
   background: var(--color-bg-subtle);
-  margin-left: calc(var(--sidebar-width) + 40px);
+  padding-left: calc(var(--sidebar-width));
 }
 
 .dashboard-wrap {
