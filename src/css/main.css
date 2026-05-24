@@ -342,16 +342,18 @@ select {
     
   }
 
+  .status-icon.large {
+    width: 50px;
+    height: 50px;
+  }
+
   /* This is jank, but it's the only way to apply colors to SVGs without modifying the SVGs themselves*/
-  .status-icon[data-filter="open"]                        { filter: var(--filter-issue-open); }
   .status-icon[data-filter="todo"]                        { filter: var(--filter-issue-open); }
   .status-icon[data-filter="in-progress"]                 { filter: var(--filter-issue-in-progress); }
-  .status-icon[data-filter="in_progress"]                 { filter: var(--filter-issue-in-progress); }
   .status-icon[data-filter="closed"]                      { filter: var(--filter-issue-closed-dark); }
-  .status-icon[data-filter="pending-review"]              { filter: var(--filter-issue-pending); }
-  .status-icon[data-filter="review"]              { filter: var(--filter-issue-pending); }
-  .status-icon[data-filter="pending"]              { filter: var(--filter-issue-pending); }
+  .status-icon[data-filter="pending"]                     { filter: var(--filter-issue-pending); }
   .status-icon[data-filter="blocked"]                     { filter: var(--filter-issue-blocked); }
+
   
   /* ─── Buttons ───────────────────────────────────────────────────── */
   .btn {

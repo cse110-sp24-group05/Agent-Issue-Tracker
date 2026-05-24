@@ -80,7 +80,7 @@
 
 /* ─── Dashboard Layout ───────────────────────────────────────────── */
 .dashboard-page {
-  padding-top: calc(var(--nav-height) + 45px); /* nav + sprint bar height */
+  padding-top: calc(var(--nav-height)); /* nav + sprint bar height */
   min-height: 100vh;
   background: var(--color-bg-subtle);
   padding-left: calc(var(--sidebar-width));

@@ -29,28 +29,9 @@
               </div>
 
               <!-- Checkmark icon -->
-              <svg
-                class="stat-icon"
-                width="35"
-                height="35"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="12"
-                  fill="var(--status-open)"
-                  opacity="0.15"
-                />
-                <path
-                  d="M6 12L10 16L18 8"
-                  stroke="var(--status-open)"
-                  stroke-width="2.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
+              <status-icon>
+                <img src="./assets/svg/todo.svg" class="status-icon large" data-filter="todo">
+              </status-icon>
               </svg>
             </div>
           </button>
@@ -66,33 +47,9 @@
                 <div class="stat-label">In Progress</div>
               </div>
               <!-- Clock icon -->
-              <svg width="35" height="35" viewBox="0 0 24 24" fill="none">
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="12"
-                  fill="var(--status-in-progress)"
-                  aria-hidden="true"
-                />
-                <line
-                  x1="12"
-                  y1="7"
-                  x2="12"
-                  y2="13"
-                  stroke="white"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                />
-                <line
-                  x1="12"
-                  y1="13"
-                  x2="16"
-                  y2="13"
-                  stroke="white"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                />
-              </svg>
+              <status-icon>
+                <img src="./assets/svg/in-progress.svg" class="status-icon large" data-filter="in-progress">
+              </status-icon>
             </div>
           </button>
 
@@ -107,65 +64,10 @@
                 <div class="stat-label">Pending Review</div>
               </div>
               <!-- Review clipboard icon -->
-              <svg
-                width="45"
-                height="45"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="12"
-                  fill="var(--status-pending-review)"
-                  opacity="0.15"
-                />
-                <rect
-                  x="7"
-                  y="6"
-                  width="10"
-                  height="13"
-                  rx="1.5"
-                  stroke="var(--status-pending-review)"
-                  stroke-width="1.5"
-                />
-                <line
-                  x1="9"
-                  y1="10"
-                  x2="15"
-                  y2="10"
-                  stroke="var(--status-pending-review)"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                />
-                <line
-                  x1="9"
-                  y1="13"
-                  x2="15"
-                  y2="13"
-                  stroke="var(--status-pending-review)"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                />
-                <line
-                  x1="9"
-                  y1="16"
-                  x2="12"
-                  y2="16"
-                  stroke="var(--status-pending-review)"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                />
-                <rect
-                  x="10"
-                  y="5"
-                  width="4"
-                  height="2.5"
-                  rx="1"
-                  fill="var(--status-pending-review)"
-                />
-              </svg>
+              
+              <status-icon>
+                <img src="./assets/svg/pending.svg" class="status-icon large" data-filter="pending">
+              </status-icon>
             </div>
           </button>
 
@@ -177,37 +79,10 @@
                 <div class="stat-label">Blocked</div>
               </div>
               <!-- Blocked circle icon -->
-              <svg
-                width="38"
-                height="38"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="12"
-                  fill="var(--status-blocked)"
-                  opacity="0.15"
-                />
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="7"
-                  stroke="var(--status-blocked)"
-                  stroke-width="2"
-                />
-                <line
-                  x1="6.5"
-                  y1="17.5"
-                  x2="17.5"
-                  y2="6.5"
-                  stroke="var(--status-blocked)"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                />
-              </svg>
+              
+              <status-icon>
+                <img src="./assets/svg/blocked.svg" class="status-icon large" data-filter="blocked">
+              </status-icon>
             </div>
           </button>
 
@@ -219,29 +94,9 @@
                 <div class="stat-label">Closed</div>
               </div>
               <!-- Circle with dot icon -->
-              <svg
-                width="35"
-                height="35"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="12"
-                  fill="var(--status-closed)"
-                  opacity="0.15"
-                />
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="7"
-                  stroke="var(--status-closed)"
-                  stroke-width="2"
-                />
-                <circle cx="12" cy="12" r="2.5" fill="var(--status-closed)" />
-              </svg>
+              <status-icon>
+                <img src="./assets/svg/closed.svg" class="status-icon large" data-filter="closed">
+              </status-icon>
             </div>
           </button>
         </div>

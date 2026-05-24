@@ -178,7 +178,7 @@
 
 .issue-table thead tr {
   border-bottom: 1px solid var(--color-border);
-  background: var(--color-bg-subtle);
+  background: var(--color-fill-light);
 }
 
 .issue-table th {
