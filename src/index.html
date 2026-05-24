@@ -428,211 +428,76 @@
           </button>
         </div>
 
-        <!-- Screen: Choice -->
-        <div class="modal-body screen" id="screen-choice">
-          <p class="choice-intro text-muted text-sm">
-            How would you like to create this issue?
-          </p>
-          <div class="choice-grid">
-            <button class="choice-card" id="choice-manual">
-              <span class="choice-emoji">✍️</span>
-              <span class="choice-name">Create Manually</span>
-              <span class="choice-hint">Fill in the fields yourself</span>
-            </button>
-            <button class="choice-card choice-card-ai" id="choice-ai">
-              <span class="choice-emoji">✨</span>
-              <span class="choice-name">Create with AI</span>
-              <span class="choice-hint">Describe it, AI structures it</span>
-            </button>
+        <!-- New Issue Form -->
+        <form class="modal-body" id="form-new-manual">
+          <div class="form-group">
+            <label class="form-label" for="new-title">Title<span class="required">*</span></label>
+            <input
+              class="form-input"
+              type="text"
+              id="new-title"
+              placeholder="Short description of the issue"
+              required
+            />
           </div>
-        </div>
-
-        <!-- Screen: Manual form -->
-
-        <div class="screen hidden" id="screen-manual">
-          <form class="modal-body" id="form-new-manual">
-            <!-- <div class="form-group">
-              <label for="form" for="create-issue">Create New Issue</label>
-            </div> -->
+          <div class="form-group">
+            <label class="form-label" for="new-description">Description</label>
+            <textarea
+              class="form-textarea"
+              id="new-description"
+              placeholder="What needs to be done and why?"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="modal-row">
             <div class="form-group">
-              <label class="form-label" for="project"
-                >Project<span class="required">*</span></label
-              >
-              <select class="form-select" id="new-project"></select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="issues-types"
-                >Issue Types<span class="required">*</span></label
-              >
-              <select class="form-select" id="new-issues-types">
-                <option value="bug" selected>Bug</option>
-                <option value="feature">Feature</option>
-                <option value="functionality">Functionality</option>
+              <label class="form-label" for="new-priority">Priority</label>
+              <select class="form-select" id="new-priority">
+                <option value="P0">P0</option>
+                <option value="P1">P1</option>
+                <option value="P2" selected>P2</option>
+                <option value="P3">P3</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" for="new-title"
-                >Title<span class="required">*</span></label
-              >
+              <label class="form-label" for="new-assignee">Assignee</label>
               <input
                 class="form-input"
                 type="text"
-                id="new-title"
-                placeholder="Short description of the issue"
-                required
+                id="new-assignee"
+                placeholder="username or leave blank"
               />
             </div>
             <div class="form-group">
-              <label class="form-label" for="new-description"
-                >Description</label
-              >
-              <textarea
-                class="form-textarea"
-                id="new-description"
-                placeholder="What needs to be done and why?"
-                rows="3"
-              ></textarea>
-            </div>
-            <div class="modal-row">
-              <div class="form-group">
-                <label class="form-label" for="new-priority">Priority</label>
-                <select class="form-select" id="new-priority">
-                  <option value="P0">P0</option>
-                  <option value="P1">P1</option>
-                  <option value="P2" selected>P2</option>
-                  <option value="P3">P3</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="new-assignee">Assignee</label>
-                <select class="form-select" id="new-assignee">
-                  <option value="open-to-all">Open-to-all</option>
-                  <option value="human-only">Human-only</option>
-                  <option value="ai-only">AI-only</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="new-budget">Token Budget</label>
-                <input
-                  class="form-input"
-                  type="number"
-                  id="new-budget"
-                  placeholder="2000"
-                  min="0"
-                  max="100000"
-                />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="new-estimate"
-                  >Time Estimate (min)</label
-                >
-                <input
-                  class="form-input"
-                  type="number"
-                  id="new-estimate"
-                  placeholder="60"
-                  min="0"
-                />
-              </div>
-            </div>
-          </form>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" type="button" id="manual-cancel">
-              Cancel
-            </button>
-            <button
-              class="btn btn-primary"
-              type="submit"
-              form="form-new-manual"
-            >
-              Create Issue
-            </button>
-          </div>
-        </div>
-
-        <!-- Screen: AI Input -->
-        <div class="screen hidden" id="screen-ai-input">
-          <div class="modal-body">
-            <div class="form-group">
-              <label class="form-label" for="ai-desc-input"
-                >Describe the issue in plain language</label
-              >
-              <textarea
-                class="form-textarea ai-desc-textarea"
-                id="ai-desc-input"
-                rows="5"
-                placeholder="e.g. The login button breaks on mobile Safari, users can't sign in on iPhone"
-              ></textarea>
-            </div>
-            <p class="ai-hint text-muted text-sm">
-              AI will structure this into a proper issue with title,
-              description, and priority.
-            </p>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" type="button" id="ai-input-back">
-              ← Back
-            </button>
-            <button class="btn btn-primary" id="ai-analyze-btn">
-              Analyze →
-            </button>
-          </div>
-        </div>
-
-        <!-- Screen: AI Loading -->
-        <div class="screen hidden" id="screen-ai-loading">
-          <div class="modal-body ai-loading-body">
-            <div class="ai-spinner" aria-hidden="true"></div>
-            <p class="ai-loading-text">Analyzing with Claude...</p>
-          </div>
-        </div>
-
-        <!-- Screen: AI Preview -->
-        <div class="screen hidden" id="screen-ai-preview">
-          <div class="modal-body">
-            <div class="ai-created-by-badge">✨ AI-assisted</div>
-            <div class="form-group">
-              <label class="form-label" for="ai-title">Title</label>
-              <input class="form-input" type="text" id="ai-title" />
+              <label class="form-label" for="new-budget">Token Budget</label>
+              <input
+                class="form-input"
+                type="number"
+                id="new-budget"
+                placeholder="2000"
+                min="0"
+                max="100000"
+              />
             </div>
             <div class="form-group">
-              <label class="form-label" for="ai-description">Description</label>
-              <textarea
-                class="form-textarea"
-                id="ai-description"
-                rows="5"
-              ></textarea>
-            </div>
-            <div class="modal-row">
-              <div class="form-group">
-                <label class="form-label" for="ai-priority">Priority</label>
-                <select class="form-select" id="ai-priority">
-                  <option value="P0">P0 — Critical</option>
-                  <option value="P1">P1 — High</option>
-                  <option value="P2">P2 — Medium</option>
-                  <option value="P3">P3 — Low</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="ai-budget">Token Budget</label>
-                <input
-                  class="form-input"
-                  type="number"
-                  id="ai-budget"
-                  min="0"
-                />
-              </div>
+              <label class="form-label" for="new-estimate">Time Estimate (min)</label>
+              <input
+                class="form-input"
+                type="number"
+                id="new-estimate"
+                placeholder="60"
+                min="0"
+              />
             </div>
           </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" id="ai-back-btn">← Back</button>
-            <button class="btn btn-primary" id="ai-confirm-btn">
-              Confirm & Create
-            </button>
-          </div>
+        </form>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" id="manual-cancel">
+            Cancel
+          </button>
+          <button class="btn btn-primary" type="submit" form="form-new-manual">
+            Create Issue
+          </button>
         </div>
       </div>
     </div>

@@ -22,12 +22,6 @@ class Sidebar extends HTMLElement {
 						<a class="sidebar-tab" href="dashboard.html">
 							Dashboard
 						</a>
-						<a class="sidebar-tab" href="agents.html">
-							Agents
-						</a>
-						<a class="sidebar-tab" href="reports.html">
-							Reports
-						</a>
 					</div>
 				</div>
 		`

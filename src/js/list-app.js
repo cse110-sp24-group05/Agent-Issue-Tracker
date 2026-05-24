@@ -92,7 +92,7 @@ import {
             <td><span class="badge ${staBadge(i.status)}">${staLabel(i.status)}</span></td>
             <td class="${i.assignee === 'unassigned' ? 'text-muted' : ''}">${esc(i.assignee)}</td>
             <td class="token-cell">
-            <div class="token-wrap"
+            <div class="token-wrap">
               <div class="token-text mono text-muted">${i.tokens_used.toLocaleString()} / ${i.token_budget.toLocaleString()}</div>
               <div class="token-bar">
                 <div class="token-fill ${tokenLevel(i.tokens_used, i.token_budget)}"
@@ -338,54 +338,24 @@ import {
   
   // ── Modal ────────────────────────────────────────────────────────
   const overlay = document.getElementById('modal-new-issue');
-  const SCREENS = ['choice', 'manual', 'ai-input', 'ai-loading', 'ai-preview'];
-  const TITLES = {
-    choice: 'New Issue',
-    manual: 'New Issue',
-    'ai-input': '✨ Create with AI',
-    'ai-loading': '✨ Create with AI',
-    'ai-preview': '✨ AI Review',
-  };
-  
-  function showScreen(name) {
-    SCREENS.forEach(s => {
-      const el = document.getElementById('screen-' + s);
-      if (el) el.classList.toggle('hidden', s !== name);
-    });
-    document.getElementById('modal-title').textContent = TITLES[name] || 'New Issue';
-  }
-  
+
   function openModal() {
     overlay.classList.remove('hidden');
-    showScreen('choice');
+    document.getElementById('new-title').focus();
   }
-  
+
   function closeModal() {
     overlay.classList.add('hidden');
-    showScreen('choice');
     document.getElementById('form-new-manual').reset();
-    document.getElementById('ai-desc-input').value = '';
   }
-  
+
   document.getElementById('btn-new-issue').addEventListener('click', openModal);
   document.getElementById('modal-close').addEventListener('click', closeModal);
+  document.getElementById('manual-cancel').addEventListener('click', closeModal);
   overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && !overlay.classList.contains('hidden')) closeModal();
   });
-  
-  // screen navigation
-  document.getElementById('choice-manual').addEventListener('click', () => {
-    showScreen('manual');
-    document.getElementById('new-title').focus();
-  });
-  document.getElementById('choice-ai').addEventListener('click', () => {
-    showScreen('ai-input');
-    document.getElementById('ai-desc-input').focus();
-  });
-  document.getElementById('manual-cancel').addEventListener('click', closeModal);
-  document.getElementById('ai-input-back').addEventListener('click', () => showScreen('choice'));
-  document.getElementById('ai-back-btn').addEventListener('click', () => showScreen('ai-input'));
   
   // manual form submit
   document.getElementById('form-new-manual').addEventListener('submit', async e => {

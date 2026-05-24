@@ -6,7 +6,6 @@
   <title>AIT — issue-001</title>
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/issue.css">
-  <link rel="stylesheet" href="css/demo.css">
 </head>
 <body>
     <script src="./js/components/navbar.js"></script>
@@ -75,25 +74,7 @@
           <!-- Audit log -->
           <div class="issue-section card">
             <div class="section-label">Audit Log</div>
-            <div class="audit-log" id="audit-log">
-
-              <div class="audit-entry">
-                <div class="audit-dot"></div>
-                <div class="audit-body">
-                  <span class="audit-action">created</span>
-                  <span class="audit-meta">by patrick &middot; May 1, 2026, 9:00 AM</span>
-                </div>
-              </div>
-
-              <div class="audit-entry">
-                <div class="audit-dot"></div>
-                <div class="audit-body">
-                  <span class="audit-action">priority-changed from P2 to P1</span>
-                  <span class="audit-meta">by patrick &middot; May 1, 2026, 11:30 AM</span>
-                </div>
-              </div>
-
-            </div>
+            <div class="audit-log" id="audit-log"></div>
           </div>
 
         </div>
@@ -209,7 +190,7 @@
   </div>
 
   <script type="module">
-    import { initData, getIssue, claimIssue, postResult, closeIssue, updateIssue, blockIssue, getSettings } from './js/data.js';
+    import { initData, getIssue, claimIssue, postResult, closeIssue, updateIssue, getSettings } from './js/data.js';
     import { esc, staBadge, staLabel, createdByIcon, fmtRelTime, fmtDateTime } from './js/ui.js';
 
     try {
@@ -387,9 +368,9 @@
       titleInput.classList.remove('hidden');
       titleInput.focus(); titleInput.select();
     });
-    titleInput.addEventListener('blur', () => {
+    titleInput.addEventListener('blur', async () => {
       const val = titleInput.value.trim();
-      if (val) updateIssue(id, { title: val, updatedBy: currentUser });
+      if (val) await updateIssue(id, { title: val, updatedBy: currentUser });
       titleInput.classList.add('hidden');
       titleText.classList.remove('hidden');
       render();
@@ -407,9 +388,9 @@
       descInput.classList.remove('hidden');
       descInput.focus();
     });
-    descInput.addEventListener('blur', () => {
+    descInput.addEventListener('blur', async () => {
       const val = descInput.value.trim();
-      if (val) updateIssue(id, { description: val, updatedBy: currentUser });
+      if (val) await updateIssue(id, { description: val, updatedBy: currentUser });
       descInput.classList.add('hidden');
       descText.classList.remove('hidden');
       render();
@@ -426,9 +407,9 @@
       assigneeInput.classList.remove('hidden');
       assigneeInput.focus(); assigneeInput.select();
     });
-    assigneeInput.addEventListener('blur', () => {
+    assigneeInput.addEventListener('blur', async () => {
       const val = assigneeInput.value.trim();
-      if (val) updateIssue(id, { assignee: val, updatedBy: currentUser });
+      if (val) await updateIssue(id, { assignee: val, updatedBy: currentUser });
       assigneeInput.classList.add('hidden');
       assigneeDisplay.classList.remove('hidden');
       render();
@@ -439,35 +420,34 @@
     });
 
     // ── Priority select ────────────────────────────────────────
-    document.getElementById('priority-select').addEventListener('change', e => {
-      updateIssue(id, { priority: e.target.value, updatedBy: currentUser });
+    document.getElementById('priority-select').addEventListener('change', async e => {
+      await updateIssue(id, { priority: e.target.value, updatedBy: currentUser });
       render();
     });
 
     // ── Action button ──────────────────────────────────────────
-    document.getElementById('action-btn').addEventListener('click', () => {
+    document.getElementById('action-btn').addEventListener('click', async () => {
       const issue = getIssue(id);
       if (issue.status === 'open') {
-        claimIssue(id, currentUser);
+        await claimIssue(id, currentUser);
         render();
       } else if (issue.status === 'in-progress') {
         document.getElementById('modal-result').classList.remove('hidden');
         document.getElementById('result-textarea').focus();
       } else if (issue.status === 'pending-review') {
-        closeIssue(id);
+        await closeIssue(id);
         render();
       } else if (issue.status === 'blocked') {
-        // Unblock by clearing reason and sending back to open.
-        updateIssue(id, { status: 'open', blocked_reason: null, updatedBy: currentUser });
+        await updateIssue(id, { status: 'open', updatedBy: currentUser });
         render();
       }
     });
 
     // Send-back: from pending-review → in-progress (re-open for the agent to address).
-    document.getElementById('action-secondary-btn').addEventListener('click', () => {
+    document.getElementById('action-secondary-btn').addEventListener('click', async () => {
       const issue = getIssue(id);
       if (issue.status === 'pending-review') {
-        updateIssue(id, { status: 'in-progress', updatedBy: currentUser });
+        await updateIssue(id, { status: 'in-progress', updatedBy: currentUser });
         render();
       }
     });
@@ -485,12 +465,12 @@
       if (e.key === 'Escape' && !resultOverlay.classList.contains('hidden')) closeResultModal();
     });
 
-    resultForm.addEventListener('submit', e => {
+    resultForm.addEventListener('submit', async e => {
       e.preventDefault();
       const result    = document.getElementById('result-textarea').value.trim();
       const tokens    = parseInt(document.getElementById('result-tokens').value, 10) || 0;
       const timeSpent = getIssue(id)?.time_spent || 0;
-      postResult(id, result, tokens, timeSpent);
+      await postResult(id, result, tokens, timeSpent);
       closeResultModal();
       render();
     });
