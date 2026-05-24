@@ -209,11 +209,14 @@
   </div>
 
   <script type="module">
-    import { getIssue, claimIssue, postResult, closeIssue, updateIssue, blockIssue, getSettings } from './js/data.js';
+    import { initData, getIssue, claimIssue, postResult, closeIssue, updateIssue, blockIssue, getSettings } from './js/data.js';
     import { esc, staBadge, staLabel, createdByIcon, fmtRelTime, fmtDateTime } from './js/ui.js';
 
-    // Redirect to first-time setup if no user is configured.
-    if (!getSettings().ait_user) location.replace('settings.html');
+    try {
+      await initData();
+    } catch (err) {
+      console.error('[data.js] Failed to load issues:', err.message);
+    }
 
     // ── Setup ──────────────────────────────────────────────────
     const id          = new URLSearchParams(window.location.search).get('id') || 'issue-001';
@@ -495,7 +498,6 @@
     // ── Initial render ─────────────────────────────────────────
     render();
   </script>
-  <script type="module" src="js/demo.js"></script>
 
 </body>
 </html>

@@ -18,7 +18,7 @@ const urlFlagIndex = args.indexOf('--url'); // look for --url flag
 const BASE_URL =
   urlFlagIndex !== -1 && args[urlFlagIndex + 1]
     ? args[urlFlagIndex + 1]
-    : 'https://agent-issue-tracker.stc021.workers.dev';
+    : process.env.AIT_API_BASE || 'https://agent-issue-tracker.stc021.workers.dev';
 
 // --- SAFETY CHECKS ---
 // Randomize the simulator agent ID so it doesn't clash with real agents

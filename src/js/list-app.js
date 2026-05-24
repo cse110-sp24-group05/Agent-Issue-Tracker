@@ -1,11 +1,11 @@
 // ── 1. IMPORTS ─────────────────────────────────────────
-// bring in functions from data.js and ui.js
 import {
-    getIssues,
-    createIssue,
-    updateIssue,
-    getSettings,
-  } from "../../prototype/js/data.js";
+  initData,
+  getIssues,
+  createIssue,
+  updateIssue,
+  getSettings,
+} from "./data.js";
   
   import {
     priBadge,
@@ -26,9 +26,12 @@ import {
   const initStatusFilter =
     new URLSearchParams(window.location.search).get("status") || "";
   
-  // redirect to settings if no user set up yet
-  if (!getSettings().ait_user) location.replace("settings.html");
-  
+  try {
+    await initData();
+  } catch (err) {
+    console.error("[data.js] Failed to load issues:", err.message);
+  }
+
   // ── 3. SUMMARY BAR ─────────────────────────────────────
   // updates the numbers on Open, In Progress, etc cards
   function updateSummary() {
@@ -100,7 +103,7 @@ import {
             <td class="align-right text-muted">${fmtRelTime(i.updated_at)}</td>
             <td class="col-edit-cell">
               <a class="row-action-btn" href="issue.html?id=${esc(i.id)}" aria-label="Edit issue ${esc(i.id)}">
-                <img src="./Assets/svg/edit.svg" alt="" width="16" height="16">
+                <img src="./assets/svg/edit.svg" alt="" width="16" height="16">
               </a>
             </td>
           </tr>`).join('');
@@ -246,19 +249,22 @@ import {
         zone.addEventListener('dragleave', e => {
           if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
         });
-        zone.addEventListener('drop', e => {
+        zone.addEventListener('drop', async e => {
           e.preventDefault();
           zone.classList.remove('drag-over');
           if (!dragging || dragging.parentElement === zone) return;
           const newStatus = zone.dataset.status;
           const id        = dragging.dataset.id;
-          updateIssue(id, { status: newStatus, updatedBy: getSettings().ait_user || 'unknown' });
+          try {
+            await updateIssue(id, { status: newStatus, updatedBy: getSettings().ait_user || 'unknown' });
+          } catch (err) {
+            console.error("[data.js] updateIssue failed:", err.message);
+            return;
+          }
           dragging.dataset.status = newStatus;
           zone.appendChild(dragging);
           updateBoardCounts();
           applyFilters();
-          // Flash the moved card/row in a color that matches the new status
-          // so it's obvious where it landed in both views.
           const kind =
             newStatus === 'in-progress'    ? 'claim'    :
             newStatus === 'pending-review' ? 'complete' :
@@ -382,19 +388,24 @@ import {
   document.getElementById('ai-back-btn').addEventListener('click', () => showScreen('ai-input'));
   
   // manual form submit
-  document.getElementById('form-new-manual').addEventListener('submit', e => {
+  document.getElementById('form-new-manual').addEventListener('submit', async e => {
     e.preventDefault();
-    const issue = createIssue({
-      title:          document.getElementById('new-title').value.trim(),
-      description:    document.getElementById('new-description').value.trim(),
-      priority:       document.getElementById('new-priority').value,
-      assignee:       document.getElementById('new-assignee').value.trim() || 'unassigned',
-      token_budget:   parseInt(document.getElementById('new-budget').value, 10) || 2000,
-      time_estimate:  parseInt(document.getElementById('new-estimate').value, 10) || 60,
-      creator:        getSettings().ait_user || 'unknown',
-      created_by:     'human-manual',
-    });
-    applyFilters();
-    closeModal();
-    requestAnimationFrame(() => flashEntity(issue.id, 'create'));
+    try {
+      const issue = await createIssue({
+        title:          document.getElementById('new-title').value.trim(),
+        description:    document.getElementById('new-description').value.trim(),
+        priority:       document.getElementById('new-priority').value,
+        assignee:       document.getElementById('new-assignee').value.trim() || 'unassigned',
+        token_budget:   parseInt(document.getElementById('new-budget').value, 10) || 2000,
+        time_estimate:  parseInt(document.getElementById('new-estimate').value, 10) || 60,
+        creator:        getSettings().ait_user || 'unknown',
+        created_by:     'human-manual',
+      });
+      applyFilters();
+      closeModal();
+      requestAnimationFrame(() => flashEntity(issue.id, 'create'));
+    } catch (err) {
+      console.error("[data.js] createIssue failed:", err.message);
+      alert(`Could not create issue: ${err.message}`);
+    }
   });
