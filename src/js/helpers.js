@@ -6,6 +6,13 @@ export const VALID_STATUSES = ['open', 'in_progress', 'blocked', 'review', 'clos
 export const VALID_PRIORITIES = ['low', 'medium', 'high', 'critical'];
 
 
+export const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
+};
+
+
 // Fields that PUT /api/issues/:id is allowed to modify.
 export const ALLOWED_UPDATE_FIELDS = [
   'title',
@@ -28,7 +35,7 @@ export const ALLOWED_UPDATE_FIELDS = [
  * @returns {Response}
  */
 export function ok(body, status = 200) {
-  return Response.json(body, { status });
+  return Response.json(body, { status, headers: CORS_HEADERS });
 }
 
 
@@ -38,7 +45,7 @@ export function ok(body, status = 200) {
  * @returns {Response}
  */
 export function badRequest(error) {
-  return Response.json({ success: false, error }, { status: 400 });
+  return Response.json({ success: false, error }, { status: 400, headers: CORS_HEADERS });
 }
 
 
@@ -48,7 +55,7 @@ export function badRequest(error) {
  * @returns {Response}
  */
 export function notFound(error = 'Issue not found') {
-  return Response.json({ success: false, error }, { status: 404 });
+  return Response.json({ success: false, error }, { status: 404, headers: CORS_HEADERS });
 }
 
 
@@ -58,7 +65,7 @@ export function notFound(error = 'Issue not found') {
  * @returns {Response}
  */
 export function serverError(error) {
-  return Response.json({ success: false, error }, { status: 500 });
+  return Response.json({ success: false, error }, { status: 500, headers: CORS_HEADERS });
 }
 
 

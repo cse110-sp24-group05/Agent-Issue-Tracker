@@ -6,6 +6,7 @@
 
 import {
   ALLOWED_UPDATE_FIELDS,
+  CORS_HEADERS,
   ok,
   badRequest,
   notFound,
@@ -111,7 +112,7 @@ export async function createIssue(request, env) {
 export async function getAllIssues(env) {
   try {
     const { results } = await selectAllIssues(env);
-    return Response.json(results);
+    return Response.json(results, { headers: CORS_HEADERS });
   } catch (error) {
     return serverError(error.message);
   }

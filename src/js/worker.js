@@ -26,6 +26,15 @@ export default {
     console.log('METHOD:', request.method);
 
 
+    if (method === 'OPTIONS' && url.pathname.startsWith('/api/')) {
+      return new Response(null, { status: 204, headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      } });
+    }
+
+
     // GET /api/issues
     if (url.pathname === '/api/issues' && method === 'GET') {
       return getAllIssues(env);
@@ -85,6 +94,13 @@ export default {
       return deleteIssue(id, env);
     }
 
-    return new Response('Not Found', { status: 404 });
+    return new Response('Not Found', {
+      status: 404,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      }
+    });
   }
 };
