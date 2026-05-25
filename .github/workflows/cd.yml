@@ -58,4 +58,5 @@ jobs:
       - name: Print deployment URL
         run: |
           echo "✅ Deployed to Cloudflare Workers"
-          echo "🌐 URL: https://agent-issue-tracker.${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.workers.dev"
+          echo "🌐 API: https://agent-issue-tracker.stc021.workers.dev"
+          echo "🌐 Site: https://agent-issue-tracker.pages.dev"
