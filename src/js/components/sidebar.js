@@ -28,7 +28,7 @@ class Sidebar extends HTMLElement {
 						<a class="sidebar-tab" href="index.html">
 							Issues
 						</a>
-						<a class="sidebar-tab" href="dashboard.html">
+						<a class="sidebar-tab" href="activity.html">
 							Dashboard
 						</a>
 					</div>

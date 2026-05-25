@@ -10,9 +10,7 @@
   </head>
   <body>
     <script src="./js/components/navbar.js"></script>
-    <script src="./js/components/sidebar.js"></script>
     <my-navbar></my-navbar>
-    <my-sidebar></my-sidebar>
     <!-- ── Page ──────────────────────────────────────────────────── -->
     <main class="page">
       <div class="container">
@@ -53,6 +51,23 @@
             </div>
           </button>
 
+          
+
+          <!-- Blocked Card -->
+          <button class="stat-card card stat-blocked" data-filter="blocked">
+            <div class="stat-card-content">
+              <div class="stat-card-text">
+                <div class="stat-number" id="sum-blocked">0</div>
+                <div class="stat-label">Blocked</div>
+              </div>
+              <!-- Blocked circle icon -->
+              
+              <status-icon>
+                <img src="./assets/svg/blocked.svg" class="status-icon large" data-filter="blocked">
+              </status-icon>
+            </div>
+          </button>
+
           <!-- Pending Review Card -->
           <button
             class="stat-card card stat-review"
@@ -67,21 +82,6 @@
               
               <status-icon>
                 <img src="./assets/svg/pending.svg" class="status-icon large" data-filter="pending">
-              </status-icon>
-            </div>
-          </button>
-
-          <!-- Blocked Card -->
-          <button class="stat-card card stat-blocked" data-filter="blocked">
-            <div class="stat-card-content">
-              <div class="stat-card-text">
-                <div class="stat-number" id="sum-blocked">0</div>
-                <div class="stat-label">Blocked</div>
-              </div>
-              <!-- Blocked circle icon -->
-              
-              <status-icon>
-                <img src="./assets/svg/blocked.svg" class="status-icon large" data-filter="blocked">
               </status-icon>
             </div>
           </button>
@@ -228,6 +228,15 @@
                 id="col-progress"
                 data-status="in-progress"
               >
+              <!-- Populated by JS -->
+              </div>
+            </div>
+            <div class="board-column board-column-blocked">
+              <div class="board-col-header">
+                <span class="board-col-title">Blocked</span>
+                <span class="board-col-count" id="count-blocked">0</span>
+              </div>
+              <div class="board-cards" id="col-blocked" data-status="blocked">
                 <!-- Populated by JS -->
               </div>
             </div>
@@ -241,15 +250,7 @@
                 id="col-review"
                 data-status="pending-review"
               >
-                <!-- Populated by JS -->
-              </div>
-            </div>
-            <div class="board-column board-column-blocked">
-              <div class="board-col-header">
-                <span class="board-col-title">Blocked</span>
-                <span class="board-col-count" id="count-blocked">0</span>
-              </div>
-              <div class="board-cards" id="col-blocked" data-status="blocked">
+                
                 <!-- Populated by JS -->
               </div>
             </div>

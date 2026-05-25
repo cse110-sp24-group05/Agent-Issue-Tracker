@@ -1,21 +1,16 @@
 import {
-  priBadge,
-  staBadge,
-  staLabel,
-  createdByIcon,
   fmtRelTime,
-  esc,
-  flashEntity,
 } from '../ui.js';
 import { StatusIcon } from './status-icon.js';
 
 /**
- *
+ * Represents one issue on the Activity page
+ * These can appear in the live activity feed or in recent completions
  */
-export class DashboardIssue extends HTMLElement {
+export class ActivityIssue extends HTMLElement {
 
   /**
-   *
+   * Creates an empty issue object
    */
   constructor() {
     super(); 
@@ -25,7 +20,7 @@ export class DashboardIssue extends HTMLElement {
   }
 
   /**
-   *
+   * Populates the issue object with issue data
    */
   set data(data) {
     this.issueData = data;
@@ -47,4 +42,4 @@ export class DashboardIssue extends HTMLElement {
 
 }
 
-customElements.define('dashboard-issue', DashboardIssue);
+customElements.define('activity-issue', ActivityIssue);

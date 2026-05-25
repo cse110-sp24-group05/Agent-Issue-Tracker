@@ -1,23 +1,16 @@
-import { activeStatusButton, clearDashboardIssueFilter, filterDashboardIssues, setActiveStatusButton } from '../dashboard-app.js';
-import {
-  priBadge,
-  staBadge,
-  staLabel,
-  createdByIcon,
-  fmtRelTime,
-  esc,
-  flashEntity,
-} from '../ui.js';
+import { activeStatusButton, clearActivityIssueFilter, filterActivityIssues, setActiveStatusButton } from '../activity-app.js';
+
 import { StatusIcon } from './status-icon.js';
 
 /**
- *
+ * Renders a button for one of the 5 issue status values
+ * On the activity page, this can filter for issues with that status
  */
-export class DashboardStatusButton extends HTMLElement {
+export class ActivityStatusButton extends HTMLElement {
 	
 	
   /**
-   *
+   * Creates a new empty button
    */
   constructor() {
     super(); 
@@ -27,7 +20,7 @@ export class DashboardStatusButton extends HTMLElement {
   }
 
   /**
-   *
+   * Populates the button based on the status and issue count values in data
    */
   set data(data) {
 
@@ -41,7 +34,7 @@ export class DashboardStatusButton extends HTMLElement {
     this.button.addEventListener('click', () => {
       if (activeStatusButton !== null) {
         activeStatusButton.classList.remove('active');
-        clearDashboardIssueFilter();
+        clearActivityIssueFilter();
         if (activeStatusButton === this.button) {
           setActiveStatusButton(null);
           return;
@@ -49,11 +42,11 @@ export class DashboardStatusButton extends HTMLElement {
       }
       setActiveStatusButton(this.button);
       this.button.classList.add('active');
-      filterDashboardIssues('status', data.status);
+      filterActivityIssues('status', data.status);
     });
   }
   
 
 }
 
-customElements.define('dashboard-status-button', DashboardStatusButton);
+customElements.define('activity-status-button', ActivityStatusButton);

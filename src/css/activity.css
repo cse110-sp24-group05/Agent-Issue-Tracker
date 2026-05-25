@@ -78,21 +78,21 @@
   letter-spacing: 0.1px;
 }
 
-/* ─── Dashboard Layout ───────────────────────────────────────────── */
-.dashboard-page {
+/* ─── Activity Layout ───────────────────────────────────────────── */
+.activity-page {
   padding-top: calc(var(--nav-height)); /* nav + sprint bar height */
   min-height: 100vh;
   background: var(--color-bg-subtle);
   padding-left: calc(var(--sidebar-width));
 }
 
-.dashboard-wrap {
+.activity-wrap {
   max-width: 1280px;
   margin: 0 auto;
   padding: var(--space-8) var(--space-6) 60px;
 }
 
-.dashboard-grid {
+.activity-grid {
   display: grid;
   grid-template-columns: 1fr 340px;
   gap: var(--space-6);

@@ -1,7 +1,7 @@
 // Imports
-import { DashboardIssue } from './components/dashboard-issue.js';
-import { DashboardStatusButton } from './components/dashboard-status-button.js';
-import { DashboardTokenBurn } from './components/dashboard-token-burn.js';
+import { ActivityIssue } from './components/activity-issue.js';
+import { ActivityStatusButton } from './components/activity-status-button.js';
+import { ActivityTokenBurn } from './components/activity-token-burn.js';
 import {
   initData,
   getIssues,
@@ -32,12 +32,12 @@ const statusButtonsParent = document.querySelector('.sprint-pills');
 const statusNames = ['Open', 'In Progress', 'Blocked', 'Pending Review', 'Closed'];
 const statusNamesRaw = ['open', 'in-progress', 'blocked', 'pending-review', 'closed'];
 /**
- * Initializes dashboard UI after loading the issues
+ * Initializes activity UI after loading the issues
  */
-async function loadDashboard() {
+async function loadActivity() {
   // The issues are sorted by most recently updated
   // Note that the schema doesn't have an 'audit log' for issue changes,
-  // so the dashboard activity feed can only show the most recent
+  // so the activity activity feed can only show the most recent
   // update for each issue
   loadIssues();
   loadStatusButtons();
@@ -46,8 +46,8 @@ async function loadDashboard() {
 }
 
 /**
- * Loads dashboard issues, which populate the Activity Feed and Recent Completions
- * Also sets the data fields used for other parts of the dashboard 
+ * Loads activity issues, which populate the Activity Feed and Recent Completions
+ * Also sets the data fields used for other parts of the activity 
  */
 function loadIssues() {
   tokenCount = 0;
@@ -55,7 +55,7 @@ function loadIssues() {
   console.log(issuesList[0]);
   issuesList.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
   issuesList.forEach((issueData) => {
-    const issue = new DashboardIssue();
+    const issue = new ActivityIssue();
     issue.data = issueData;
     issueObjects.push(issue);
     tokenCount += issueData.tokens_used;
@@ -100,10 +100,10 @@ function getStatusIndex(status) {
 }
 
 /**
- * Loads the token burn graphic on the right side of the dashboard page
+ * Loads the token burn graphic on the right side of the activity page
  */
 function loadTokenBurn() {
-  const tb = new DashboardTokenBurn();
+  const tb = new ActivityTokenBurn();
   tb.data = {
     tokenCount: tokenCount,
     tokenMax: tokenMax,
@@ -112,7 +112,7 @@ function loadTokenBurn() {
 }
 
 /**
- * Loads the five status buttons at the top of the dashboard page
+ * Loads the five status buttons at the top of the activity page
  */
 function loadStatusButtons() {
   const statusArray = [0, 0, 0, 0, 0];
@@ -121,7 +121,7 @@ function loadStatusButtons() {
   });
   let ind = 0;
   statusNames.forEach(() => {
-    const sb = new DashboardStatusButton();
+    const sb = new ActivityStatusButton();
     sb.data = {
       status: statusNamesRaw[ind],
       count: statusArray[ind],
@@ -132,12 +132,12 @@ function loadStatusButtons() {
 }
 
 /**
- * Hides issues on the dashboard that don't match a certain value
+ * Hides issues on the activity that don't match a certain value
  * Currently, only one filter can be active at one time
  * @param key Look for this key in every issue
  * @param valueToMatch If the value at that key isn't equal to this value, hide the issue
  */
-export function filterDashboardIssues(key, valueToMatch) {
+export function filterActivityIssues(key, valueToMatch) {
   issueObjects.forEach((issue) => {
     if (issue.issueData[key] !== valueToMatch) {
       issue.style.display = 'none';
@@ -150,16 +150,16 @@ export function filterDashboardIssues(key, valueToMatch) {
 }
 
 /**
- * Clears the filter set by filterDashboardIssues
+ * Clears the filter set by filteractivityIssues
  * causing all issues to become visible again
  */
-export function clearDashboardIssueFilter() {
+export function clearActivityIssueFilter() {
   issueObjects.forEach((issue) => {
     issue.style.display = 'flex';
   });
 }
 
-await loadDashboard();
+await loadActivity();
 
 
 

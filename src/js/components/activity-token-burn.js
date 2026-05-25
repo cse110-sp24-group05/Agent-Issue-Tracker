@@ -1,18 +1,9 @@
-import {
-  priBadge,
-  staBadge,
-  staLabel,
-  createdByIcon,
-  fmtRelTime,
-  esc,
-  flashEntity,
-} from '../ui.js';
-import { StatusIcon } from './status-icon.js';
+
 
 /**
- * Component representing the Token Burn UI in the dashboard
+ * Component representing the Token Burn UI in the activity
  */
-export class DashboardTokenBurn extends HTMLElement {
+export class ActivityTokenBurn extends HTMLElement {
 	
 	
   /**
@@ -22,6 +13,7 @@ export class DashboardTokenBurn extends HTMLElement {
     super(); 
   }
 
+  
   /**
    * Supplies this token burn component with current token budget and usage data,
    * then loads the HTML based on that data
@@ -29,7 +21,7 @@ export class DashboardTokenBurn extends HTMLElement {
   set data(data) {
     this.issueData = data;
     const pct = `${data.tokenCount * 100 / data.tokenMax}%`;
-    this.innerHTML += `
+    this.innerHTML = `
       <div class='dash-section-head'>
           <h2 class='dash-section-title'>Token Burn</h2>
         </div>
@@ -61,4 +53,4 @@ export class DashboardTokenBurn extends HTMLElement {
 
 }
 
-customElements.define('dashboard-token-burn', DashboardTokenBurn);
+customElements.define('activity-token-burn', ActivityTokenBurn);

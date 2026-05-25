@@ -8,7 +8,7 @@ export class StatusIcon extends HTMLElement {
 
 
   /**
-   *
+   * Creates a new StatusIcon element
    */
   constructor() {
     super();
@@ -16,7 +16,8 @@ export class StatusIcon extends HTMLElement {
   }
 
   /**
-   *
+   * Set the status belonging to this StatusIcon
+   * These can be open, in-progress, blocked, pending, or closed
    */
   set status(status) {
     let fileName;
@@ -42,7 +43,6 @@ export class StatusIcon extends HTMLElement {
     default:
       return;
     }
-    console.log(status);
     this.innerHTML = `
         <img src="./assets/svg/${fileName}.svg" class="status-icon" data-filter=${fileName}>
       `;

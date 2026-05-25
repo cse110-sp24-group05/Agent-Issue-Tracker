@@ -22,7 +22,7 @@ import {
 const VIEW_KEY = 'ait_view_pref';
 let currentView = localStorage.getItem(VIEW_KEY) === 'board' ? 'board' : 'list';
   
-// reads ?status= from URL (used when clicking dashboard pills)
+// reads ?status= from URL (used when clicking activity pills)
 const initStatusFilter =
     new URLSearchParams(window.location.search).get('status') || '';
   
