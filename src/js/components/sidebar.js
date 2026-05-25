@@ -22,7 +22,7 @@ class Sidebar extends HTMLElement {
 			<!-- ── Sidebar ──────────────────────────────────────────────────── -->
 				<div class="sidebar">
 					<button class="sidebar-toggle">
-						<img src="./Assets/svg/sidebar-toggle.svg">
+						<img src="./assets/svg/sidebar-toggle.svg">
 					</button>
 					<div class="sidebar-tabs">
 						<a class="sidebar-tab" href="index.html">

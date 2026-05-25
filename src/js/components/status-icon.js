@@ -42,8 +42,9 @@ export class StatusIcon extends HTMLElement {
     default:
       return;
     }
+    console.log(status);
     this.innerHTML = `
-        <img src="./Assets/svg/${fileName}.svg" class="status-icon" data-filter=${fileName}>
+        <img src="./assets/svg/${fileName}.svg" class="status-icon" data-filter=${fileName}>
       `;
   }
 

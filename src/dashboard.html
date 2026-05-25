@@ -20,33 +20,9 @@
             <header>
               <!-- ── Sprint Health Bar ──────────────────────────────────────── -->
               <div class="sprint-bar">
-                <span class="sprint-bar-label">Sprint</span>
+                <!-- <span class="sprint-bar-label">Sprint</span> -->
                 <div class="sprint-pills">
-                  <button class="pill" data-filter="open">
-                    <img src="./Assets/svg/todo.svg" class="status-icon">
-                    <span class="pill-count" id="pc-open">0</span>
-                    <span class="pill-label">Open</span>
-                  </button>
-                  <button class="pill" data-filter="in-progress">
-                    <img src="./Assets/svg/in-progress.svg" class="status-icon">
-                    <span class="pill-count" id="pc-progress">0</span>
-                    <span class="pill-label">In Progress</span>
-                  </button>
-                  <button class="pill" data-filter="pending-review">
-                    <img src="./Assets/svg/pending.svg" class="status-icon">
-                    <span class="pill-count" id="pc-review">0</span>
-                    <span class="pill-label">Pending Review</span>
-                  </button>
-                  <button class="pill" data-filter="blocked">
-                    <img src="./Assets/svg/blocked.svg" class="status-icon">
-                    <span class="pill-count" id="pc-blocked">0</span>
-                    <span class="pill-label">Blocked</span>
-                  </button>
-                  <button class="pill" data-filter="closed">
-                    <img src="./Assets/svg/closed.svg" class="status-icon">
-                    <span class="pill-count" id="pc-closed">0</span>
-                    <span class="pill-label">Closed</span>
-                  </button>
+                  <!-- Rendered in dashboard-app.js -->
                 </div>
               </div>
             </header>
@@ -63,51 +39,13 @@
                   </h2>
                 </div>
                 <div class="feed-list" id="feed-list">
-                  <!-- Rendered by JS -->
+                  <!-- Rendered in dashboard-app.js -->
                 </div>
               </section>
 
               <!-- ── Token Burn ────────────────────────────────────── -->
-              <aside class="dash-section">
-                <div class="dash-section-head">
-                  <h2 class="dash-section-title">Token Burn</h2>
-                </div>
-                <div class="token-body">
-
-                  <div class="token-section">
-                    <div class="token-section-label">Sprint Budget</div>
-                    <div class="budget-row">
-                      <label for="sprint-budget-input">Tokens</label>
-                      <input class="budget-input" type="number" id="sprint-budget-input"
-                            min="0" step="1000" aria-label="Sprint token budget">
-                    </div>
-                  </div>
-
-                  <div class="token-section">
-                    <div class="token-section-label">Used This Sprint</div>
-                    <div class="token-total-num mono" id="token-total">0</div>
-                    <div class="token-total-sub" id="token-total-sub">of 20,000 budget</div>
-                    <div class="sprint-track">
-                      <div class="sprint-fill" id="sprint-fill"></div>
-                    </div>
-                    <div class="sprint-pct" id="sprint-pct">0%</div>
-                  </div>
-
-                  <div class="token-section">
-                    <div class="token-section-label">By Agent</div>
-                    <div id="agent-breakdown">
-                      <span class="token-empty">No tokens used yet.</span>
-                    </div>
-                  </div>
-
-                  <div class="token-section">
-                    <div class="token-section-label">Top 3 by Cost</div>
-                    <div id="top-issues">
-                      <span class="token-empty">No issues with usage.</span>
-                    </div>
-                  </div>
-
-                </div>
+              <aside class="dash-section" id="token-burn">
+                
               </aside>
 
             </div>

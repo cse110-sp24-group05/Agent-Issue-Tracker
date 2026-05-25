@@ -1,6 +1,6 @@
 /* ─── Sprint Health Bar ─────────────────────────────────────────── */
 .sprint-bar {
-  background: var(--color-background-light);
+  background: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   margin-bottom: 50px;
   z-index: 90;
@@ -12,6 +12,7 @@
 .sprint-bar-label {
     font-family: 'HeadingFont';
     font-weight: var(--weight-bold);
+    background: none;
 }
 
 .sprint-pills {
@@ -79,7 +80,7 @@
 
 /* ─── Dashboard Layout ───────────────────────────────────────────── */
 .dashboard-page {
-  padding-top: calc(var(--nav-height) + 45px); /* nav + sprint bar height */
+  padding-top: calc(var(--nav-height)); /* nav + sprint bar height */
   min-height: 100vh;
   background: var(--color-bg-subtle);
   padding-left: calc(var(--sidebar-width));
