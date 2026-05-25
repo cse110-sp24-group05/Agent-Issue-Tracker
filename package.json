@@ -6,9 +6,14 @@
     "sim": "dotenv -e .env -- node src/runner/simulator.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand"
   },
+  "jest": {
+    "testMatch": ["**/src/tests/**/*.test.js"],
+    "transform": {}
+  },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
+    "@jest/globals": "^29.0.0",
     "dotenv-cli": "^11.0.0",
     "eslint": "^9.0.0",
     "eslint-plugin-jsdoc": "^48.0.0",
