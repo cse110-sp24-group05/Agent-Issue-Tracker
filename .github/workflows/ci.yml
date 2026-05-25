@@ -2,7 +2,7 @@ name: CI
 
 # ─────────────────────────────────────────────
 # ci.yml — Continuous Integration
-#
+# Created with Claude AI assistance — human reviewed and tested
 # Runs on every push and PR to main or develop.
 # Checks commit messages, lints code, enforces JSDoc,
 # and runs tests. If anything fails, the PR is blocked.
