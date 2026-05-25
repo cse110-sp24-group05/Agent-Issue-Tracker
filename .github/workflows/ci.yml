@@ -114,6 +114,6 @@ jobs:
 
       - name: Run Pa11y on live site
         run: |
-          pa11y https://agent-issue-tracker.pages.dev || true
-          pa11y https://agent-issue-tracker.pages.dev/dashboard.html || true
-          pa11y https://agent-issue-tracker.pages.dev/issue.html || true
+          pa11y https://agent-issue-tracker.pages.dev 
+          pa11y https://agent-issue-tracker.pages.dev/dashboard.html 
+          pa11y https://agent-issue-tracker.pages.dev/issue.html 
