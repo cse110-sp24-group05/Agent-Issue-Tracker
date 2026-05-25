@@ -6,6 +6,7 @@ name: CI
 # Runs on every push and PR to main or develop.
 # Checks commit messages, lints code, enforces JSDoc,
 # and runs tests. If anything fails, the PR is blocked.
+# Bot PRs (Cloudflare) are ignored automatically.
 # ─────────────────────────────────────────────
 
 on:
@@ -18,11 +19,11 @@ jobs:
 
   # checks that commit messages follow the "feat: ..." / "fix: ..." format
   # we need this so semver.yml can figure out version bumps later
-  # only runs on PRs, not direct pushes
+  # only runs on PRs, not direct pushes, and ignores bot PRs
   commitlint:
     name: Lint Commit Messages
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.actor != 'cloudflare-workers-and-pages[bot]'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -48,6 +49,7 @@ jobs:
   lint:
     name: ESLint & JSDoc
     runs-on: ubuntu-latest
+    if: github.actor != 'cloudflare-workers-and-pages[bot]'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -70,6 +72,7 @@ jobs:
     name: Unit & E2E Tests
     runs-on: ubuntu-latest
     needs: lint
+    if: github.actor != 'cloudflare-workers-and-pages[bot]'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -84,7 +87,7 @@ jobs:
         run: npm ci
 
       - name: Run unit tests
-        run: npm test  # make sure "test" script exists in package.json
+        run: npm test
 
       # uploads even if tests fail so we can see what broke
       - name: Upload coverage report
