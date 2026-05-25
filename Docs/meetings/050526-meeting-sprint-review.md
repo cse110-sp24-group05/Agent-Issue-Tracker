@@ -11,7 +11,7 @@ https://app.retrium.com/team-room/8a679f09-c2f7-4ecd-9534-03c9b1ee221c/history/d
 
 **Agenda**
 
-* **Review research**  
+* **Review research, each team lead presents their findings with the team**  
 * **MVP backlog**  
 * **Retrospective**
 
