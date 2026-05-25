@@ -96,3 +96,23 @@ jobs:
         with:
           name: coverage-report
           path: coverage/
+  
+  # checks live pages for accessibility issues against WCAG standards
+  # uses a prebuilt action — no extra dependencies needed
+  accessibility:
+    name: Accessibility (Pa11y)
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.actor != 'cloudflare-workers-and-pages[bot]'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+ 
+      - name: Run Pa11y on live site
+        uses: benc-uk/pa11y-action@v1
+        with:
+          urls: |
+            https://agent-issue-tracker.pages.dev
+            https://agent-issue-tracker.pages.dev/dashboard.html
+            https://agent-issue-tracker.pages.dev/issue.html
+ 
