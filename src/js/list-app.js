@@ -5,7 +5,7 @@ import {
   createIssue,
   updateIssue,
   getSettings,
-} from "./data.js";
+} from './data.js';
 
 import {
   priBadge,
@@ -15,34 +15,32 @@ import {
   fmtRelTime,
   esc,
   flashEntity,
-} from "./ui.js";
+} from './ui.js';
 
 // ── 2. STATE ───────────────────────────────────────────
 // remembers if user prefers list or board view
-const VIEW_KEY = "ait_view_pref";
-let currentView = localStorage.getItem(VIEW_KEY) === "board" ? "board" : "list";
+const VIEW_KEY = 'ait_view_pref';
+let currentView = localStorage.getItem(VIEW_KEY) === 'board' ? 'board' : 'list';
 
 // reads ?status= from URL (used when clicking activity pills)
 const initStatusFilter =
-  new URLSearchParams(window.location.search).get("status") || "";
+  new URLSearchParams(window.location.search).get('status') || '';
 
 try {
   await initData();
 } catch (err) {
-  console.error("[data.js] Failed to load issues:", err.message);
+  console.error('[data.js] Failed to load issues:', err.message);
 }
 
-// ── 3. SUMMARY BAR ─────────────────────────────────────
-// updates the numbers on Open, In Progress, etc cards
 /**
- *
+ * Updates the summary bar counts for each issue status column
  */
 function updateSummary() {
   const all = getIssues();
   const c = {
     open: 0,
-    "in-progress": 0,
-    "pending-review": 0,
+    'in-progress': 0,
+    'pending-review': 0,
     blocked: 0,
     closed: 0,
   };
@@ -51,27 +49,25 @@ function updateSummary() {
       c[i.status]++;
     }
   });
-  document.getElementById("sum-open").textContent = c["open"];
-  document.getElementById("sum-progress").textContent = c["in-progress"];
-  document.getElementById("sum-review").textContent = c["pending-review"];
-  document.getElementById("sum-blocked").textContent = c["blocked"];
-  document.getElementById("sum-closed").textContent = c["closed"];
+  document.getElementById('sum-open').textContent = c['open'];
+  document.getElementById('sum-progress').textContent = c['in-progress'];
+  document.getElementById('sum-review').textContent = c['pending-review'];
+  document.getElementById('sum-blocked').textContent = c['blocked'];
+  document.getElementById('sum-closed').textContent = c['closed'];
 
   // Highlight active pill matching filter-status
-  const cur = document.getElementById("filter-status").value;
-  document.querySelectorAll(".summary-bar .stat-card").forEach((el) => {
-    el.classList.toggle("active", el.dataset.filter === cur);
+  const cur = document.getElementById('filter-status').value;
+  document.querySelectorAll('.summary-bar .stat-card').forEach((el) => {
+    el.classList.toggle('active', el.dataset.filter === cur);
   });
 }
 
-// ── 4. LIST RENDER ─────────────────────────────────────
-// builds the table rows from issue data
 /**
- *
- * @param issues
+ * Renders the list view table rows from issues data
+ * @param {Array} issues - List of issue objects to display
  */
 function renderList(issues) {
-  const tbody = document.querySelector(".issue-table tbody");
+  const tbody = document.querySelector('.issue-table tbody');
   if (!issues.length) {
     const allIssues = getIssues();
     if (allIssues.length === 0) {
@@ -88,9 +84,9 @@ function renderList(issues) {
               </div>
             </td></tr>`;
       document
-        .getElementById("list-empty-new-btn")
-        ?.addEventListener("click", () => {
-          document.getElementById("btn-new-issue").click();
+        .getElementById('list-empty-new-btn')
+        ?.addEventListener('click', () => {
+          document.getElementById('btn-new-issue').click();
         });
     } else {
       tbody.innerHTML =
@@ -104,14 +100,14 @@ function renderList(issues) {
           <tr data-issue-row data-id="${esc(i.id)}"
               data-status="${i.status}" data-priority="${i.priority}"
               data-assignee="${esc(i.assignee)}">
-            <td><a class="issue-id mono" href="issue.html?id=${esc(i.id)}">${esc(i.id.replace("issue-", ""))}</a></td>
+            <td><a class="issue-id mono" href="issue.html?id=${esc(i.id)}">${esc(i.id.replace('issue-', ''))}</a></td>
             <td><span class="badge ${priBadge(i.priority)}">${i.priority}</span></td>
             <td>
-              <span class="created-by-icon" title="created by ${esc(i.created_by || "unknown")}">${createdByIcon(i.created_by)}</span>
+              <span class="created-by-icon" title="created by ${esc(i.created_by || 'unknown')}">${createdByIcon(i.created_by)}</span>
               <a class="issue-title-link" href="issue.html?id=${esc(i.id)}" title="${esc(i.title)}">${esc(i.title)}</a>
             </td>
             <td><span class="badge ${staBadge(i.status)}">${staLabel(i.status)}</span></td>
-            <td class="${i.assignee === "unassigned" ? "text-muted" : ""}">${esc(i.assignee)}</td>
+            <td class="${i.assignee === 'unassigned' ? 'text-muted' : ''}">${esc(i.assignee)}</td>
             <td class="token-cell">
             <div class="token-wrap">
               <div class="token-text mono text-muted">${i.tokens_used.toLocaleString()} / ${i.token_budget.toLocaleString()}</div>
@@ -129,64 +125,66 @@ function renderList(issues) {
             </td>
           </tr>`,
     )
-    .join("");
+    .join('');
 
-  tbody.querySelectorAll("[data-issue-row]").forEach((row) => {
-    row.addEventListener("click", (e) => {
-      if (e.target.closest("a")) {
+  tbody.querySelectorAll('[data-issue-row]').forEach((row) => {
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('a')) {
         return;
       } // let inner links handle their own nav
-      location.href = "issue.html?id=" + row.dataset.id;
+      location.href = 'issue.html?id=' + row.dataset.id;
     });
   });
 }
 
 /**
- *
- * @param used
- * @param budget
+ * Returns the token usage level based on remaining budget
+ * @param {number} used - Number of tokens used
+ * @param {number} budget - Total token buget remaining
+ * @returns {string}
  */
 function tokenLevel(used, budget) {
   const remaining = budget ? 1 - used / budget : 1;
   if (remaining < 0.3) {
-    return "token-over";
+    return 'token-over';
   }
 
   if (remaining < 0.6) {
-    return "token-warn";
+    return 'token-warn';
   }
 
-  return "token-ok";
+  return 'token-ok';
 }
 
 // ── 5. BOARD RENDER ────────────────────────────────────
 // builds the kanban cards and handles drag and drop
 const ZONE_ID = {
-  open: "col-open",
-  "in-progress": "col-progress",
-  "pending-review": "col-review",
-  closed: "col-closed",
-  blocked: "col-blocked",
+  open: 'col-open',
+  'in-progress': 'col-progress',
+  'pending-review': 'col-review',
+  closed: 'col-closed',
+  blocked: 'col-blocked',
 };
 const COUNT_ID = {
-  "col-open": "count-open",
-  "col-progress": "count-progress",
-  "col-review": "count-review",
-  "col-blocked": "count-blocked",
-  "col-closed": "count-closed",
+  'col-open': 'count-open',
+  'col-progress': 'count-progress',
+  'col-review': 'count-review',
+  'col-blocked': 'count-blocked',
+  'col-closed': 'count-closed',
 };
 
 let dragging = null;
 
 /**
- *
- * @param issue
+ * Creates a draggable Kanban board card element for an issue
+ * @param {object} issue - The issue object to create a card
+ * @returns
  */
 function makeCard(issue) {
-  const div = document.createElement("div");
-  div.className = "board-card card";
-  if (issue.status === "blocked") {
-    div.classList.add("board-card-blocked");
+  const div = document.createElement('div');
+  div.className = 'board-card card';
+  if (issue.status === 'blocked') {
+    div.classList.add('board-card-blocked');
   }
   div.draggable = true;
   div.dataset.id = issue.id;
@@ -194,35 +192,35 @@ function makeCard(issue) {
   div.dataset.status = issue.status;
   div.innerHTML = `
           <div class="board-card-title">
-            <span class="created-by-icon" title="created by ${esc(issue.created_by || "unknown")}">${createdByIcon(issue.created_by)}</span>
+            <span class="created-by-icon" title="created by ${esc(issue.created_by || 'unknown')}">${createdByIcon(issue.created_by)}</span>
             ${esc(issue.title)}
           </div>
           <div class="board-card-meta">
             <span class="badge ${priBadge(issue.priority)}">${issue.priority}</span>
-            <span class="board-card-assignee${issue.assignee === "unassigned" ? " text-muted" : ""}">
+            <span class="board-card-assignee${issue.assignee === 'unassigned' ? ' text-muted' : ''}">
               ${esc(issue.assignee)}
             </span>
             <span class="board-card-budget mono">${issue.token_budget.toLocaleString()} tok</span>
           </div>`;
 
-  div.addEventListener("dragstart", (e) => {
+  div.addEventListener('dragstart', (e) => {
     dragging = div;
-    div.classList.add("dragging");
-    e.dataTransfer.setData("text/plain", div.dataset.id);
-    e.dataTransfer.effectAllowed = "move";
+    div.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', div.dataset.id);
+    e.dataTransfer.effectAllowed = 'move';
   });
-  div.addEventListener("dragend", () => {
-    div.classList.remove("dragging");
+  div.addEventListener('dragend', () => {
+    div.classList.remove('dragging');
     dragging = null;
   });
-  div.addEventListener("click", () => {
-    location.href = "issue.html?id=" + div.dataset.id;
+  div.addEventListener('click', () => {
+    location.href = 'issue.html?id=' + div.dataset.id;
   });
   return div;
 }
 
 /**
- *
+ * Updates the issue count displayed on each Kanban board column
  */
 function updateBoardCounts() {
   Object.entries(COUNT_ID).forEach(([zoneId, countId]) => {
@@ -230,24 +228,24 @@ function updateBoardCounts() {
     if (el) {
       el.textContent = document
         .getElementById(zoneId)
-        .querySelectorAll(".board-card").length;
+        .querySelectorAll('.board-card').length;
     }
   });
 }
 
 /**
- *
- * @param issues
+ * Renders the Kanban board view with issues sorted into their status columns
+ * @param {Array} issues - List of issue objects
  */
 function renderBoard(issues) {
   [
-    "col-open",
-    "col-progress",
-    "col-review",
-    "col-blocked",
-    "col-closed",
+    'col-open',
+    'col-progress',
+    'col-review',
+    'col-blocked',
+    'col-closed',
   ].forEach((id) => {
-    document.getElementById(id).innerHTML = "";
+    document.getElementById(id).innerHTML = '';
   });
   // Blocked issues show in their pre-blocked column visually — but they have status=blocked.
   // Per spec: blocked stays in its current column with red left border. Since we don't track
@@ -265,32 +263,32 @@ function renderBoard(issues) {
   // Empty state for new users or no issues at all
   // check if ALl columns are empty
   const allEmpty = [
-    "col-open",
-    "col-progress",
-    "col-review",
-    "col-blocked",
-    "col-closed",
+    'col-open',
+    'col-progress',
+    'col-review',
+    'col-blocked',
+    'col-closed',
   ].every(
     (id) =>
-      document.getElementById(id).querySelectorAll(".board-card").length === 0,
+      document.getElementById(id).querySelectorAll('.board-card').length === 0,
   );
 
   // empty state message
   const emptyMessage = {
-    "col-open": "No open issues yet",
-    "col-progress": "No issues in progress",
-    "col-review": "No issues pending review",
-    "col-blocked": "No blocked issues yet",
-    "col-closed": "No closed issues yet",
+    'col-open': 'No open issues yet',
+    'col-progress': 'No issues in progress',
+    'col-review': 'No issues pending review',
+    'col-blocked': 'No blocked issues yet',
+    'col-closed': 'No closed issues yet',
   };
 
   Object.entries(emptyMessage).forEach(([colId, message]) => {
     const col = document.getElementById(colId);
-    if (!col || col.querySelectorAll(".board-card").length > 0) {
+    if (!col || col.querySelectorAll('.board-card').length > 0) {
       return;
     }
 
-    if (colId === "col-blocked" && allEmpty) {
+    if (colId === 'col-blocked' && allEmpty) {
       // only show CTA button when ALL columns are empty
       col.innerHTML = `
               <div class="board-empty-state board-empty-cta">
@@ -302,9 +300,9 @@ function renderBoard(issues) {
                 </button>
               </div>`;
       document
-        .getElementById("empty-new-issue-btn")
-        ?.addEventListener("click", () => {
-          document.getElementById("btn-new-issue").click();
+        .getElementById('empty-new-issue-btn')
+        ?.addEventListener('click', () => {
+          document.getElementById('btn-new-issue').click();
         });
     } else {
       // regular empty state — just a message, no button
@@ -316,20 +314,20 @@ function renderBoard(issues) {
   });
 }
 
-document.querySelectorAll(".board-cards").forEach((zone) => {
-  zone.addEventListener("dragover", (e) => {
+document.querySelectorAll('.board-cards').forEach((zone) => {
+  zone.addEventListener('dragover', (e) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    zone.classList.add("drag-over");
+    e.dataTransfer.dropEffect = 'move';
+    zone.classList.add('drag-over');
   });
-  zone.addEventListener("dragleave", (e) => {
+  zone.addEventListener('dragleave', (e) => {
     if (!zone.contains(e.relatedTarget)) {
-      zone.classList.remove("drag-over");
+      zone.classList.remove('drag-over');
     }
   });
-  zone.addEventListener("drop", async (e) => {
+  zone.addEventListener('drop', async (e) => {
     e.preventDefault();
-    zone.classList.remove("drag-over");
+    zone.classList.remove('drag-over');
     if (!dragging || dragging.parentElement === zone) {
       return;
     }
@@ -338,10 +336,10 @@ document.querySelectorAll(".board-cards").forEach((zone) => {
     try {
       await updateIssue(id, {
         status: newStatus,
-        updatedBy: getSettings().ait_user || "unknown",
+        updatedBy: getSettings().ait_user || 'unknown',
       });
     } catch (err) {
-      console.error("[data.js] updateIssue failed:", err.message);
+      console.error('[data.js] updateIssue failed:', err.message);
       return;
     }
     dragging.dataset.status = newStatus;
@@ -349,43 +347,42 @@ document.querySelectorAll(".board-cards").forEach((zone) => {
     updateBoardCounts();
     applyFilters();
     const kind =
-      newStatus === "in-progress"
-        ? "claim"
-        : newStatus === "pending-review"
-          ? "complete"
-          : newStatus === "closed"
-            ? "close"
-            : newStatus === "blocked"
-              ? "block"
-              : "update";
+      newStatus === 'in-progress'
+        ? 'claim'
+        : newStatus === 'pending-review'
+          ? 'complete'
+          : newStatus === 'closed'
+            ? 'close'
+            : newStatus === 'blocked'
+              ? 'block'
+              : 'update';
     requestAnimationFrame(() => flashEntity(id, kind));
   });
 });
 
-// ── 6. FILTERS + VIEW TOGGLE + MODAL ───────────────────
-// wires up all the buttons and interactions
 /**
- *
+ * Returns issues filtered by current status, priority, assignee, and search input
+ * @returns {Array} - Filtered list of issue objects
  */
 function getFiltered() {
-  const status = document.getElementById("filter-status").value;
-  const priority = document.getElementById("filter-priority").value;
+  const status = document.getElementById('filter-status').value;
+  const priority = document.getElementById('filter-priority').value;
   const assignee = document
-    .getElementById("filter-assignee")
+    .getElementById('filter-assignee')
     .value.trim()
     .toLowerCase();
-  const search = document.getElementById("filter-search").value.toLowerCase();
+  const search = document.getElementById('filter-search').value.toLowerCase();
   return getIssues().filter(
     (i) =>
       (!status || i.status === status) &&
       (!priority || i.priority === priority) &&
-      (!assignee || (i.assignee || "").toLowerCase().includes(assignee)) &&
+      (!assignee || (i.assignee || '').toLowerCase().includes(assignee)) &&
       (!search || i.title.toLowerCase().includes(search)),
   );
 }
 
 /**
- *
+ * Applies current filters and re-renders both list and board views
  */
 function applyFilters() {
   const filtered = getFiltered();
@@ -394,123 +391,122 @@ function applyFilters() {
   updateSummary();
 }
 
-// ── View toggle ──────────────────────────────────────────────────
 /**
- *
- * @param view
+ * Switches between list and board view and saves the preference on localStorage
+ * @param {string} view - the view preference, either 'list' or 'board'
  */
 function setView(view) {
-  currentView = view === "board" ? "board" : "list";
+  currentView = view === 'board' ? 'board' : 'list';
   localStorage.setItem(VIEW_KEY, currentView);
   document
-    .getElementById("list-view")
-    .classList.toggle("hidden", currentView !== "list");
+    .getElementById('list-view')
+    .classList.toggle('hidden', currentView !== 'list');
   document
-    .getElementById("board-view")
-    .classList.toggle("hidden", currentView !== "board");
+    .getElementById('board-view')
+    .classList.toggle('hidden', currentView !== 'board');
   document
-    .getElementById("view-toggle-list")
-    .classList.toggle("active", currentView === "list");
+    .getElementById('view-toggle-list')
+    .classList.toggle('active', currentView === 'list');
   document
-    .getElementById("view-toggle-board")
-    .classList.toggle("active", currentView === "board");
+    .getElementById('view-toggle-board')
+    .classList.toggle('active', currentView === 'board');
 }
 
 document
-  .getElementById("view-toggle-list")
-  .addEventListener("click", () => setView("list"));
+  .getElementById('view-toggle-list')
+  .addEventListener('click', () => setView('list'));
 document
-  .getElementById("view-toggle-board")
-  .addEventListener("click", () => setView("board"));
+  .getElementById('view-toggle-board')
+  .addEventListener('click', () => setView('board'));
 
 // ── Summary pill clicks ──────────────────────────────────────────
-document.querySelectorAll(".summary-bar .stat-card").forEach((card) => {
-  card.addEventListener("click", () => {
+document.querySelectorAll('.summary-bar .stat-card').forEach((card) => {
+  card.addEventListener('click', () => {
     const f = card.dataset.filter;
-    const cur = document.getElementById("filter-status").value;
-    document.getElementById("filter-status").value = cur === f ? "" : f;
+    const cur = document.getElementById('filter-status').value;
+    document.getElementById('filter-status').value = cur === f ? '' : f;
     applyFilters();
   });
 });
 
 // ── Filter wiring ────────────────────────────────────────────────
-["filter-status", "filter-priority"].forEach((id) => {
-  document.getElementById(id).addEventListener("change", applyFilters);
+['filter-status', 'filter-priority'].forEach((id) => {
+  document.getElementById(id).addEventListener('change', applyFilters);
 });
 document
-  .getElementById("filter-assignee")
-  .addEventListener("input", applyFilters);
+  .getElementById('filter-assignee')
+  .addEventListener('input', applyFilters);
 document
-  .getElementById("filter-search")
-  .addEventListener("input", applyFilters);
+  .getElementById('filter-search')
+  .addEventListener('input', applyFilters);
 
 // ── Init ─────────────────────────────────────────────────────────
 if (initStatusFilter) {
-  document.getElementById("filter-status").value = initStatusFilter;
+  document.getElementById('filter-status').value = initStatusFilter;
 }
 setView(currentView);
 applyFilters();
 
 // ── Agent sim re-render hook ─────────────────────────────────────
-document.addEventListener("ait:data-changed", applyFilters);
+document.addEventListener('ait:data-changed', applyFilters);
 
 // ── Modal ────────────────────────────────────────────────────────
-const overlay = document.getElementById("modal-new-issue");
+const overlay = document.getElementById('modal-new-issue');
 
 /**
- *
+ * Opens the new issue modal and focuses the title input
  */
 function openModal() {
-  overlay.classList.remove("hidden");
-  document.getElementById("new-title").focus();
+  overlay.classList.remove('hidden');
+  document.getElementById('new-title').focus();
 }
 
 /**
- *
+ * Closes the new issue modal and resets the form
  */
 function closeModal() {
-  overlay.classList.add("hidden");
-  document.getElementById("form-new-manual").reset();
+  overlay.classList.add('hidden');
+  document.getElementById('form-new-manual').reset();
 }
 
-document.getElementById("btn-new-issue").addEventListener("click", openModal);
-document.getElementById("modal-close").addEventListener("click", closeModal);
-document.getElementById("manual-cancel").addEventListener("click", closeModal);
-overlay.addEventListener("click", (e) => {
+document.getElementById('btn-new-issue').addEventListener('click', openModal);
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('manual-cancel').addEventListener('click', closeModal);
+overlay.addEventListener('click', (e) => {
   if (e.target === overlay) {
     closeModal();
   }
 });
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && !overlay.classList.contains("hidden")) {
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !overlay.classList.contains('hidden')) {
     closeModal();
   }
 });
 
 // manual form submit
 document
-  .getElementById("form-new-manual")
-  .addEventListener("submit", async (e) => {
+  .getElementById('form-new-manual')
+  .addEventListener('submit', async (e) => {
     e.preventDefault();
     try {
       const issue = await createIssue({
-        title: document.getElementById("new-title").value.trim(),
-        description: document.getElementById("new-description").value.trim(),
-        priority: document.getElementById("new-priority").value,
+        title: document.getElementById('new-title').value.trim(),
+        description: document.getElementById('new-description').value.trim(),
+        priority: document.getElementById('new-priority').value,
         assignee:
-          document.getElementById("new-assignee").value.trim() || "unassigned",
+          document.getElementById('new-assignee').value.trim() || 'unassigned',
         token_budget:
-          parseInt(document.getElementById("new-budget").value, 10) || 2000,
+          parseInt(document.getElementById('new-budget').value, 10) || 2000,
         time_estimate:
-          parseInt(document.getElementById("new-estimate").value, 10) || 60,
-        creator: getSettings().ait_user || "unknown",
-        created_by: "human-manual",
+          parseInt(document.getElementById('new-estimate').value, 10) || 60,
+        creator: getSettings().ait_user || 'unknown',
+        created_by: 'human-manual',
       });
       applyFilters();
       closeModal();
-      requestAnimationFrame(() => flashEntity(issue.id, "create"));
+      requestAnimationFrame(() => flashEntity(issue.id, 'create'));
     } catch (err) {
-      console.error("[data.js] createIssue failed:", err.message);
+      console.error('[data.js] createIssue failed:', err.message);
       alert(`Could not create issue: ${err.message}`);
     }
   });
