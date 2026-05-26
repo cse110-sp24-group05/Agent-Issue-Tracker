@@ -1,3 +1,4 @@
+// Created with Chatgpt assistance — human reviewed and tested
 // worker.js
 // Cloudflare Worker entry point. Routes HTTP requests to handlers in
 // handlers.js. SQL lives in db.js; shared validators and response builders
@@ -12,7 +13,8 @@ import {
   deleteIssue,
   claimIssue,
   putResult,
-  closeIssue
+  closeIssue,
+  blockIssue
 } from './handlers.js';
 
 
@@ -54,12 +56,25 @@ export default {
     }
 
 
+    // PUT /api/issues/:id/block
+    const isBlock = url.pathname.startsWith('/api/issues/') && url.pathname.endsWith('/block');
+    if (isBlock && method === 'PUT') {
+      const id = url.pathname.split('/')[3];
+      return blockIssue(id,env);
+    }
+
     // PUT /api/issues/:id/claim
     const isClaim = url.pathname.startsWith('/api/issues/') && url.pathname.endsWith('/claim');
     if (isClaim && method === 'PUT') {
       return claimIssue(request, env);
     }
 
+    // PUT /api/issues/:id/close
+    const isClose = url.pathname.startsWith('/api/issues/') && url.pathname.endsWith('/close');
+    if (isClose && method === 'PUT') {
+      const id = url.pathname.split('/')[3];
+      return closeIssue(id, env);
+    }
 
     // PUT /api/issues/:id/result
     const isResult = url.pathname.startsWith('/api/issues/') && url.pathname.endsWith('/result');
@@ -69,19 +84,12 @@ export default {
     }
 
 
-    // PUT /api/issues/:id/close
-    const isClose = url.pathname.startsWith('/api/issues/') && url.pathname.endsWith('/close');
-    if (isClose && method === 'PUT') {
-      const id = url.pathname.split('/')[3];
-      return closeIssue(id, env);
-    }
-
-
     // PUT /api/issues/:id
     const isPlainIssuePath = url.pathname.startsWith('/api/issues/')
       && !url.pathname.endsWith('/claim')
       && !url.pathname.endsWith('/result')
-      && !url.pathname.endsWith('/close');
+      && !url.pathname.endsWith('/close')
+      && !url.pathname.endsWith('/block');
     if (isPlainIssuePath && method === 'PUT') {
       const id = url.pathname.split('/')[3];
       return updateIssue(id, request, env);

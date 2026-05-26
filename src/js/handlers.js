@@ -1,3 +1,4 @@
+// Created with Chatgpt assistance — human reviewed and tested
 // handlers.js
 // Request handlers for the issues API: 5 CRUD operations and 3 workflow
 // transitions. HTTP routing lives in worker.js; SQL lives in db.js;
@@ -384,7 +385,38 @@ export async function closeIssue(id, env) {
  * @param {object} env - Environment bindings containing the database connection.
  * @returns {Response} A JSON response indicating success or failure.
  */
-// async function blockIssue(id, env) {}
+export async function blockIssue(id, env) {
+  try {
+
+    const issue = await selectIssueById(env, id);
+    if (!issue) {
+      return notFound();
+    }
+
+    const currentStatus = issue.issue_status;
+    if(currentStatus === 'blocked'){
+      return badRequest('Issue already blocked');
+    }
+
+    if(currentStatus === 'closed'){
+      return badRequest('Issue already closed');
+    }
+
+    const now = new Date().toISOString();
+
+    await updateIssueStatus(env, id,'blocked', now);
+
+    const updated = await selectIssueById(env, id);
+
+    return ok({
+      success: true,
+      message: 'Issue updated successfully',
+      issue: updated
+    });
+  } catch (error) {
+    return serverError(error.message);
+  }
+}
 
 
 /**
