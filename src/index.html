@@ -317,15 +317,14 @@
             </div>
             <div class="form-group">
               <label class="form-label" for="new-assignee">Assignee</label>
-              <input
-                class="form-input"
-                type="text"
-                id="new-assignee"
-                placeholder="username or leave blank"
-              />
+              <select class="form-select" id="new-assignee">
+                <option value="human-only">Human-only</option>
+                <option value="open-to-all" selected>Open-to-all</option>
+                <option value="ai-only">AI-only</option>
+              </select>
             </div>
             <div class="form-group">
-              <label class="form-label" for="new-budget">Token Budget</label>
+              <label class="form-label" for="new-budget ">Token Budget</label>
               <input
                 class="form-input"
                 type="number"
