@@ -7,7 +7,9 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand"
   },
   "jest": {
-    "testMatch": ["**/src/tests/**/*.test.js"],
+    "testMatch": [
+      "**/src/tests/**/*.test.js"
+    ],
     "transform": {}
   },
   "devDependencies": {
@@ -19,5 +21,6 @@
     "eslint-plugin-jsdoc": "^48.0.0",
     "jest": "^30.4.2",
     "wrangler": "^4.92.0"
-  }
+  },
+  "version": "1.0.0"
 }
