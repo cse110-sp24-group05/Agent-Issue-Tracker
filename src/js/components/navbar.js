@@ -16,8 +16,8 @@ class Navbar extends HTMLElement {
    * The tab link for the current tab should be 'active'
    */
   connectedCallback() {
-    const tabNames = ['activity.html', 'index.html'];
-    const displayTabNames = ['Activity', 'Dashboard'];
+    const tabNames = ['index.html', 'activity.html'];
+    const displayTabNames = ['Dashboard', 'Activity'];
     let tabsHTML = '';
 
     for (let i = 0; i < tabNames.length; i++) {
