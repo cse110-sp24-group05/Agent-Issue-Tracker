@@ -134,8 +134,8 @@ const testJson = `[
   },
   {
     "id": "issue-006",
-    "title": "Feature: implement token burn progress bar on dashboard",
-    "description": "The dashboard shows total tokens used as a number but no visual progress against the sprint budget. Add a horizontal progress bar with three states: under 70% green, 70–90% yellow, over 90% red. Bar is reactive to budget changes and re-renders when issues update.",
+    "title": "Feature: implement token burn progress bar on activity",
+    "description": "The activity shows total tokens used as a number but no visual progress against the sprint budget. Add a horizontal progress bar with three states: under 70% green, 70–90% yellow, over 90% red. Bar is reactive to budget changes and re-renders when issues update.",
     "status": "pending-review",
     "priority": "P1",
     "assignee": "claude-agent-2",
@@ -149,7 +149,7 @@ const testJson = `[
     "claimed_at": "2026-05-06T10:00:00Z",
     "completed_at": null,
     "blocked_reason": null,
-    "result": "Implemented in dashboard.html with a .sprint-track / .sprint-fill pair driven by the existing renderTokenBurn() function. Added warn/danger modifier classes that flip at 70% and 90%. Verified the bar updates in real time when the sprint budget input changes and when the agent simulator burns tokens. No new dependencies. Screenshot attached in PR.",
+    "result": "Implemented in activity.html with a .sprint-track / .sprint-fill pair driven by the existing renderTokenBurn() function. Added warn/danger modifier classes that flip at 70% and 90%. Verified the bar updates in real time when the sprint budget input changes and when the agent simulator burns tokens. No new dependencies. Screenshot attached in PR.",
     "created_by": "human-manual",
     "audit_log": [
       { "action": "created", "by": "patrick", "at": "2026-05-05T13:00:00Z" },
@@ -160,7 +160,7 @@ const testJson = `[
   {
     "id": "issue-007",
     "title": "Bug: token budget not persisting after page reload",
-    "description": "Editing the sprint token budget on the dashboard updates the displayed value but the change is lost when the page is reloaded. Root cause: the input's change handler only updated in-memory state. Fix saves to localStorage via data.js saveSprintBudget() on blur and reloads correctly on every page.",
+    "description": "Editing the sprint token budget on the activity updates the displayed value but the change is lost when the page is reloaded. Root cause: the input's change handler only updated in-memory state. Fix saves to localStorage via data.js saveSprintBudget() on blur and reloads correctly on every page.",
     "status": "closed",
     "priority": "P1",
     "assignee": "claude-agent-1",
@@ -174,7 +174,7 @@ const testJson = `[
     "claimed_at": "2026-05-04T11:00:00Z",
     "completed_at": "2026-05-05T17:30:00Z",
     "blocked_reason": null,
-    "result": "Wired the sprint budget input on dashboard.html to saveSprintBudget() in data.js on blur and on Enter. getSprintBudget() now seeds the input on initial render. Verified across reload, cross-tab, and the agent simulator's auto-loop — the value survives all three. Tokens used: 980 of 1,500 budgeted.",
+    "result": "Wired the sprint budget input on activity.html to saveSprintBudget() in data.js on blur and on Enter. getSprintBudget() now seeds the input on initial render. Verified across reload, cross-tab, and the agent simulator's auto-loop — the value survives all three. Tokens used: 980 of 1,500 budgeted.",
     "created_by": "human-manual",
     "audit_log": [
       { "action": "claimed", "by": "claude-agent-1", "at": "2026-05-04T11:00:00Z" },
@@ -185,7 +185,7 @@ const testJson = `[
   {
     "id": "issue-008",
     "title": "Feature: add sprint summary export to markdown",
-    "description": "Team lead wants a one-click export of the current sprint's closed issues, token burn, and per-agent breakdown as a markdown file suitable for pasting into a retro doc. Layout decision is still open: should the export reflect the dashboard layout or be its own canonical format?",
+    "description": "Team lead wants a one-click export of the current sprint's closed issues, token burn, and per-agent breakdown as a markdown file suitable for pasting into a retro doc. Layout decision is still open: should the export reflect the activity layout or be its own canonical format?",
     "status": "blocked",
     "priority": "P2",
     "assignee": "unassigned",
@@ -198,12 +198,12 @@ const testJson = `[
     "claimed_by": null,
     "claimed_at": null,
     "completed_at": null,
-    "blocked_reason": "waiting for dashboard layout decision",
+    "blocked_reason": "waiting for activity layout decision",
     "result": null,
     "created_by": "human-manual",
     "audit_log": [
       { "action": "created", "by": "patrick", "at": "2026-05-05T09:00:00Z" },
-      { "action": "blocked: waiting for dashboard layout decision", "by": "patrick", "at": "2026-05-06T12:00:00Z" }
+      { "action": "blocked: waiting for activity layout decision", "by": "patrick", "at": "2026-05-06T12:00:00Z" }
     ]
   }
 ]

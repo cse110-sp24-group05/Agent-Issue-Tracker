@@ -248,7 +248,6 @@ select {
     font-weight: var(--weight-bold);
     color: var(--color-text-light);
     letter-spacing: -0.3px;
-    flex-shrink: 0;
     font-family: ui-monospace, "Cascadia Code", "Fira Code", monospace;
 }
 
@@ -257,39 +256,51 @@ select {
 }
 
 
-.nav-actions {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-    gap: var(--space-2);
-    flex-shrink: 0;
-}
-
-.nav-icon-btn {
+.nav-tabs {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: var(--radius-md);
-    border: none;
-    background: transparent;
-    color: #9CA3AF;
-    font-size: var(--text-md);
-    cursor: pointer;
-    transition: color var(--transition-fast), background var(--transition-fast);
+    gap: var(--space-2);
+    flex: 1;
+}
+
+.nav-tabs a {
+  color: var(--color-text-light);
+  font-family: 'HeadingFont';
+}
+
+.nav-tabs a.active {
+  font-family: 'HeadingFontBold';
+}
+.nav-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: #9CA3AF;
+  font-size: var(--text-md);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.nav-icon-btn img {
+  width: 32px;
+  height: 32px;
 }
 
 .nav-icon-btn:hover {
-    color: #FFFFFF;
-    background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* ─── Page Layout ───────────────────────────────────────────────── */
 .page {
     padding-top: var(--nav-height);
     min-height: 100vh;
-    margin-left: var(--sidebar-width);
     background: var(--color-bg-subtle);
   }
   

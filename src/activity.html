@@ -4,31 +4,29 @@
     <meta charset="utf-8">
     <title></title>
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/activity.css">
   </head>
   <body>
-    <script src="./js/dashboard-app.js" type="module"></script>
+    <script src="./js/activity-app.js" type="module"></script>
     <script src="./js/components/navbar.js"></script>
-    <script src="./js/components/sidebar.js"></script>
     <my-navbar></my-navbar>
-    <my-sidebar></my-sidebar>
 
        <!-- ── Page ─────────────────────────────────────────────────── -->
-        <main class="dashboard-page">
-          <div class="dashboard-wrap">
+        <main class="activity-page">
+          <div class="activity-wrap">
             
             <header>
               <!-- ── Sprint Health Bar ──────────────────────────────────────── -->
               <div class="sprint-bar">
                 <!-- <span class="sprint-bar-label">Sprint</span> -->
                 <div class="sprint-pills">
-                  <!-- Rendered in dashboard-app.js -->
+                  <!-- Rendered in activity-app.js -->
                 </div>
               </div>
             </header>
 
             <!-- Two-column: feed + token burn -->
-            <div class="dashboard-grid">
+            <div class="activity-grid">
 
               <!-- ── Live Activity Feed ───────────────────────────── -->
               <section class="dash-section">
@@ -39,7 +37,7 @@
                   </h2>
                 </div>
                 <div class="feed-list" id="feed-list">
-                  <!-- Rendered in dashboard-app.js -->
+                  <!-- Rendered in activity-app.js -->
                 </div>
               </section>
 
