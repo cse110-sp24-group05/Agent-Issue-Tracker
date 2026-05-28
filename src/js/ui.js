@@ -36,11 +36,12 @@ export const staLabel = s => STA_LABEL[s] || s;
  *   any other (treated as agent name) → 🤖
  * @param createdBy
  */
-export function createdByIcon(createdBy) {
+/**export function createdByIcon(createdBy) {
   if (createdBy === 'human-manual') {return '✍️';}
   if (createdBy === 'llm-assist')   {return '✨';}
   return '🤖';
 }
+*/
 
 /**
  * Relative time string: "just now", "32s ago", "5m ago", "3h ago", "2d ago".
