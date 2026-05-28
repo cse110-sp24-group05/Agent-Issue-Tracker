@@ -14,7 +14,8 @@ import {
   claimIssue,
   putResult,
   closeIssue,
-  blockIssue
+  blockIssue,
+  getIssueHistory
 } from './handlers.js';
 
 
@@ -38,9 +39,15 @@ export default {
       return getAllIssues(env);
     }
 
+    // GET /api/issues/:id/history
+    if (url.pathname.startsWith('/api/issues/') && url.pathname.endsWith('/history') && method === 'GET') {
+      const id = url.pathname.split('/')[3];
+      return getIssueHistory(id, env);
+    }
 
     // GET /api/issues/:id
-    if (url.pathname.startsWith('/api/issues/') && method === 'GET') {
+    const isGetById = url.pathname.startsWith('/api/issues/') && !url.pathname.endsWith('/history');
+    if (isGetById && method === 'GET') {
       const id = url.pathname.split('/')[3];
       return getIssueById(id, env);
     }
