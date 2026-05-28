@@ -197,7 +197,7 @@ html {
 }
 
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+  font-family: 'SmallFont', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
                Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: var(--text-base);
   font-weight: var(--weight-normal);
@@ -248,7 +248,7 @@ select {
     font-weight: var(--weight-bold);
     color: var(--color-text-light);
     letter-spacing: -0.3px;
-    font-family: ui-monospace, "Cascadia Code", "Fira Code", monospace;
+    font-family: 'HeadingFont', ui-monospace, "Cascadia Code", "Fira Code", monospace;
 }
 
 .nav-logo span {
@@ -589,15 +589,16 @@ select {
   .align-right   { text-align: right; }
   
   /* ─── Settings / Centered Page Layout ───────────────────────────── */
-  .page-centered {
-    min-height: 100vh;
-    background: var(--color-bg-subtle);
-    display: flex;
+  .settings-container {
+    width: 100%;
+    height: 100%;
     align-items: center;
     justify-content: center;
-    padding: var(--space-6);
+    display: flex;
+    background: var(--color-fill-light);
+    position: fixed;
+    z-index: 99;
   }
-  
   .setup-card {
     width: 100%;
     max-width: 440px;

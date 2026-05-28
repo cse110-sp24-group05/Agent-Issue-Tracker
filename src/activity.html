@@ -1,68 +1,122 @@
 <!DOCTYPE html>
 <html lang="">
+
   <head>
     <meta charset="utf-8">
     <title></title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/activity.css">
   </head>
+
   <body>
     <script src="./js/activity-app.js" type="module"></script>
     <script src="./js/components/navbar.js"></script>
     <my-navbar></my-navbar>
 
-       <!-- ── Page ─────────────────────────────────────────────────── -->
-        <main class="activity-page">
-          <div class="activity-wrap">
-            
-            <header>
-              <!-- ── Sprint Health Bar ──────────────────────────────────────── -->
-              <div class="sprint-bar">
-                <!-- <span class="sprint-bar-label">Sprint</span> -->
-                <div class="sprint-pills">
-                  <!-- Rendered in activity-app.js -->
-                </div>
-              </div>
-            </header>
+    <div class="settings-container">
+      <div class="setup-card card">
+        <div class="setup-header">
+          <span class="nav-logo">A<span>I</span>T</span>
+          <p class="text-muted text-sm">Agent Issue Tracker — first-time setup</p>
+        </div>
 
-            <!-- Two-column: feed + token burn -->
-            <div class="activity-grid">
-
-              <!-- ── Live Activity Feed ───────────────────────────── -->
-              <section class="dash-section">
-                <div class="dash-section-head">
-                  <h2 class="dash-section-title">
-                    <span class="live-dot" aria-hidden="true"></span>
-                    Live Activity
-                  </h2>
-                </div>
-                <div class="feed-list" id="feed-list">
-                  <!-- Rendered in activity-app.js -->
-                </div>
-              </section>
-
-              <!-- ── Token Burn ────────────────────────────────────── -->
-              <aside class="dash-section" id="token-burn">
-                
-              </aside>
-
-            </div>
-
-            <!-- ── Recent Completions ──────────────────────────────── -->
-            <section class="dash-section dash-completions-section">
-              <div class="dash-section-head">
-                <h2 class="dash-section-title">Recent Completions</h2>
-              </div>
-              <div class="completions-grid" id="completions-grid">
-                <!-- Rendered by JS -->
-              </div>
-            </section>
-
+        <form id="setup-form" class="setup-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="ait-name">
+              Your name <span class="field-hint">required</span>
+            </label>
+            <input class="form-input" type="text" id="ait-name" placeholder="e.g. Patrick" autocomplete="name" required>
           </div>
-        </main>
 
-        
+          <div class="form-group">
+            <label class="form-label" for="ait-repo">
+              GitHub repo <span class="field-hint">required</span>
+            </label>
+            <input class="form-input" type="text" id="ait-repo" placeholder="owner/repo" autocomplete="off" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ait-token">
+              GitHub token <span class="field-hint">required</span>
+            </label>
+            <input class="form-input" type="password" id="ait-token" placeholder="ghp_…" autocomplete="off" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ait-slack">
+              Slack webhook URL <span class="field-hint">optional</span>
+            </label>
+            <input class="form-input" type="text" id="ait-slack" placeholder="https://hooks.slack.com/services/…"
+              autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ait-llm">
+              LLM API key <span class="field-hint">optional</span>
+            </label>
+            <input class="form-input" type="password" id="ait-llm" placeholder="sk-…" autocomplete="off">
+          </div>
+
+          <button type="submit" class="btn btn-primary setup-submit">
+            Save and continue
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ── Page ─────────────────────────────────────────────────── -->
+    <main class="activity-page">
+      <div class="activity-wrap">
+
+        <header>
+          <!-- ── Sprint Health Bar ──────────────────────────────────────── -->
+          <div class="sprint-bar">
+            <!-- <span class="sprint-bar-label">Sprint</span> -->
+            <div class="sprint-pills">
+              <!-- Rendered in activity-app.js -->
+            </div>
+          </div>
+        </header>
+
+        <!-- Two-column: feed + token burn -->
+        <div class="activity-grid">
+
+          <!-- ── Live Activity Feed ───────────────────────────── -->
+          <section class="dash-section">
+            <div class="dash-section-head">
+              <h2 class="dash-section-title">
+                <span class="live-dot" aria-hidden="true"></span>
+                Live Activity
+              </h2>
+            </div>
+            <div class="feed-list" id="feed-list">
+              <!-- Rendered in activity-app.js -->
+            </div>
+          </section>
+
+          <!-- ── Token Burn ────────────────────────────────────── -->
+          <aside class="dash-section" id="token-burn">
+
+          </aside>
+
+        </div>
+
+        <!-- ── Recent Completions ──────────────────────────────── -->
+        <section class="dash-section dash-completions-section">
+          <div class="dash-section-head">
+            <h2 class="dash-section-title">Recent Completions</h2>
+          </div>
+          <div class="completions-grid" id="completions-grid">
+            <!-- Rendered by JS -->
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+
     <main></main>
     <footer></footer>
   </body>
+
 </html>
