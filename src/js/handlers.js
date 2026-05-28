@@ -25,7 +25,8 @@ import {
   deleteIssueById,
   claimIssueRow,
   updateIssueStatus,
-  closeIssueRow
+  closeIssueRow,
+  selectIssueHistory
 } from './db.js';
 
 
@@ -418,6 +419,32 @@ export async function blockIssue(id, env) {
   }
 }
 
+/**
+ * getIssueHistory retrieves the history of status changes for a specific issue
+ * based on its issue id. It checks if the issue exists and then queries the
+ * database for all status change records associated with that issue. The function
+ * formats the results into a JSON response, which includes an array of historical
+ * entries detailing the status changes along with their corresponding timestamps.
+ * If the issue does not exist or if there is an error during retrieval,
+ * it returns an appropriate error message.
+ * @param {string} id - A unique identifier for an issue.
+ * @param {object} env - The environment object containing bindings and configurations,
+ * including the database connection.
+ * @returns {Response} A JSON response containing the issue history or an error message.
+ */
+export async function getIssueHistory(id, env) {
+  try {
+    const issue = await selectIssueById(env, id);
+    if (!issue) {
+      return notFound();
+    }
+
+    const history = await selectIssueHistory(env, id);
+    return ok({ success: true, issue_id: id, history });
+  } catch (error) {
+    return serverError(error.message);
+  }
+}
 
 /**
  * filterIssues returns a filtered subset of issues based on provided criteria.

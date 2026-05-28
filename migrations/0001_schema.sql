@@ -37,3 +37,53 @@ CREATE TABLE IF NOT EXISTS agents (
         agent_status IN ('idle', 'running', 'offline')
     )
 );
+
+CREATE TABLE IF NOT EXISTS issue_status_history (
+    id                TEXT NOT NULL PRIMARY KEY,
+    issue_id          TEXT NOT NULL,
+    issue_status      TEXT NOT NULL CHECK (
+        issue_status IN ('open', 'in_progress', 'blocked', 'review', 'closed')
+    ),
+    changed_at        TEXT NOT NULL,         -- ISO timestamp
+    changed_by_user   TEXT,
+    changed_by_agent  TEXT,                  -- Only one of these two should be filled
+
+    FOREIGN KEY (issue_id)         REFERENCES issues(id),
+    FOREIGN KEY (changed_by_user)  REFERENCES users(id),
+    FOREIGN KEY (changed_by_agent) REFERENCES agents(id)
+);
+
+CREATE TRIGGER IF NOT EXISTS trg_issue_status_history
+AFTER UPDATE OF issue_status ON issues
+WHEN OLD.issue_status != NEW.issue_status
+BEGIN
+    INSERT INTO issue_status_history (id, issue_id, issue_status, changed_at, changed_by_user, changed_by_agent)
+    VALUES (
+        lower(hex(randomblob(16))),
+        NEW.id,
+        NEW.issue_status,
+        NEW.updated_at,
+        NEW.assigned_to_user,
+        NEW.assigned_to_agent
+    );
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_issue_status_history_insert
+AFTER INSERT ON issues
+BEGIN
+    INSERT INTO issue_status_history (id, issue_id, issue_status, changed_at, changed_by_user, changed_by_agent)
+    VALUES (
+        lower(hex(randomblob(16))),
+        NEW.id,
+        NEW.issue_status,
+        NEW.created_at,
+        NEW.assigned_to_user,
+        NEW.assigned_to_agent
+    );
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_delete_issue_status_history
+BEFORE DELETE ON issues
+BEGIN
+    DELETE FROM issue_status_history WHERE issue_id = OLD.id;
+END;
