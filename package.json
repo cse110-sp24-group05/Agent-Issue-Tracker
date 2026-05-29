@@ -12,7 +12,6 @@
   },
   "jest": {
     "testMatch": [
-      "**/src/tests/**/*.test.js",
       "**/tests/**/*.test.js"
     ],
     "transform": {}
