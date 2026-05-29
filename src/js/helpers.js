@@ -9,7 +9,7 @@ export const VALID_PRIORITIES = ['low', 'medium', 'high', 'critical'];
 export const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type'
+  'Access-Control-Allow-Headers': 'Content-Type, X-Workspace-ID, X-Agent-ID'
 };
 
 
@@ -24,7 +24,9 @@ export const ALLOWED_UPDATE_FIELDS = [
   'claim_expires_at',
   'retry_count',
   'claim_timeout_minutes',
-  'closed_at'
+  'closed_at',
+  'result_text',
+  'tokens_used'
 ];
 
 

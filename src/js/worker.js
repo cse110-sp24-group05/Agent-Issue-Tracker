@@ -8,6 +8,7 @@
 import {
   createIssue,
   getAllIssues,
+  getReadyIssue,
   getIssueById,
   updateIssue,
   deleteIssue,
@@ -17,6 +18,8 @@ import {
   blockIssue
 } from './handlers.js';
 
+import { CORS_HEADERS } from './helpers.js';
+
 
 export default {
   async fetch(request, env) {
@@ -25,17 +28,19 @@ export default {
 
 
     if (method === 'OPTIONS' && url.pathname.startsWith('/api/')) {
-      return new Response(null, { status: 204, headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type'
-      } });
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
 
 
     // GET /api/issues
     if (url.pathname === '/api/issues' && method === 'GET') {
       return getAllIssues(env);
+    }
+
+
+    // GET /api/issues/ready — must be checked before the generic :id route
+    if (url.pathname === '/api/issues/ready' && method === 'GET') {
+      return getReadyIssue(request, env);
     }
 
 
@@ -98,13 +103,6 @@ export default {
       return deleteIssue(id, env);
     }
 
-    return new Response('Not Found', {
-      status: 404,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type'
-      }
-    });
+    return new Response('Not Found', { status: 404, headers: CORS_HEADERS });
   }
 };
