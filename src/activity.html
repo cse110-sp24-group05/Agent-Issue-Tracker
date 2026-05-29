@@ -11,58 +11,10 @@
   <body>
     <script src="./js/activity-app.js" type="module"></script>
     <script src="./js/components/navbar.js"></script>
+    <script src="./js/components/setup-modal.js"></script>
     <my-navbar></my-navbar>
 
-    <div class="settings-container">
-      <div class="setup-card card">
-        <div class="setup-header">
-          <span class="nav-logo">A<span>I</span>T</span>
-          <p class="text-muted text-sm">Agent Issue Tracker — first-time setup</p>
-        </div>
-
-        <form id="setup-form" class="setup-form" novalidate>
-          <div class="form-group">
-            <label class="form-label" for="ait-name">
-              Your name <span class="field-hint">required</span>
-            </label>
-            <input class="form-input" type="text" id="ait-name" placeholder="e.g. Patrick" autocomplete="name" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="ait-repo">
-              GitHub repo <span class="field-hint">required</span>
-            </label>
-            <input class="form-input" type="text" id="ait-repo" placeholder="owner/repo" autocomplete="off" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="ait-token">
-              GitHub token <span class="field-hint">required</span>
-            </label>
-            <input class="form-input" type="password" id="ait-token" placeholder="ghp_…" autocomplete="off" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="ait-slack">
-              Slack webhook URL <span class="field-hint">optional</span>
-            </label>
-            <input class="form-input" type="text" id="ait-slack" placeholder="https://hooks.slack.com/services/…"
-              autocomplete="off">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="ait-llm">
-              LLM API key <span class="field-hint">optional</span>
-            </label>
-            <input class="form-input" type="password" id="ait-llm" placeholder="sk-…" autocomplete="off">
-          </div>
-
-          <button type="submit" class="btn btn-primary setup-submit">
-            Save and continue
-          </button>
-        </form>
-      </div>
-    </div>
+    <setup-modal></setup-modal>
 
     <!-- ── Page ─────────────────────────────────────────────────── -->
     <main class="activity-page">
