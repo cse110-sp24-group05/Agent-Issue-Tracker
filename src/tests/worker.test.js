@@ -170,11 +170,19 @@ describe('Issues API Tests', () => {
     // success case
     test('returns history records for an existing issue', async () => {
       mockD1Sequence([
-        { response: { id: '1', issue_status: 'open' }, method: 'first' }, //selectIssueById
-        { response: {results: [{ issue_id: '1', old_status: 'open', 
-          new_status: 'in_progress', changed_at: new Date().toISOString() },
-        { issue_id: '1', old_status: null, new_status: 'open', 
-          changed_at: new Date().toISOString() }]}, method: 'all'}, // selectIssueHistory
+        {
+          response: { id: '1', issue_status: 'open' },
+          method: 'first'
+        },
+        {
+          response: {
+            results: [
+              { id: 'abc', issue_id: '1', issue_status: 'in_progress', changed_at: new Date().toISOString(), changed_by_user: null, changed_by_agent: 'agent-1' },
+              { id: 'xyz', issue_id: '1', issue_status: 'open',        changed_at: new Date().toISOString(), changed_by_user: null, changed_by_agent: null }
+            ]
+          },
+          method: 'all'
+        }
       ]);
 
       const response = await worker.fetch(
@@ -187,8 +195,9 @@ describe('Issues API Tests', () => {
       expect(data.success).toBe(true);
       expect(data.issue_id).toBe('1');
       expect(data.history).toHaveLength(2);
-      expect(data.history[0].new_status).toBe('in_progress');
+      expect(data.history[0].issue_status).toBe('in_progress'); // most recent first
     });
+
 
     // empty (no) history case
     test('returns empty history array when issue has no history', async () => {
