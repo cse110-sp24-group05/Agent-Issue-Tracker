@@ -13,7 +13,7 @@ import {
   VALID_PRIORITIES,
   CORS_HEADERS,
   ALLOWED_UPDATE_FIELDS
-} from '../src/js/helpers.js';
+} from '../js/helpers.js';
 
 
 // Tests for validateStatus, including success case, failure case, 
