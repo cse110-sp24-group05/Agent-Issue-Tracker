@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AIT — Issues</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/list.css" />
+    <link rel="stylesheet" href="css/issue.css">
+  </head>
+  <body>
+    <script src="./js/components/navbar.js"></script>
+    <my-navbar></my-navbar>
+    <!-- ── Page ──────────────────────────────────────────────────── -->
+    <main class="page">
+      <div class="container">
+        <!-- Summary bar -->
+        <div class="summary-bar">
+          <!-- Open Card -->
+          <button class="stat-card card stat-open" data-filter="open">
+            <!-- container: pushes text left, icon right -->
+            <div class="stat-card-content">
+              <!-- left side: label on top, number below -->
+              <div class="stat-card-text">
+                <div class="stat-number" id="sum-open">0</div>
+                <div class="stat-label">Open</div>
+              </div>
+
+              <!-- Checkmark icon -->
+              <status-icon>
+                <img src="./assets/svg/todo.svg" class="status-icon large" data-filter="todo">
+              </status-icon>
+              </svg>
+            </div>
+          </button>
+
+          <!-- In Progress Card -->
+          <button
+            class="stat-card card stat-progress"
+            data-filter="in-progress"
+          >
+            <div class="stat-card-content">
+              <div class="stat-card-text">
+                <div class="stat-number" id="sum-progress">0</div>
+                <div class="stat-label">In Progress</div>
+              </div>
+              <!-- Clock icon -->
+              <status-icon>
+                <img src="./assets/svg/in-progress.svg" class="status-icon large" data-filter="in-progress">
+              </status-icon>
+            </div>
+          </button>
+
+          
+
+          <!-- Blocked Card -->
+          <button class="stat-card card stat-blocked" data-filter="blocked">
+            <div class="stat-card-content">
+              <div class="stat-card-text">
+                <div class="stat-number" id="sum-blocked">0</div>
+                <div class="stat-label">Blocked</div>
+              </div>
+              <!-- Blocked circle icon -->
+              
+              <status-icon>
+                <img src="./assets/svg/blocked.svg" class="status-icon large" data-filter="blocked">
+              </status-icon>
+            </div>
+          </button>
+
+          <!-- Pending Review Card -->
+          <button
+            class="stat-card card stat-review"
+            data-filter="pending-review"
+          >
+            <div class="stat-card-content">
+              <div class="stat-card-text">
+                <div class="stat-number" id="sum-review">0</div>
+                <div class="stat-label">Pending Review</div>
+              </div>
+              <!-- Review clipboard icon -->
+              
+              <status-icon>
+                <img src="./assets/svg/pending.svg" class="status-icon large" data-filter="pending">
+              </status-icon>
+            </div>
+          </button>
+
+          <!-- Closed Card -->
+          <button class="stat-card card stat-closed" data-filter="closed">
+            <div class="stat-card-content">
+              <div class="stat-card-text">
+                <div class="stat-number" id="sum-closed">0</div>
+                <div class="stat-label">Closed</div>
+              </div>
+              <!-- Circle with dot icon -->
+              <status-icon>
+                <img src="./assets/svg/closed.svg" class="status-icon large" data-filter="closed">
+              </status-icon>
+            </div>
+          </button>
+        </div>
+        <!--  -->
+        <!-- Toolbar: filters + view toggle + new issue -->
+        <div class="list-toolbar">
+          <div class="filter-bar">
+            <select
+              class="form-select filter-select"
+              id="filter-status"
+              aria-label="Filter by status"
+            >
+              <option value="">All statuses</option>
+              <option value="open">Open</option>
+              <option value="in-progress">In Progress</option>
+              <option value="pending-review">Pending Review</option>
+              <option value="blocked">Blocked</option>
+              <option value="closed">Closed</option>
+            </select>
+
+            <select
+              class="form-select filter-select"
+              id="filter-priority"
+              aria-label="Filter by priority"
+            >
+              <option value="">All priorities</option>
+              <option value="P0">P0</option>
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+            </select>
+
+            <input
+              class="form-input filter-input"
+              type="text"
+              id="filter-assignee"
+              placeholder="Assignee…"
+              aria-label="Filter by assignee"
+            />
+
+            <input
+              class="form-input filter-search"
+              type="text"
+              id="filter-search"
+              placeholder="Search issues…"
+              aria-label="Search issues"
+            />
+          </div>
+
+          <div class="toolbar-right">
+            <div class="view-toggle" role="group" aria-label="View toggle">
+              <button
+                class="view-toggle-btn active"
+                id="view-toggle-list"
+                data-view="list"
+                aria-label="List view"
+              >
+                <span aria-hidden="true">≡</span> List
+              </button>
+              <button
+                class="view-toggle-btn"
+                id="view-toggle-board"
+                data-view="board"
+                aria-label="Board view"
+              >
+                <span aria-hidden="true">⊞</span> Board
+              </button>
+            </div>
+            <button class="btn btn-primary" id="btn-new-issue">
+              + New Issue
+            </button>
+          </div>
+        </div>
+        <!-- ── List view ───────────────────────────────────────── -->
+        <div id="list-view" class="view-container">
+          <div class="card issue-table-wrapper">
+            <table class="issue-table">
+              <colgroup>
+                <col class="col-id" />
+                <col class="col-pri" />
+                <col class="col-title" />
+                <col class="col-status" />
+                <col class="col-assign" />
+                <col class="col-budget" />
+                <col class="col-date" />
+                <col class="col-edit">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Pri</th>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Assignee</th>
+                  <th class="align-center">Tokens</th>
+                  <th class="align-center">Updated</th>
+                  <th aria-label="Actions"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- ── End Container ──────────────────────────────────────── -->
+      </div>
+
+      <div class="container-board">
+        <!-- ── Kanban Board view ──────────────────────────────────────── -->
+        <div id="board-view" class="view-container hidden">
+          <div class="board">
+            <div class="board-column board-column-open">
+              <div class="board-col-header">
+                <span class="board-col-title">Open</span>
+                <span class="board-col-count" id="count-open">0</span>
+              </div>
+              <div class="board-cards" id="col-open" data-status="open">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+            <div class="board-column board-column-progress">
+              <div class="board-col-header">
+                <span class="board-col-title">In Progress</span>
+                <span class="board-col-count" id="count-progress">0</span>
+              </div>
+              <div
+                class="board-cards"
+                id="col-progress"
+                data-status="in-progress"
+              >
+              <!-- Populated by JS -->
+              </div>
+            </div>
+            <div class="board-column board-column-blocked">
+              <div class="board-col-header">
+                <span class="board-col-title">Blocked</span>
+                <span class="board-col-count" id="count-blocked">0</span>
+              </div>
+              <div class="board-cards" id="col-blocked" data-status="blocked">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+            <div class="board-column board-column-review">
+              <div class="board-col-header">
+                <span class="board-col-title">Pending Review</span>
+                <span class="board-col-count" id="count-review">0</span>
+              </div>
+              <div
+                class="board-cards"
+                id="col-review"
+                data-status="pending-review"
+              >
+                
+                <!-- Populated by JS -->
+              </div>
+            </div>
+            <div class="board-column board-column-closed">
+              <div class="board-col-header">
+                <span class="board-col-title">Closed</span>
+                <span class="board-col-count" id="count-closed">0</span>
+              </div>
+              <div class="board-cards" id="col-closed" data-status="closed">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- ── End Main ──────────────────────────────────────────────────── -->
+    <!-- ── New Issue Modal ───────────────────────────────────────── -->
+    <div
+      class="modal-overlay hidden"
+      id="modal-new-issue"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modal-title">Create New Issue</h2>
+          <button class="modal-close" id="modal-close" aria-label="Close">
+            &#10005;
+          </button>
+        </div>
+
+        <!-- New Issue Form -->
+        <form class="modal-body" id="form-new-manual">
+          <div class="form-group">
+            <label class="form-label" for="new-title">Title<span class="required">*</span></label>
+            <input
+              class="form-input"
+              type="text"
+              id="new-title"
+              placeholder="Short description of the issue"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="new-description">Description</label>
+            <textarea
+              class="form-textarea"
+              id="new-description"
+              placeholder="What needs to be done and why?"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="modal-row">
+            <div class="form-group">
+              <label class="form-label" for="new-priority">Priority</label>
+              <select class="form-select" id="new-priority">
+                <option value="P0">P0</option>
+                <option value="P1">P1</option>
+                <option value="P2" selected>P2</option>
+                <option value="P3">P3</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="new-assignee">Assignee</label>
+              <input
+                class="form-input"
+                type="text"
+                id="new-assignee"
+                placeholder="username or leave blank"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="new-budget">Token Budget</label>
+              <input
+                class="form-input"
+                type="number"
+                id="new-budget"
+                placeholder="2000"
+                min="0"
+                max="100000"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="new-estimate">Time Estimate (min)</label>
+              <input
+                class="form-input"
+                type="number"
+                id="new-estimate"
+                placeholder="60"
+                min="0"
+              />
+            </div>
+          </div>
+        </form>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" id="manual-cancel">
+            Cancel
+          </button>
+          <button class="btn btn-primary" type="submit" form="form-new-manual">
+            Create Issue
+          </button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="js/list-app.js"></script>
+    <!-- ── End Body ──────────────────────────────────────────────────── -->
+  </body>
+</html>

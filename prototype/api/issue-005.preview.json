@@ -1,0 +1,120 @@
+{
+  "_comment": "Two snapshots of the same issue under the proposed v2 schema. Switch between them in issue.preview.html to see how the contract evolves between claim and result.",
+
+  "incoming": {
+    "id": "issue-005",
+    "type": "bug",
+    "title": "Fix: kanban drag and drop not persisting status change",
+
+    "context": "Dragging a card from To Do to In Progress visually updates the column but the issue's status reverts on page reload. The drop handler is updating in-memory state without calling updateIssue(), so localStorage is never written. This was caught when QA reloaded after a sprint planning session and the board reset.",
+
+    "acceptance_criteria": [
+      { "text": "Dropping a card calls updateIssue() so the change is persisted to localStorage.", "done": false },
+      { "text": "Reloading the page preserves the new column position.", "done": false },
+      { "text": "An audit_log entry is written with the old → new status transition.", "done": false },
+      { "text": "Regression test asserts that updateIssue() is called exactly once per drop.", "done": false }
+    ],
+
+    "files_in_scope": [
+      "prototype/index.html",
+      "prototype/js/data.js"
+    ],
+    "out_of_scope": [
+      "prototype/css/main.css",
+      "prototype/api/issues.json"
+    ],
+
+    "status":     "in-progress",
+    "priority":   "P0",
+    "assignee":   "claude-agent-1",
+    "created_by": "human-manual",
+    "created_at": "2026-05-06T09:00:00Z",
+    "updated_at": "2026-05-07T10:00:00Z",
+    "claimed_by": "claude-agent-1",
+    "claimed_at": "2026-05-07T10:00:00Z",
+    "completed_at": null,
+
+    "token_budget":  2000,
+    "tokens_used":   720,
+    "time_estimate": 60,
+    "time_spent":    25,
+
+    "blocked_reason": null,
+    "dependencies":   [],
+    "escalate_when":  "If the drop handler has no obvious reference to updateIssue() or if multiple handlers race, stop and request a pairing session.",
+
+    "result": null,
+
+    "audit_log": [
+      { "action": "created",          "by": "patrick",         "at": "2026-05-06T09:00:00Z" },
+      { "action": "claimed",          "by": "claude-agent-1",  "at": "2026-05-07T10:00:00Z" }
+    ]
+  },
+
+  "submitted": {
+    "id": "issue-005",
+    "type": "bug",
+    "title": "Fix: kanban drag and drop not persisting status change",
+
+    "context": "Dragging a card from To Do to In Progress visually updates the column but the issue's status reverts on page reload. The drop handler is updating in-memory state without calling updateIssue(), so localStorage is never written. This was caught when QA reloaded after a sprint planning session and the board reset.",
+
+    "acceptance_criteria": [
+      { "text": "Dropping a card calls updateIssue() so the change is persisted to localStorage.", "done": true },
+      { "text": "Reloading the page preserves the new column position.", "done": true },
+      { "text": "An audit_log entry is written with the old → new status transition.", "done": true },
+      { "text": "Regression test asserts that updateIssue() is called exactly once per drop.", "done": true }
+    ],
+
+    "files_in_scope": [
+      "prototype/index.html",
+      "prototype/js/data.js"
+    ],
+    "out_of_scope": [
+      "prototype/css/main.css",
+      "prototype/api/issues.json"
+    ],
+
+    "status":     "pending-review",
+    "priority":   "P0",
+    "assignee":   "claude-agent-1",
+    "created_by": "human-manual",
+    "created_at": "2026-05-06T09:00:00Z",
+    "updated_at": "2026-05-09T14:20:00Z",
+    "claimed_by": "claude-agent-1",
+    "claimed_at": "2026-05-07T10:00:00Z",
+    "completed_at": null,
+
+    "token_budget":  2000,
+    "tokens_used":   1640,
+    "time_estimate": 60,
+    "time_spent":    52,
+
+    "blocked_reason": null,
+    "dependencies":   [],
+    "escalate_when":  "If the drop handler has no obvious reference to updateIssue() or if multiple handlers race, stop and request a pairing session.",
+
+    "result": {
+      "pr_url":       "https://github.com/team/ait/pull/214",
+      "tests_passed": true,
+      "acceptance_criteria": [
+        { "text": "Dropping a card calls updateIssue() so the change is persisted to localStorage.", "done": true },
+        { "text": "Reloading the page preserves the new column position.", "done": true },
+        { "text": "An audit_log entry is written with the old → new status transition.", "done": true },
+        { "text": "Regression test asserts that updateIssue() is called exactly once per drop.", "done": true }
+      ],
+      "files_changed": [
+        "prototype/index.html",
+        "prototype/js/data.js",
+        "prototype/test/board.drop.test.js"
+      ],
+      "tokens_used": 1640,
+      "notes": "Root cause: the drop handler was mutating dragging.dataset.status without invoking updateIssue(). Wired the call into the drop event and added a 4th-line audit entry stamping the transition. Regression test uses a spy on updateIssue() and asserts call count === 1 per drop, regardless of drag distance. Verified manually across reload, cross-tab, and the agent simulator's auto-loop."
+    },
+
+    "audit_log": [
+      { "action": "created",                  "by": "patrick",         "at": "2026-05-06T09:00:00Z" },
+      { "action": "claimed",                  "by": "claude-agent-1",  "at": "2026-05-07T10:00:00Z" },
+      { "action": "submitted for review",     "by": "claude-agent-1",  "at": "2026-05-09T14:20:00Z" }
+    ]
+  }
+}

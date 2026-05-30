@@ -1,7 +1,7 @@
 name: SemVer
 
 # semver.yml — Automated Versioning & Changelog
-#
+# Created with Claude AI assistance — human reviewed and tested
 # Watches every merge to main and reads commit messages
 # to figure out the next version number automatically.
 #   feat: anything   → minor bump (1.0.0 → 1.1.0)

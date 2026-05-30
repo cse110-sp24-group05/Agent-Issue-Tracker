@@ -1,6 +1,8 @@
 name: CD
+
+# ─────────────────────────────────────────────
 # cd.yml — Continuous Deployment
-#
+# Created with Claude AI assistance — human reviewed and tested
 # Automatically deploys the app to Cloudflare every time
 # code merges to main. Runs the database migrations first,
 # then deploys the Worker so the two are always in sync.
@@ -9,9 +11,8 @@ name: CD
 # GitHub repo → Settings → Secrets and variables → Actions
 #   CLOUDFLARE_API_TOKEN   → get from Cloudflare dashboard > API Tokens
 #   CLOUDFLARE_ACCOUNT_ID  → get from Cloudflare dashboard homepage
+# ─────────────────────────────────────────────
 
-
-# only fires when something merges to main
 on:
   push:
     branches: [main]
@@ -46,8 +47,16 @@ jobs:
       # deploys src/js/worker.js to Cloudflare Workers
       # wrangler.toml already has the right config so this just works
       - name: Deploy Worker
+        id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+
+      # prints the deployment URL to the Actions log
+      - name: Print deployment URL
+        run: |
+          echo "✅ Deployed to Cloudflare Workers"
+          echo "🌐 API: https://agent-issue-tracker.stc021.workers.dev"
+          echo "🌐 Site: https://agent-issue-tracker.pages.dev"

@@ -25,10 +25,6 @@ export default {
     const method = request.method;
 
 
-    console.log('PATH:', url.pathname);
-    console.log('METHOD:', request.method);
-
-
     if (method === 'OPTIONS' && url.pathname.startsWith('/api/')) {
       return new Response(null, { status: 204, headers: {
         'Access-Control-Allow-Origin': '*',

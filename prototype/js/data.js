@@ -17,7 +17,7 @@ const _shouldReset =
   new URLSearchParams(window.location.search).get('reset') === 'true';
 
 if (_shouldReset || !localStorage.getItem(ISSUES_KEY)) {
-  const res  = await fetch('api/issues.json');
+  const res  = await fetch('../api/issues.json');
   const seed = await res.json();
   localStorage.setItem(ISSUES_KEY, JSON.stringify(seed));
   if (_shouldReset) {

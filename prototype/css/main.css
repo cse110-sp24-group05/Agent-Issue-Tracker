@@ -18,6 +18,15 @@
   --color-accent-hover: #1D4ED8;
   --color-danger:       #DC2626;
   --color-danger-hover: #B91C1C;
+  --color-new-issue-btn: #007E02;
+  --color-new-issue-btn-hover: #016603;
+
+  /* backgrounds */
+  --color-background-light: rgb(255 255 255);
+  --color-background-dark: rgb(56 56 56);
+  --color-fill-light: rgb(238 239 250);
+  --color-fill-dark: rgb(99 100 106);
+  --color-fill-highlight: rgb(251 251 251);
 
   /* Priority badge colors */
   --priority-p0: #DC2626;
@@ -39,11 +48,11 @@
   --status-closed:         #6B7280;
 
   /* Status badge backgrounds */
-  --status-open-bg:           #F0FDF4;
-  --status-in-progress-bg:    #FEFCE8;
-  --status-pending-review-bg: #F5F3FF;
-  --status-blocked-bg:        #FEF2F2;
-  --status-closed-bg:         #F9FAFB;
+  --status-open-bg:           #EBFFED;
+  --status-in-progress-bg:    #FFF3ED;
+  --status-pending-review-bg: #FBF2FF;
+  --status-blocked-bg:        #FFF0F0;
+  --status-closed-bg:         #ECEAEA;
 
   /* Spacing scale */
   --space-1:  4px;
@@ -64,12 +73,12 @@
 
   /* Font sizes */
   --text-xs:   11px;
-  --text-sm:   13px;
+  --text-sm:   17px;
   --text-base: 14px;
   --text-md:   16px;
   --text-lg:   18px;
   --text-xl:   22px;
-  --text-2xl:  28px;
+  --text-2xl:  32px;
 
   /* Font weights */
   --weight-normal:   400;
@@ -85,6 +94,11 @@
 
   /* Nav dimensions */
   --nav-height: 56px;
+
+  /* Sidebar */
+  --sidebar-width: 220px;
+  --sidebar-border-width: 1px;
+
 
   /* Transitions */
   --transition-fast: 120ms ease;
@@ -230,14 +244,77 @@ select {
 .page {
   padding-top: var(--nav-height);
   min-height: 100vh;
+  margin-left: var(--sidebar-width);
   background: var(--color-bg-subtle);
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 1300px;
   margin: 0 auto;
   padding: var(--space-8) var(--space-6);
 }
+
+.container-board {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+/* ─── Sidebar ───────────────────────────────────────────────────── */
+.sidebar {
+  position: fixed;
+  top: var(--nav-height);
+  left: 0;
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--nav-height));
+  background: var(--color-fill-light);
+  display: flex;
+  flex-direction: column;
+  z-index: 90;
+  gap: var(--space-6);
+  font-family: 'HeadingFont';
+  border: var(--color-nav-bar);
+  border-right-width: var(--sidebar-border-width);
+  border-top-width: 0px;
+  border-style: solid;
+}
+
+.sidebar-tabs {
+display: flex;
+align-items: stretch;
+flex-direction: column;
+margin-top: var(--space-4);
+flex: 17;
+justify-content: flex-start;
+}
+
+.sidebar-tab {
+display: flex;
+align-items: center;
+padding-left: var(--space-4);
+padding-top: var(--space-1);
+padding-bottom: var(--space-1);
+color: var(--color-text-dark);
+font-size: var(--text-lg);
+font-weight: var(--weight-medium);
+border: none;
+width: 100%;
+box-sizing: border-box;
+text-decoration: none;
+transition: all var(--transition-fast);
+}
+
+.sidebar-tab:hover {
+font-weight: var(--weight-bold);
+
+}
+
+.sidebar-tab.active {
+background-color: var(--color-fill-highlight);
+font-family: 'HeadingFontBold';
+}
+
+
 
 /* ─── Badge ─────────────────────────────────────────────────────── */
 .badge {
@@ -270,8 +347,8 @@ select {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
   border: 1px solid transparent;
@@ -288,14 +365,14 @@ select {
 }
 
 .btn-primary {
-  background: var(--color-accent);
+  background: var(--color-new-issue-btn);
   color: #FFFFFF;
-  border-color: var(--color-accent);
+  border-color: var(--color-new-issue-btn);
 }
 
 .btn-primary:hover {
-  background: var(--color-accent-hover);
-  border-color: var(--color-accent-hover);
+  background: var(--color-new-issue-btn-hover);
+  border-color: var(--color-new-issue-btn-hover);
 }
 
 .btn-secondary {

@@ -1,0 +1,521 @@
+/* ─── Sprint Health Bar ─────────────────────────────────────────── */
+.sprint-bar {
+  background: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 50px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.sprint-bar-label {
+    font-family: 'HeadingFont';
+    font-weight: var(--weight-bold);
+    background: none;
+}
+
+.sprint-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-fill-light);
+  color: var(--color-text-dark);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast),
+              color var(--transition-fast);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.pill:hover {
+  background: var(--color-background-light);
+  font-weight: var(--weight-bold);
+}
+
+.pill.active {
+  background: var(--color-background-light);
+  font-family: 'SmallFontBold';
+  
+}
+
+/* TODO: delete pill dot CSS since it's being unified into status icon */
+.pill-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  
+}
+
+/* This is jank, but it's the only way to apply colors to SVGs without modifying the SVGs themselves*/
+[data-filter="open"]           .pill-dot { filter: var(--filter-issue-open) }
+[data-filter="in-progress"]    .pill-dot { filter: var(--filter-issue-in-progress); }
+[data-filter="pending-review"] .pill-dot { filter: var(--filter-issue-pending); }
+[data-filter="blocked"]        .pill-dot { filter: var(--filter-issue-blocked); }
+[data-filter="closed"]         .pill-dot { filter: var(--filter-issue-closed-dark); }
+
+.pill-count {
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+}
+
+.pill-label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.1px;
+}
+
+/* ─── Activity Layout ───────────────────────────────────────────── */
+.activity-page {
+  padding-top: calc(var(--nav-height)); /* nav + sprint bar height */
+  min-height: 100vh;
+  background: var(--color-bg-subtle);
+  padding-left: calc(var(--sidebar-width));
+}
+
+.activity-wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6) 60px;
+}
+
+.activity-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: var(--space-6);
+  align-items: start;
+  margin-bottom: var(--space-8);
+}
+
+/* ─── Shared Section ─────────────────────────────────────────────── */
+.dash-section {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.dash-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-fill-light);
+  font-size: 28px;
+}
+
+.dash-section-title {
+  font-family: 'HeadingFont';
+  font-size: var(--text-md);
+  color: var(--color-text-dark);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.feed-filter-tag {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 2px var(--space-2);
+  font-weight: var(--weight-normal);
+}
+
+/* ─── Live Dot ───────────────────────────────────────────────────── */
+.live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--status-open);
+  flex-shrink: 0;
+  animation: live-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 0 0   rgba(22, 163, 74, 0.5); }
+  50%       { opacity: 0.6; box-shadow: 0 0 0 6px rgba(22, 163, 74, 0); }
+}
+
+/* ─── Activity Feed ──────────────────────────────────────────────── */
+.feed-list {
+  max-height: 580px;
+  overflow-y: auto;
+}
+
+.feed-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: 11px var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  transition: background var(--transition-fast);
+}
+
+.feed-entry:last-child { border-bottom: none; }
+.feed-entry:hover { background: #F5F7FF; }
+
+.feed-icon {
+  font-size: 15px;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+  line-height: 1.4;
+}
+
+.feed-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.feed-top {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-bottom: 2px;
+  flex-wrap: wrap;
+}
+
+.feed-issue-id {
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  color: var(--color-accent);
+  text-decoration: none;
+  flex-shrink: 0;
+  letter-spacing: 0.2px;
+}
+
+.feed-issue-id:hover { text-decoration: underline; }
+
+.feed-action {
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.feed-meta {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.feed-meta strong {
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
+}
+
+.feed-time {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-family: ui-monospace, monospace;
+  padding-top: 2px;
+}
+
+.feed-empty {
+  padding: var(--space-10) var(--space-5);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+/* ─── Token Burn ──────────────────────────────────────────────────── */
+.token-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.token-section {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.token-section:last-child { border-bottom: none; }
+
+.token-section-label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+/* Budget input */
+.budget-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.budget-row label {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.budget-input {
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  width: 90px;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+  color: var(--color-text);
+  text-align: right;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.budget-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Total used */
+.token-total-num {
+  font-size: 34px;
+  font-weight: var(--weight-bold);
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  color: var(--color-text);
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+
+.token-total-sub {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-top: 3px;
+}
+
+/* Sprint progress bar */
+.sprint-track {
+  height: 10px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin: var(--space-3) 0 var(--space-2);
+}
+
+.sprint-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--status-open);
+  transition: width 600ms ease, background 400ms ease;
+}
+
+.sprint-fill.warn   { background: var(--status-in-progress); }
+.sprint-fill.danger { background: var(--priority-p0); }
+
+.sprint-pct {
+  font-size: 11px;
+  font-family: ui-monospace, monospace;
+  color: var(--color-text-muted);
+  text-align: right;
+}
+
+/* Agent breakdown */
+.agent-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.agent-row:last-child { margin-bottom: 0; }
+
+.agent-name {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  width: 100px;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text);
+}
+
+.agent-track {
+  flex: 1;
+  height: 5px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.agent-fill {
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: var(--radius-full);
+  transition: width 600ms ease;
+}
+
+.agent-tokens {
+  font-size: 11px;
+  font-family: ui-monospace, monospace;
+  color: var(--color-text-muted);
+  width: 44px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Top issues */
+.top-issue {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.top-issue:last-child { border-bottom: none; }
+
+.top-issue-title {
+  font-size: var(--text-xs);
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  transition: color var(--transition-fast);
+}
+
+.top-issue-title:hover { color: var(--color-accent); }
+
+.top-issue-tokens {
+  font-size: 11px;
+  font-family: ui-monospace, monospace;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.token-empty {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* ─── Recent Completions ─────────────────────────────────────────── */
+.dash-completions-section {
+    width: 25%;
+}
+
+.completions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+.completion-card {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.completion-title {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  text-decoration: none;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color var(--transition-fast);
+}
+
+.completion-title:hover { color: var(--color-accent); }
+
+.completion-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  flex-wrap: wrap;
+}
+
+.completion-tokens {
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  background: var(--color-bg-subtle);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.completion-result {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  line-height: 1.55;
+  flex: 1;
+}
+
+.completion-read-more {
+  font-size: var(--text-xs);
+  color: var(--color-accent);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  margin-top: auto;
+  transition: color var(--transition-fast);
+}
+
+.completion-read-more:hover { text-decoration: underline; }
+
+.completions-empty {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  padding: var(--space-6) 0;
+}
+
+/* ─── Feed: Load more ──────────────────────────────────────────── */
+.feed-load-more {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  background: transparent;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.feed-load-more:hover {
+  background: rgba(37, 99, 235, 0.05);
+  border-color: var(--color-accent);
+}

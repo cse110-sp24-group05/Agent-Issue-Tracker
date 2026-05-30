@@ -16,7 +16,25 @@ An issue tracker built for AI-native workflows. Humans create and review issues 
 
 ## Stack
 
-Vanilla HTML, CSS, JavaScript — no frameworks. Deployed to GitHub Pages. Data stored in localStorage.
+Vanilla HTML, CSS, JavaScript frontend in `src/`. API on Cloudflare Workers + D1 (`src/js/worker.js`). The older clickable mock lives in `prototype/` and is not used for local dev.
+
+## Local development
+
+**UI only** (static files in `src/`):
+
+```bash
+npm run dev
+```
+
+Open http://localhost:8080/ (redirects to the dashboard).
+
+**API** (optional, for wiring the UI to real endpoints):
+
+```bash
+npm run dev:api
+```
+
+Runs `wrangler dev` — see [`Docs/api-contract.md`](Docs/api-contract.md).
 
 ---
 

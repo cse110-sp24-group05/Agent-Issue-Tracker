@@ -6,35 +6,10 @@
   <title>AIT — issue-001</title>
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/issue.css">
-  <link rel="stylesheet" href="css/demo.css">
 </head>
 <body>
-
-  <!-- ── Nav ──────────────────────────────────────────────────── -->
-  <nav class="nav">
-    <a class="nav-logo" href="index.html">A<span>I</span>T</a>
-    <div class="nav-tabs">
-      <a class="nav-tab" href="index.html">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-          <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm8 0A1.5 1.5 0 0 1 10.5 9h3A1.5 1.5 0 0 1 15 10.5v3A1.5 1.5 0 0 1 13.5 15h-3A1.5 1.5 0 0 1 9 13.5z"/>
-        </svg>
-        Issues
-      </a>
-      <a class="nav-tab" href="dashboard.html">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-          <path d="M1 11v4h3v-4zm4-4v8h3V7zm4-4v12h3V3z"/>
-        </svg>
-        Dashboard
-      </a>
-    </div>
-    <div class="nav-actions">
-      <a class="nav-icon-btn" href="settings.html" title="Settings" aria-label="Settings">
-        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
-        </svg>
-      </a>
-    </div>
-  </nav>
+  <script src="./js/components/navbar.js"></script>
+  <my-navbar></my-navbar>
 
   <!-- ── Page ─────────────────────────────────────────────────── -->
   <main class="page">
@@ -97,25 +72,7 @@
           <!-- Audit log -->
           <div class="issue-section card">
             <div class="section-label">Audit Log</div>
-            <div class="audit-log" id="audit-log">
-
-              <div class="audit-entry">
-                <div class="audit-dot"></div>
-                <div class="audit-body">
-                  <span class="audit-action">created</span>
-                  <span class="audit-meta">by patrick &middot; May 1, 2026, 9:00 AM</span>
-                </div>
-              </div>
-
-              <div class="audit-entry">
-                <div class="audit-dot"></div>
-                <div class="audit-body">
-                  <span class="audit-action">priority-changed from P2 to P1</span>
-                  <span class="audit-meta">by patrick &middot; May 1, 2026, 11:30 AM</span>
-                </div>
-              </div>
-
-            </div>
+            <div class="audit-log" id="audit-log"></div>
           </div>
 
         </div>
@@ -231,11 +188,14 @@
   </div>
 
   <script type="module">
-    import { getIssue, claimIssue, postResult, closeIssue, updateIssue, blockIssue, getSettings } from './js/data.js';
+    import { initData, getIssue, claimIssue, postResult, closeIssue, updateIssue, getSettings } from './js/data.js';
     import { esc, staBadge, staLabel, createdByIcon, fmtRelTime, fmtDateTime } from './js/ui.js';
 
-    // Redirect to first-time setup if no user is configured.
-    if (!getSettings().ait_user) location.replace('settings.html');
+    try {
+      await initData();
+    } catch (err) {
+      console.error('[data.js] Failed to load issues:', err.message);
+    }
 
     // ── Setup ──────────────────────────────────────────────────
     const id          = new URLSearchParams(window.location.search).get('id') || 'issue-001';
@@ -406,9 +366,9 @@
       titleInput.classList.remove('hidden');
       titleInput.focus(); titleInput.select();
     });
-    titleInput.addEventListener('blur', () => {
+    titleInput.addEventListener('blur', async () => {
       const val = titleInput.value.trim();
-      if (val) updateIssue(id, { title: val, updatedBy: currentUser });
+      if (val) await updateIssue(id, { title: val, updatedBy: currentUser });
       titleInput.classList.add('hidden');
       titleText.classList.remove('hidden');
       render();
@@ -426,9 +386,9 @@
       descInput.classList.remove('hidden');
       descInput.focus();
     });
-    descInput.addEventListener('blur', () => {
+    descInput.addEventListener('blur', async () => {
       const val = descInput.value.trim();
-      if (val) updateIssue(id, { description: val, updatedBy: currentUser });
+      if (val) await updateIssue(id, { description: val, updatedBy: currentUser });
       descInput.classList.add('hidden');
       descText.classList.remove('hidden');
       render();
@@ -445,9 +405,9 @@
       assigneeInput.classList.remove('hidden');
       assigneeInput.focus(); assigneeInput.select();
     });
-    assigneeInput.addEventListener('blur', () => {
+    assigneeInput.addEventListener('blur', async () => {
       const val = assigneeInput.value.trim();
-      if (val) updateIssue(id, { assignee: val, updatedBy: currentUser });
+      if (val) await updateIssue(id, { assignee: val, updatedBy: currentUser });
       assigneeInput.classList.add('hidden');
       assigneeDisplay.classList.remove('hidden');
       render();
@@ -458,35 +418,34 @@
     });
 
     // ── Priority select ────────────────────────────────────────
-    document.getElementById('priority-select').addEventListener('change', e => {
-      updateIssue(id, { priority: e.target.value, updatedBy: currentUser });
+    document.getElementById('priority-select').addEventListener('change', async e => {
+      await updateIssue(id, { priority: e.target.value, updatedBy: currentUser });
       render();
     });
 
     // ── Action button ──────────────────────────────────────────
-    document.getElementById('action-btn').addEventListener('click', () => {
+    document.getElementById('action-btn').addEventListener('click', async () => {
       const issue = getIssue(id);
       if (issue.status === 'open') {
-        claimIssue(id, currentUser);
+        await claimIssue(id, currentUser);
         render();
       } else if (issue.status === 'in-progress') {
         document.getElementById('modal-result').classList.remove('hidden');
         document.getElementById('result-textarea').focus();
       } else if (issue.status === 'pending-review') {
-        closeIssue(id);
+        await closeIssue(id);
         render();
       } else if (issue.status === 'blocked') {
-        // Unblock by clearing reason and sending back to open.
-        updateIssue(id, { status: 'open', blocked_reason: null, updatedBy: currentUser });
+        await updateIssue(id, { status: 'open', updatedBy: currentUser });
         render();
       }
     });
 
     // Send-back: from pending-review → in-progress (re-open for the agent to address).
-    document.getElementById('action-secondary-btn').addEventListener('click', () => {
+    document.getElementById('action-secondary-btn').addEventListener('click', async () => {
       const issue = getIssue(id);
       if (issue.status === 'pending-review') {
-        updateIssue(id, { status: 'in-progress', updatedBy: currentUser });
+        await updateIssue(id, { status: 'in-progress', updatedBy: currentUser });
         render();
       }
     });
@@ -504,12 +463,12 @@
       if (e.key === 'Escape' && !resultOverlay.classList.contains('hidden')) closeResultModal();
     });
 
-    resultForm.addEventListener('submit', e => {
+    resultForm.addEventListener('submit', async e => {
       e.preventDefault();
       const result    = document.getElementById('result-textarea').value.trim();
       const tokens    = parseInt(document.getElementById('result-tokens').value, 10) || 0;
       const timeSpent = getIssue(id)?.time_spent || 0;
-      postResult(id, result, tokens, timeSpent);
+      await postResult(id, result, tokens, timeSpent);
       closeResultModal();
       render();
     });
@@ -517,7 +476,6 @@
     // ── Initial render ─────────────────────────────────────────
     render();
   </script>
-  <script type="module" src="js/demo.js"></script>
 
 </body>
 </html>

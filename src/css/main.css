@@ -1,0 +1,692 @@
+@import "sidebar.css";
+
+/* CSS VARAIBLES */
+:root {
+    /* ──── COLORS ────────────────────────────────────────────── */
+
+    /* text */
+    /* Note that I swapped text-dark and text-light, because the old way was confusing */
+    --color-text-dark: rgb(13 13 13);
+    --color-text-light: rgb(255 255 255);
+    --color-text-gray: rgb(142 142 142);
+
+    /* backgrounds */
+    --color-background-light: rgb(255 255 255);
+    --color-background-dark: rgb(56 56 56);
+    --color-fill-light: rgb(238 239 250);
+    --color-fill-dark: rgb(99 100 106);
+    --color-fill-highlight: rgb(251 251 251);
+
+    /* Colors — surface */
+    --color-nav:       #0F1117;
+    --color-nav-text:  #E5E7EB;
+    --color-bg:        #FFFFFF;
+    --color-bg-subtle: #F9FAFB;
+    --color-border:    #E5E7EB;
+    --color-border-strong: #D1D5DB;
+
+    /* Colors — text */
+    --color-text:       #111827;
+    --color-text-muted: #6B7280;
+    --color-text-nav:   #E5E7EB;
+
+    /* Colors — interactive */
+    --color-accent:       #2563EB;
+    --color-accent-hover: #1D4ED8;
+    --color-danger:       #DC2626;
+    --color-danger-hover: #B91C1C;
+    --color-new-issue-btn: #007E02;
+    --color-new-issue-btn-hover: #016603;
+
+
+    /* issue status */
+    --color-issue-open: rgb(7 189 56);
+    --color-issue-pending: rgb(143, 50, 223);
+    --color-issue-blocked: rgb(225 15 15);
+    --color-issue-in-progress: hsl(43, 66%, 52%);
+    --color-issue-closed-dark: rgb(107 106 123);
+    --color-issue-closed: rgb(180 179 207);
+
+    /* filters: used for SVG icons since they don't play nice with colors */
+    --filter-issue-open: invert(46%) sepia(13%) saturate(7421%) hue-rotate(113deg) brightness(91%) contrast(83%);
+    --filter-issue-pending: invert(27%) sepia(74%) saturate(4817%) hue-rotate(264deg) brightness(90%) contrast(93%);
+    --filter-issue-blocked: invert(13%) sepia(90%) saturate(6703%) hue-rotate(357deg) brightness(90%) contrast(96%);
+    --filter-issue-in-progress: invert(87%) sepia(46%) saturate(2772%) hue-rotate(330deg) brightness(89%) contrast(87%);
+    --filter-issue-closed-dark: invert(41%) sepia(17%) saturate(362%) hue-rotate(204deg) brightness(95%) contrast(81%);
+    --filter-issue-closed: invert(79%) sepia(11%) saturate(487%) hue-rotate(203deg) brightness(92%) contrast(86%);
+
+    /* miscellaneous */
+    --color-button: rgb(19 10 214);
+    --color-nav-bar: rgb(3 2 25);
+    --color-border: rgb(142 142 142);
+    --color-priority-high: rgb(193 0 0);
+    --color-priority-low: rgb(112 112 112);
+    --color-priority-low-dark: rgb(210 210 210);
+    --color-priority-medium: rgb(199 146 12);
+
+
+    /* Priority badge colors */
+    --priority-p0: #DC2626;
+    --priority-p1: #EA580C;
+    --priority-p2: #2563EB;
+    --priority-p3: #6B7280;
+
+    /* Priority badge backgrounds (10% opacity tint) */
+    --priority-p0-bg: #FEF2F2;
+    --priority-p1-bg: #FFF7ED;
+    --priority-p2-bg: #EFF6FF;
+    --priority-p3-bg: #F9FAFB;
+
+    /* Status badge colors */
+    --status-open:           #16A34A;
+    --status-in-progress:    #CA8A04;
+    --status-pending-review: #7C3AED;
+    --status-blocked:        #DC2626;
+    --status-closed:         #6B7280;
+
+    /* Status badge backgrounds */
+    --status-open-bg:           #EBFFED;
+    --status-in-progress-bg:    #FFF3ED;
+    --status-pending-review-bg: #FBF2FF;
+    --status-blocked-bg:        #FFF0F0;
+    --status-closed-bg:         #ECEAEA;
+
+
+
+    /* ──── ELEMENT PROPORTIONS ────────────────────────────────────────────── */
+    /* TODO: Tweak these if necessary, I copied them from the prototype to make editing easier */
+    /* Spacing scale */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+
+    /* Border radius */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+    --radius-full: 9999px;
+
+    /* Font sizes */
+    --text-xs: 11px;
+    --text-sm: 13px;
+    --text-base: 14px;
+    --text-md: 16px;
+    --text-lg: 18px;
+    --text-xl: 22px;
+    --text-2xl: 28px;
+
+    /* Font weights */
+    --weight-normal: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+    /* Nav dimensions */
+    --nav-height: 56px;
+
+    /* Sidebar */
+    --sidebar-width: calc(clamp(150px, 12%, 200px));
+    --sidebar-width-hidden: 60px;
+
+    /* Transitions */
+    --transition-fast: 120ms ease;
+    --transition-base: 200ms ease;
+}
+
+@font-face {
+    font-family: 'HeadingFont';
+    src:
+        url('../assets/fonts/InclusiveSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'HeadingFontBold';
+    src:
+        url('../assets/fonts/InclusiveSans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: bold;
+}
+
+@font-face {
+    font-family: 'SmallFont';
+    src:
+        url('../assets/fonts/IBMPlexSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SmallFontBold';
+    src:
+        url('../assets/fonts/IBMPlexSans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: bold;
+}
+
+body {
+    font-family: 'SmallFont';
+}
+
+/* ─── Reset ────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-normal);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.5;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: var(--text-base);
+}
+
+/* ─── Top Nav ───────────────────────────────────────────────────── */
+.nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-height);
+    background: var(--color-nav-bar);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-6);
+    z-index: 100;
+    gap: var(--space-6);
+    font-family: 'HeadingFont';
+}
+
+.nav-logo {
+    font-size: var(--text-md);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-light);
+    letter-spacing: -0.3px;
+    font-family: ui-monospace, "Cascadia Code", "Fira Code", monospace;
+}
+
+.nav-logo span {
+    color: var(--color-accent);
+}
+
+
+.nav-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    flex: 1;
+}
+
+.nav-tabs a {
+  color: var(--color-text-light);
+  font-family: 'HeadingFont';
+}
+
+.nav-tabs a.active {
+  font-family: 'HeadingFontBold';
+}
+.nav-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: #9CA3AF;
+  font-size: var(--text-md);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.nav-icon-btn img {
+  width: 32px;
+  height: 32px;
+}
+
+.nav-icon-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Page Layout ───────────────────────────────────────────────── */
+.page {
+    padding-top: var(--nav-height);
+    min-height: 100vh;
+    background: var(--color-bg-subtle);
+  }
+  
+  .container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-6);
+  }
+  
+  .container-board {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+  }
+  
+  
+  
+  
+  /* ─── Badge ─────────────────────────────────────────────────────── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    line-height: 1.6;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+  }
+  
+  /* Priority badges */
+  .badge-p0 { color: var(--priority-p0); background: var(--priority-p0-bg); }
+  .badge-p1 { color: var(--priority-p1); background: var(--priority-p1-bg); }
+  .badge-p2 { color: var(--priority-p2); background: var(--priority-p2-bg); }
+  .badge-p3 { color: var(--priority-p3); background: var(--priority-p3-bg); }
+  
+  /* Status badges */
+  .badge-open           { color: var(--status-open);           background: var(--status-open-bg); }
+  .badge-in-progress    { color: var(--status-in-progress);    background: var(--status-in-progress-bg); }
+  .badge-pending-review { color: var(--status-pending-review); background: var(--status-pending-review-bg); }
+  .badge-blocked        { color: var(--status-blocked);        background: var(--status-blocked-bg); }
+  .badge-closed         { color: var(--status-closed);         background: var(--status-closed-bg); }
+
+  .status-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    
+  }
+
+  .status-icon.large {
+    width: 50px;
+    height: 50px;
+  }
+
+  /* This is jank, but it's the only way to apply colors to SVGs without modifying the SVGs themselves*/
+  .status-icon[data-filter="todo"]                        { filter: var(--filter-issue-open); }
+  .status-icon[data-filter="in-progress"]                 { filter: var(--filter-issue-in-progress); }
+  .status-icon[data-filter="closed"]                      { filter: var(--filter-issue-closed-dark); }
+  .status-icon[data-filter="pending"]                     { filter: var(--filter-issue-pending); }
+  .status-icon[data-filter="blocked"]                     { filter: var(--filter-issue-blocked); }
+
+  
+  /* ─── Buttons ───────────────────────────────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast),
+                color var(--transition-fast), box-shadow var(--transition-fast);
+    white-space: nowrap;
+    line-height: 1.5;
+  }
+  
+  .btn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  
+  .btn-primary {
+    background: var(--color-new-issue-btn);
+    color: #FFFFFF;
+    border-color: var(--color-new-issue-btn);
+  }
+  
+  .btn-primary:hover {
+    background: var(--color-new-issue-btn-hover);
+    border-color: var(--color-new-issue-btn-hover);
+  }
+  
+  .btn-secondary {
+    background: #FFFFFF;
+    color: var(--color-text);
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .btn-secondary:hover {
+    background: var(--color-bg-subtle);
+    border-color: var(--color-border-strong);
+  }
+  
+  .btn-danger {
+    background: var(--color-danger);
+    color: #FFFFFF;
+    border-color: var(--color-danger);
+  }
+  
+  .btn-danger:hover {
+    background: var(--color-danger-hover);
+    border-color: var(--color-danger-hover);
+  }
+  
+  .btn-sm {
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--text-xs);
+  }
+
+.row-action-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  opacity: 0;
+  transition: opacity var(--transition-fast),
+              background var(--transition-fast),
+              color var(--transition-fast);
+}
+
+.row-action-btn:hover{
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text);
+}
+
+  
+  /* ─── Card ──────────────────────────────────────────────────────── */
+  .card {
+    background: #FFFFFF;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  /* ─── Form Elements ─────────────────────────────────────────────── */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .form-label {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    color: var(--color-text);
+  }
+  
+  .form-input,
+  .form-select,
+  .form-textarea {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: #FFFFFF;
+    color: var(--color-text);
+    font-size: var(--text-base);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+  
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+  
+  .form-textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  
+  /* ─── Modal ─────────────────────────────────────────────────────── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: var(--space-6);
+  }
+  
+  .modal-overlay.hidden {
+    display: none;
+  }
+  
+  .modal {
+    background: #FFFFFF;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-modal);
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-5) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  .modal-title {
+    font-size: var(--text-md);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text);
+  }
+  
+  .modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+    font-size: var(--text-md);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+  }
+  
+  .modal-close:hover {
+    background: var(--color-bg-subtle);
+    color: var(--color-text);
+  }
+  
+  .modal-body {
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+  
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+  
+  /* ─── Monospace ─────────────────────────────────────────────────── */
+  .mono {
+    font-family: ui-monospace, "Cascadia Code", "Fira Code", "Courier New", monospace;
+    font-size: var(--text-xs);
+  }
+  
+  /* ─── Utility ───────────────────────────────────────────────────── */
+  .hidden        { display: none !important; }
+  .sr-only       { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  .flex          { display: flex; }
+  .gap-2         { gap: var(--space-2); }
+  .gap-3         { gap: var(--space-3); }
+  .items-center  { align-items: center; }
+  .text-muted    { color: var(--color-text-muted); }
+  .text-sm       { font-size: var(--text-sm); }
+  .font-semibold { font-weight: var(--weight-semibold); }
+  .align-right   { text-align: right; }
+  
+  /* ─── Settings / Centered Page Layout ───────────────────────────── */
+  .page-centered {
+    min-height: 100vh;
+    background: var(--color-bg-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6);
+  }
+  
+  .setup-card {
+    width: 100%;
+    max-width: 440px;
+    padding: var(--space-8);
+  }
+  
+  .setup-header {
+    text-align: center;
+    margin-bottom: var(--space-8);
+  }
+  
+  .setup-header .nav-logo {
+    font-size: var(--text-2xl);
+    color: var(--color-text);
+    display: block;
+    margin-bottom: var(--space-2);
+  }
+  
+  .setup-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+  
+  .setup-submit {
+    width: 100%;
+    justify-content: center;
+    padding-top: var(--space-3);
+    padding-bottom: var(--space-3);
+    margin-top: var(--space-2);
+  }
+  
+  .field-hint {
+    font-size: var(--text-xs);
+    font-weight: var(--weight-normal);
+    color: var(--color-text-muted);
+    margin-left: var(--space-1);
+  }
+  
+  /* ─── Color-coded change highlights ─────────────────────────────── */
+  /* Used by ui.js flashEntity() — pulses background + outline so a
+     developer can spot the row/card that just changed. Each action has
+     its own hue; outline (not border) is used so it doesn't disturb the
+     priority left-border on board cards. */
+  
+  @keyframes flash-create-kf {
+    0%   { background-color: rgba(22, 163, 74, 0.32);  outline-color: rgba(22, 163, 74, 0.85); outline-offset: 0; }
+    60%  { background-color: rgba(22, 163, 74, 0.22);  outline-color: rgba(22, 163, 74, 0.55); }
+    100% { background-color: transparent;              outline-color: transparent; }
+  }
+  @keyframes flash-claim-kf {
+    0%   { background-color: rgba(202, 138, 4, 0.32);  outline-color: rgba(202, 138, 4, 0.9); }
+    60%  { background-color: rgba(202, 138, 4, 0.20); }
+    100% { background-color: transparent;              outline-color: transparent; }
+  }
+  @keyframes flash-complete-kf {
+    0%   { background-color: rgba(124, 58, 237, 0.30); outline-color: rgba(124, 58, 237, 0.9); }
+    60%  { background-color: rgba(124, 58, 237, 0.20); }
+    100% { background-color: transparent;              outline-color: transparent; }
+  }
+  @keyframes flash-close-kf {
+    0%   { background-color: rgba(21, 128, 61, 0.32);  outline-color: rgba(21, 128, 61, 0.95); }
+    60%  { background-color: rgba(21, 128, 61, 0.20); }
+    100% { background-color: transparent;              outline-color: transparent; }
+  }
+  @keyframes flash-block-kf {
+    0%   { background-color: rgba(220, 38, 38, 0.30);  outline-color: rgba(220, 38, 38, 0.9); }
+    60%  { background-color: rgba(220, 38, 38, 0.20); }
+    100% { background-color: transparent;              outline-color: transparent; }
+  }
+  @keyframes flash-update-kf {
+    0%   { background-color: rgba(37, 99, 235, 0.28);  outline-color: rgba(37, 99, 235, 0.85); }
+    100% { background-color: transparent;              outline-color: transparent; }
+  }
+  
+  .flash-create,
+  .flash-claim,
+  .flash-complete,
+  .flash-close,
+  .flash-block,
+  .flash-update {
+    outline: 2px solid transparent;
+    outline-offset: -2px;
+  }
+  
+  .flash-create   { animation: flash-create-kf   2.2s ease-out forwards; }
+  .flash-claim    { animation: flash-claim-kf    2.2s ease-out forwards; }
+  .flash-complete { animation: flash-complete-kf 2.2s ease-out forwards; }
+  .flash-close    { animation: flash-close-kf    2.2s ease-out forwards; }
+  .flash-block    { animation: flash-block-kf    2.2s ease-out forwards; }
+  .flash-update   { animation: flash-update-kf   1.8s ease-out forwards; }
+  
