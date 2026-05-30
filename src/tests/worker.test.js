@@ -165,6 +165,73 @@ describe('Issues API Tests', () => {
     });
   });
 
+  // test GET /api/issues/:id/history
+  describe('GET /api/issues/:id/history', () => {
+    // success case
+    test('returns history records for an existing issue', async () => {
+      mockD1Sequence([
+        {
+          response: { id: '1', issue_status: 'open' },
+          method: 'first'
+        },
+        {
+          response: {
+            results: [
+              { id: 'abc', issue_id: '1', issue_status: 'in_progress', changed_at: new Date().toISOString(), changed_by_user: null, changed_by_agent: 'agent-1' },
+              { id: 'xyz', issue_id: '1', issue_status: 'open',        changed_at: new Date().toISOString(), changed_by_user: null, changed_by_agent: null }
+            ]
+          },
+          method: 'all'
+        }
+      ]);
+
+      const response = await worker.fetch(
+        new Request('http://localhost/api/issues/1/history', { method: 'GET' }),
+        env
+      );
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.issue_id).toBe('1');
+      expect(data.history).toHaveLength(2);
+      expect(data.history[0].issue_status).toBe('in_progress'); // most recent first
+    });
+
+
+    // empty (no) history case
+    test('returns empty history array when issue has no history', async () => {
+      mockD1Sequence([
+        { response: { id: '1', issue_status: 'open' }, method: 'first' },
+        { response: { results: [] },                   method: 'all'   }
+      ]);
+
+      const response = await worker.fetch(
+        new Request('http://localhost/api/issues/1/history', { method: 'GET' }),
+        env
+      );
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.history).toHaveLength(0);
+    });
+
+    // failure case (issue not found)
+    test('issue does not exist, return 404', async () => {
+      mockD1Response(null, 'first');
+
+      const response = await worker.fetch(
+        new Request('http://localhost/api/issues/999/history', { method: 'GET' }),
+        env
+      );
+      const data = await response.json();
+
+      expect(response.status).toBe(404);
+      expect(data.success).toBe(false);
+    });
+  });
+
+
   // Tests for POST
 
   // Test for POST /api/issues
