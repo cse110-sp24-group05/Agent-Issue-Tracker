@@ -370,10 +370,6 @@ export async function closeIssue(id, env) {
   }
 }
 
-
-// TODO: implement blockIssue, filterIssues, sortIssues
-
-
 /**
  * blockIssue transitions an issue into a blocked state when processing
  * cannot continue due to some unresolved problem or prereq.
@@ -445,23 +441,3 @@ export async function getIssueHistory(id, env) {
     return serverError(error.message);
   }
 }
-
-/**
- * filterIssues returns a filtered subset of issues based on provided criteria.
- *
- * @param {object} filters - Key/value pairs to filter issues by (e.g. status, priority).
- * @param {object} env - Environment bindings containing the database connection.
- * @returns {Response} A JSON response containing the filtered issues or an error message.
- */
-// async function filterIssues(filters, env) {}
-
-
-/**
- * sortIssues returns all issues sorted by a specified field.
- *
- * @param {string} field - The field to sort by (e.g. created_at, issue_priority).
- * @param {string} direction - Sort direction, either "asc" or "desc".
- * @param {object} env - Environment bindings containing the database connection.
- * @returns {Response} A JSON response containing the sorted issues or an error message.
- */
-// async function sortIssues(field, direction, env) {}
