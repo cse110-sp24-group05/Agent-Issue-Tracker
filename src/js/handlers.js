@@ -21,10 +21,12 @@ import {
   insertIssue,
   selectAllIssues,
   selectIssueById,
+  selectReadyIssue,
   updateIssueFields,
   deleteIssueById,
   claimIssueRow,
   updateIssueStatus,
+  storeIssueResult,
   closeIssueRow,
   selectIssueHistory
 } from './db.js';
@@ -115,6 +117,33 @@ export async function getAllIssues(env) {
   try {
     const { results } = await selectAllIssues(env);
     return Response.json(results, { headers: CORS_HEADERS });
+  } catch (error) {
+    return serverError(error.message);
+  }
+}
+
+
+/**
+ * getReadyIssue returns the single highest-priority open unclaimed issue.
+ * The X-Workspace-ID header is read and logged now; full workspace-scoped
+ * filtering is a placeholder until user auth is implemented.
+ *
+ * @param {Request} request - Incoming request; reads X-Workspace-ID header.
+ * @param {object} env - Environment bindings containing the database connection.
+ * @returns {Response} The ready issue, or 404 if none are available.
+ */
+export async function getReadyIssue(request, env) {
+  try {
+    const workspaceId = request.headers.get('X-Workspace-ID') || 'unknown';
+    console.log(`getReadyIssue: workspace=${workspaceId}`);
+
+    const issue = await selectReadyIssue(env);
+
+    if (!issue) {
+      return notFound('No open issues available');
+    }
+
+    return ok({ success: true, issue });
   } catch (error) {
     return serverError(error.message);
   }
@@ -313,7 +342,7 @@ export async function claimIssue(request, env) {
  */
 export async function putResult(id, request, env) {
   try {
-    const { new_status } = await request.json();
+    const { new_status, result_text, tokens_used } = await request.json();
 
     // Allowed statuses after processing
     const validStatuses = ['blocked', 'review'];
@@ -332,7 +361,14 @@ export async function putResult(id, request, env) {
       return badRequest('Issue must be in progress before posting results.');
     }
 
-    await updateIssueStatus(env, id, new_status, new Date().toISOString());
+    await storeIssueResult(
+      env,
+      id,
+      new_status,
+      result_text ?? null,
+      tokens_used ?? null,
+      new Date().toISOString()
+    );
 
     return ok({ success: true, message: 'Result posted successfully' });
   } catch (error) {
