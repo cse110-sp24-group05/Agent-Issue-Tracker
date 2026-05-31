@@ -8,6 +8,7 @@
     "dev:api": "dotenv -e .env -- wrangler dev",
     "ait": "dotenv -e .env -- node src/runner/runner.js",
     "sim": "dotenv -e .env -- node src/runner/simulator.js",
+    "ait-runner": "dotenv -e .env -- node src/runner/claude-runner.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand"
   },
   "jest": {

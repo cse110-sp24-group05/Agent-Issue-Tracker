@@ -23,6 +23,8 @@ export const ALLOWED_UPDATE_FIELDS = [
   'assigned_to_agent',
   'claim_expires_at',
   'retry_count',
+  'agent_response',
+  'tokens_used',
   'claim_timeout_minutes',
   'closed_at',
   'result_text',
