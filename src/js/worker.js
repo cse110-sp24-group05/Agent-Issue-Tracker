@@ -15,7 +15,8 @@ import {
   claimIssue,
   putResult,
   closeIssue,
-  blockIssue
+  blockIssue,
+  getIssueHistory
 } from './handlers.js';
 
 import { CORS_HEADERS } from './helpers.js';
@@ -37,6 +38,11 @@ export default {
       return getAllIssues(env);
     }
 
+    // GET /api/issues/:id/history
+    if (url.pathname.startsWith('/api/issues/') && url.pathname.endsWith('/history') && method === 'GET') {
+      const id = url.pathname.split('/')[3];
+      return getIssueHistory(id, env);
+    }
 
     // GET /api/issues/ready — must be checked before the generic :id route
     if (url.pathname === '/api/issues/ready' && method === 'GET') {
@@ -45,7 +51,8 @@ export default {
 
 
     // GET /api/issues/:id
-    if (url.pathname.startsWith('/api/issues/') && method === 'GET') {
+    const isGetById = url.pathname.startsWith('/api/issues/') && !url.pathname.endsWith('/history');
+    if (isGetById && method === 'GET') {
       const id = url.pathname.split('/')[3];
       return getIssueById(id, env);
     }

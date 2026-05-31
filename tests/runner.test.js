@@ -52,14 +52,16 @@ function mockD1Response(response, method = 'first') {
 }
 
 /**
- * Queue multiple D1 responses in order using mockReturnValueOnce.
- * Use this when a handler calls prepare() more than once (e.g. putResult
- * calls selectIssueById then storeIssueResult).
+ * Queue multiple D1 responses in order for handlers that call prepare() more
+ * than once. Matches the signature used in tests/worker.test.js (main's impl).
  *
- * @param {Array<{ response: any, method: 'first'|'all'|'run' }>} steps
+ * @param {Array<{ response: any, method: 'first'|'all'|'run' }>} calls
  */
-function mockD1Sequence(...steps) {
-  for (const { response, method = 'first' } of steps) {
+function mockD1Sequence(calls) {
+  let callIndex = 0;
+  env.issues_db.prepare.mockImplementation(() => {
+    const { response, method = 'first' } = calls[callIndex] ?? calls[calls.length - 1];
+    callIndex++;
     const chain = {
       bind: jest.fn().mockReturnThis(),
       first: jest.fn(),
@@ -67,8 +69,8 @@ function mockD1Sequence(...steps) {
       run:   jest.fn()
     };
     chain[method].mockResolvedValue(response);
-    env.issues_db.prepare.mockReturnValueOnce(chain);
-  }
+    return chain;
+  });
 }
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -182,10 +184,10 @@ describe('PUT /api/issues/:id/result', () => {
 
   test('accepts new_status "review" and posts back successfully', async () => {
     // putResult calls prepare() twice: selectIssueById then storeIssueResult
-    mockD1Sequence(
+    mockD1Sequence([
       { response: inProgressIssue(), method: 'first' },
       { response: { meta: { changes: 1 } }, method: 'run' }
-    );
+    ]);
 
     const res = await worker.fetch(
       new Request('http://localhost/api/issues/issue-001/result', {
@@ -204,10 +206,10 @@ describe('PUT /api/issues/:id/result', () => {
 
   test('accepts result_text and tokens_used alongside new_status', async () => {
     // This is the shape Claude sends via its curl command at the end of a task.
-    mockD1Sequence(
+    mockD1Sequence([
       { response: inProgressIssue(), method: 'first' },
       { response: { meta: { changes: 1 } }, method: 'run' }
-    );
+    ]);
 
     const res = await worker.fetch(
       new Request('http://localhost/api/issues/issue-001/result', {
@@ -228,10 +230,10 @@ describe('PUT /api/issues/:id/result', () => {
   });
 
   test('accepts "blocked" as new_status', async () => {
-    mockD1Sequence(
+    mockD1Sequence([
       { response: inProgressIssue(), method: 'first' },
       { response: { meta: { changes: 1 } }, method: 'run' }
-    );
+    ]);
 
     const res = await worker.fetch(
       new Request('http://localhost/api/issues/issue-001/result', {

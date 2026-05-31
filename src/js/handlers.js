@@ -27,7 +27,8 @@ import {
   claimIssueRow,
   updateIssueStatus,
   storeIssueResult,
-  closeIssueRow
+  closeIssueRow,
+  selectIssueHistory
 } from './db.js';
 
 
@@ -405,10 +406,6 @@ export async function closeIssue(id, env) {
   }
 }
 
-
-// TODO: implement blockIssue, filterIssues, sortIssues
-
-
 /**
  * blockIssue transitions an issue into a blocked state when processing
  * cannot continue due to some unresolved problem or prereq.
@@ -454,23 +451,29 @@ export async function blockIssue(id, env) {
   }
 }
 
-
 /**
- * filterIssues returns a filtered subset of issues based on provided criteria.
- *
- * @param {object} filters - Key/value pairs to filter issues by (e.g. status, priority).
- * @param {object} env - Environment bindings containing the database connection.
- * @returns {Response} A JSON response containing the filtered issues or an error message.
+ * getIssueHistory retrieves the history of status changes for a specific issue
+ * based on its issue id. It checks if the issue exists and then queries the
+ * database for all status change records associated with that issue. The function
+ * formats the results into a JSON response, which includes an array of historical
+ * entries detailing the status changes along with their corresponding timestamps.
+ * If the issue does not exist or if there is an error during retrieval,
+ * it returns an appropriate error message.
+ * @param {string} id - A unique identifier for an issue.
+ * @param {object} env - The environment object containing bindings and configurations,
+ * including the database connection.
+ * @returns {Response} A JSON response containing the issue history or an error message.
  */
-// async function filterIssues(filters, env) {}
+export async function getIssueHistory(id, env) {
+  try {
+    const issue = await selectIssueById(env, id);
+    if (!issue) {
+      return notFound();
+    }
 
-
-/**
- * sortIssues returns all issues sorted by a specified field.
- *
- * @param {string} field - The field to sort by (e.g. created_at, issue_priority).
- * @param {string} direction - Sort direction, either "asc" or "desc".
- * @param {object} env - Environment bindings containing the database connection.
- * @returns {Response} A JSON response containing the sorted issues or an error message.
- */
-// async function sortIssues(field, direction, env) {}
+    const history = await selectIssueHistory(env, id);
+    return ok({ success: true, issue_id: id, history });
+  } catch (error) {
+    return serverError(error.message);
+  }
+}

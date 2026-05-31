@@ -262,3 +262,21 @@ export function closeIssueRow(env, id, now) {
     )
     .run();
 }
+
+/**
+ * select issue history by issue id, ordered from latest to oldest.
+ * @param {object} env - Worker env bindings.
+ * @param {string} id - Issue id.
+ * @returns {Promise<Array>} Array of history records, ordered from latest to oldest.
+ */
+export function selectIssueHistory(env, id) {
+  return env.issues_db
+    .prepare(`
+      SELECT * FROM issue_status_history
+      WHERE issue_id = ?
+      ORDER BY changed_at DESC
+    `)
+    .bind(id)
+    .all()
+    .then(r => r.results);
+}
