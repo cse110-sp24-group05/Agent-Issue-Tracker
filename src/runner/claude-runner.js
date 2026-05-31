@@ -32,8 +32,8 @@ const args = process.argv.slice(2);
 const urlFlagIndex = args.indexOf('--url');
 const BASE_URL =
     urlFlagIndex !== -1 && args[urlFlagIndex + 1]
-        ? args[urlFlagIndex + 1]
-        : process.env.AIT_API_BASE || 'https://agent-issue-tracker.stc021.workers.dev';
+      ? args[urlFlagIndex + 1]
+      : process.env.AIT_API_BASE || 'https://agent-issue-tracker.stc021.workers.dev';
 
 // --mock flag: skip real Claude API call and use a fake result
 const MOCK_MODE = args.includes('--mock');
@@ -65,19 +65,19 @@ const MIN_DESCRIPTION_LENGTH = 15;
 
 // fake results for mock mode
 const FAKE_RESULTS = [
-    'Refactored the module into smaller functions. All tests pass.',
-    'Fixed the bug by adding input validation. Added 3 unit tests.',
-    'Updated documentation and added JSDoc comments to all exports.',
-    'Implemented the feature as described. Ready for review.',
-    'Resolved the issue by patching the edge case. No regressions found.',
+  'Refactored the module into smaller functions. All tests pass.',
+  'Fixed the bug by adding input validation. Added 3 unit tests.',
+  'Updated documentation and added JSDoc comments to all exports.',
+  'Implemented the feature as described. Ready for review.',
+  'Resolved the issue by patching the edge case. No regressions found.',
 ];
 
 // priority ranking for sorting (lower = more urgent)
 const PRIORITY_RANK = {
-    critical: 0,
-    high: 1,
-    medium: 2,
-    low: 3,
+  critical: 0,
+  high: 1,
+  medium: 2,
+  low: 3,
 };
 
 
@@ -90,8 +90,8 @@ const PRIORITY_RANK = {
  * @param {string} message - What happened
  */
 function log(label, message) {
-    const time = new Date().toISOString().slice(11, 19);
-    console.log(`[${time}] [${label}] ${message}`);
+  const time = new Date().toISOString().slice(11, 19);
+  console.log(`[${time}] [${label}] ${message}`);
 }
 
 /**
@@ -100,7 +100,7 @@ function log(label, message) {
  * @returns {Promise} - Resolves when done
  */
 function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -109,7 +109,7 @@ function sleep(ms) {
  * @returns {*} - One random element
  */
 function pickRandom(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 /**
@@ -123,20 +123,20 @@ function pickRandom(arr) {
  * @returns {Promise<Response>} - The fetch response
  */
 async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-    try {
-        const response = await fetch(url, { ...options, signal: controller.signal });
-        return response;
-    } catch (error) {
-        // give a clearer error message when the abort fires
-        if (error.name === 'AbortError') {
-            throw new Error(`Request timed out after ${timeoutMs}ms: ${url}`);
-        }
-        throw error;
-    } finally {
-        clearTimeout(timeoutId);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    return response;
+  } catch (error) {
+    // give a clearer error message when the abort fires
+    if (error.name === 'AbortError') {
+      throw new Error(`Request timed out after ${timeoutMs}ms: ${url}`);
     }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 /**
@@ -148,15 +148,15 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_M
  * @returns {string} - Truncated text
  */
 function smartTruncate(text, maxChars) {
-    if (text.length <= maxChars) return text;
-    const slice = text.substring(0, maxChars);
-    const lastNewline = slice.lastIndexOf('\n');
-    // if there's a newline in the last 25% of the slice, cut there
-    // otherwise just hard-cut and add ellipsis
-    if (lastNewline > maxChars * 0.75) {
-        return slice.substring(0, lastNewline) + '\n[...truncated]';
-    }
-    return slice + '...[truncated]';
+  if (text.length <= maxChars) {return text;}
+  const slice = text.substring(0, maxChars);
+  const lastNewline = slice.lastIndexOf('\n');
+  // if there's a newline in the last 25% of the slice, cut there
+  // otherwise just hard-cut and add ellipsis
+  if (lastNewline > maxChars * 0.75) {
+    return slice.substring(0, lastNewline) + '\n[...truncated]';
+  }
+  return slice + '...[truncated]';
 }
 
 /**
@@ -169,32 +169,32 @@ function smartTruncate(text, maxChars) {
  * @returns {boolean} - true if Claude indicated it can't solve
  */
 function isClaudeBlocked(text) {
-    if (!text || text.trim().length === 0) {
-        return true; // empty response is treated as blocked
-    }
+  if (!text || text.trim().length === 0) {
+    return true; // empty response is treated as blocked
+  }
 
-    // explicit refusal phrases — Claude usually states these upfront
-    const explicitRefusals = [
-        'i cannot solve',
-        'i can\'t solve',
-        'i am unable to',
-        'i\'m unable to',
-        'unable to provide',
-        'not enough information',
-        'insufficient information',
-        'insufficient detail',
-        'missing information',
-        'cannot determine',
-        'need more context',
-        'need more information',
-        'requires more detail',
-    ];
+  // explicit refusal phrases — Claude usually states these upfront
+  const explicitRefusals = [
+    'i cannot solve',
+    'i can\'t solve',
+    'i am unable to',
+    'i\'m unable to',
+    'unable to provide',
+    'not enough information',
+    'insufficient information',
+    'insufficient detail',
+    'missing information',
+    'cannot determine',
+    'need more context',
+    'need more information',
+    'requires more detail',
+  ];
 
-    // only check the first 300 chars — Claude states upfront if it can't help
-    // (avoids false positives from successful responses that mention these phrases mid-solution)
-    const opening = text.substring(0, 300).toLowerCase();
+  // only check the first 300 chars — Claude states upfront if it can't help
+  // (avoids false positives from successful responses that mention these phrases mid-solution)
+  const opening = text.substring(0, 300).toLowerCase();
 
-    return explicitRefusals.some((phrase) => opening.includes(phrase));
+  return explicitRefusals.some((phrase) => opening.includes(phrase));
 }
 
 
@@ -213,101 +213,101 @@ function isClaudeBlocked(text) {
  * @throws {Error} - if the API call fails or response is malformed
  */
 async function askClaude(title, description, projectContext) {
-    // build the prompt using the config template
-    const prompt = config.buildPrompt(title, description, projectContext);
+  // build the prompt using the config template
+  const prompt = config.buildPrompt(title, description, projectContext);
 
-    log('CLAUDE', 'Sending issue to Claude API...');
-    log('CLAUDE', `Model: ${config.model} | Max tokens: ${config.maxTokens} | Temp: ${config.temperature}`);
+  log('CLAUDE', 'Sending issue to Claude API...');
+  log('CLAUDE', `Model: ${config.model} | Max tokens: ${config.maxTokens} | Temp: ${config.temperature}`);
 
-    // wrap in fetchWithTimeout so a hung connection doesn't lock the runner forever
-    const response = await fetchWithTimeout(
-        config.apiUrl,
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': ANTHROPIC_API_KEY,
-                'anthropic-version': config.apiVersion,
-            },
-            body: JSON.stringify({
-                model: config.model,
-                max_tokens: config.maxTokens,
-                temperature: config.temperature,
-                messages: [
-                    {
-                        role: 'user',
-                        content: prompt,
-                    },
-                ],
-            }),
-        },
-        REQUEST_TIMEOUT_MS
-    );
+  // wrap in fetchWithTimeout so a hung connection doesn't lock the runner forever
+  const response = await fetchWithTimeout(
+    config.apiUrl,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': config.apiVersion,
+      },
+      body: JSON.stringify({
+        model: config.model,
+        max_tokens: config.maxTokens,
+        temperature: config.temperature,
+        messages: [
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+      }),
+    },
+    REQUEST_TIMEOUT_MS
+  );
 
-    // handle non-2xx responses with specific error messages
-    // each common status code gets a tailored hint so the user knows what to fix
-    if (!response.ok) {
-        let errorMessage = `HTTP ${response.status}`;
-        try {
-            const errorData = await response.json();
-            errorMessage = errorData.error?.message || errorMessage;
-        } catch {
-            // response body wasn't JSON — use the status text
-            errorMessage = response.statusText || errorMessage;
-        }
-
-        // build a user-friendly error with hints
-        const hints = {
-            401: 'Invalid API key. Check ANTHROPIC_API_KEY in your .env file.',
-            403: 'API key does not have permission. Check your Anthropic account.',
-            429: 'Rate limit exceeded. Wait a minute and try again.',
-            500: 'Claude API server error. Try again in a moment.',
-            503: 'Claude API is temporarily unavailable. Try again later.',
-            529: 'Claude API is overloaded. Try again in a few minutes.',
-        };
-        const hint = hints[response.status] || '';
-        throw new Error(`Claude API error (${response.status}): ${errorMessage}${hint ? ' — ' + hint : ''}`);
-    }
-
-    // parse response — wrap in try/catch in case the response isn't valid JSON
-    let data;
+  // handle non-2xx responses with specific error messages
+  // each common status code gets a tailored hint so the user knows what to fix
+  if (!response.ok) {
+    let errorMessage = `HTTP ${response.status}`;
     try {
-        data = await response.json();
+      const errorData = await response.json();
+      errorMessage = errorData.error?.message || errorMessage;
     } catch {
-        throw new Error('Claude API returned invalid JSON');
+      // response body wasn't JSON — use the status text
+      errorMessage = response.statusText || errorMessage;
     }
 
-    // validate response structure before trying to use it
-    // protects against API changes or malformed responses
-    if (!data.content || !Array.isArray(data.content)) {
-        throw new Error('Claude API response has no content array');
-    }
+    // build a user-friendly error with hints
+    const hints = {
+      401: 'Invalid API key. Check ANTHROPIC_API_KEY in your .env file.',
+      403: 'API key does not have permission. Check your Anthropic account.',
+      429: 'Rate limit exceeded. Wait a minute and try again.',
+      500: 'Claude API server error. Try again in a moment.',
+      503: 'Claude API is temporarily unavailable. Try again later.',
+      529: 'Claude API is overloaded. Try again in a few minutes.',
+    };
+    const hint = hints[response.status] || '';
+    throw new Error(`Claude API error (${response.status}): ${errorMessage}${hint ? ' — ' + hint : ''}`);
+  }
 
-    // extract the response text from text blocks only
-    const result = data.content
-        .filter((block) => block && block.type === 'text' && typeof block.text === 'string')
-        .map((block) => block.text)
-        .join('\n');
+  // parse response — wrap in try/catch in case the response isn't valid JSON
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error('Claude API returned invalid JSON');
+  }
 
-    // catch case where there were content blocks but none were text
-    if (!result || result.trim().length === 0) {
-        throw new Error('Claude returned an empty response (no text content)');
-    }
+  // validate response structure before trying to use it
+  // protects against API changes or malformed responses
+  if (!data.content || !Array.isArray(data.content)) {
+    throw new Error('Claude API response has no content array');
+  }
 
-    // extract token usage — usage object might be missing on some error responses
-    const inputTokens = data.usage?.input_tokens || 0;
-    const outputTokens = data.usage?.output_tokens || 0;
-    const totalTokens = inputTokens + outputTokens;
-    const estimatedCost = config.estimateCost(inputTokens, outputTokens);
+  // extract the response text from text blocks only
+  const result = data.content
+    .filter((block) => block && block.type === 'text' && typeof block.text === 'string')
+    .map((block) => block.text)
+    .join('\n');
 
-    // check if Claude hit the max_tokens limit — response would be truncated
-    // worth warning the user since the answer may be incomplete
-    const stopReason = data.stop_reason;
-    if (stopReason === 'max_tokens') {
-        log('WARN', `Claude response was truncated at max_tokens (${config.maxTokens}). Consider increasing maxTokens in claude-config.js.`);
-    }
+  // catch case where there were content blocks but none were text
+  if (!result || result.trim().length === 0) {
+    throw new Error('Claude returned an empty response (no text content)');
+  }
 
-    return { result, inputTokens, outputTokens, totalTokens, estimatedCost };
+  // extract token usage — usage object might be missing on some error responses
+  const inputTokens = data.usage?.input_tokens || 0;
+  const outputTokens = data.usage?.output_tokens || 0;
+  const totalTokens = inputTokens + outputTokens;
+  const estimatedCost = config.estimateCost(inputTokens, outputTokens);
+
+  // check if Claude hit the max_tokens limit — response would be truncated
+  // worth warning the user since the answer may be incomplete
+  const stopReason = data.stop_reason;
+  if (stopReason === 'max_tokens') {
+    log('WARN', `Claude response was truncated at max_tokens (${config.maxTokens}). Consider increasing maxTokens in claude-config.js.`);
+  }
+
+  return { result, inputTokens, outputTokens, totalTokens, estimatedCost };
 }
 
 
@@ -322,21 +322,21 @@ async function askClaude(title, description, projectContext) {
  * @returns {Promise<boolean>} - true on success, false on failure
  */
 async function blockIssue(issueId) {
-    try {
-        const response = await fetchWithTimeout(`${BASE_URL}/api/issues/${issueId}/block`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-        });
-        if (!response.ok) {
-            const data = await response.json().catch(() => ({}));
-            log('ERROR', `Block failed: ${data.error || response.statusText}`);
-            return false;
-        }
-        return true;
-    } catch (error) {
-        log('ERROR', `Block request failed: ${error.message}`);
-        return false;
+  try {
+    const response = await fetchWithTimeout(`${BASE_URL}/api/issues/${issueId}/block`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      log('ERROR', `Block failed: ${data.error || response.statusText}`);
+      return false;
     }
+    return true;
+  } catch (error) {
+    log('ERROR', `Block request failed: ${error.message}`);
+    return false;
+  }
 }
 
 /**
@@ -348,21 +348,21 @@ async function blockIssue(issueId) {
  * @returns {Promise<boolean>} - true on success, false on failure
  */
 async function saveAgentResponse(issueId, response) {
-    try {
-        const apiResponse = await fetchWithTimeout(`${BASE_URL}/api/issues/${issueId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ agent_response: response }),
-        });
-        if (!apiResponse.ok) {
-            log('WARN', 'Could not save agent response.');
-            return false;
-        }
-        return true;
-    } catch (error) {
-        log('WARN', `Could not save agent response: ${error.message}`);
-        return false;
+  try {
+    const apiResponse = await fetchWithTimeout(`${BASE_URL}/api/issues/${issueId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ agent_response: response }),
+    });
+    if (!apiResponse.ok) {
+      log('WARN', 'Could not save agent response.');
+      return false;
     }
+    return true;
+  } catch (error) {
+    log('WARN', `Could not save agent response: ${error.message}`);
+    return false;
+  }
 }
 
 
@@ -373,313 +373,313 @@ async function saveAgentResponse(issueId, response) {
  * Runs the full agent cycle: fetch -> pick -> claim -> Claude -> result -> close
  */
 async function runRunner() {
-    // print header
-    console.log('===========================================');
-    console.log('  AIT Runner');
-    console.log(`  API: ${BASE_URL}`);
-    console.log(`  Agent: ${AGENT_ID}`);
-    console.log(`  Mode: ${MOCK_MODE ? 'MOCK (no Claude API call)' : 'LIVE (calling Claude API)'}`);
-    if (!MOCK_MODE) {
-        console.log(`  Model: ${config.model}`);
-    }
-    if (AUTO_CLOSE) {
-        console.log('Close: ENABLED (will auto-close after review, for testing only)');
-    } else {
-        console.log('Close: DISABLED (issue stays in review for human approval)');
-    }
-    console.log('===========================================\n');
+  // print header
+  console.log('===========================================');
+  console.log('  AIT Runner');
+  console.log(`  API: ${BASE_URL}`);
+  console.log(`  Agent: ${AGENT_ID}`);
+  console.log(`  Mode: ${MOCK_MODE ? 'MOCK (no Claude API call)' : 'LIVE (calling Claude API)'}`);
+  if (!MOCK_MODE) {
+    console.log(`  Model: ${config.model}`);
+  }
+  if (AUTO_CLOSE) {
+    console.log('Close: ENABLED (will auto-close after review, for testing only)');
+  } else {
+    console.log('Close: DISABLED (issue stays in review for human approval)');
+  }
+  console.log('===========================================\n');
 
-    // warn if pointing at production
-    if (BASE_URL.includes('workers.dev')) {
-        console.log('WARNING: Running against production API.\n');
-    }
+  // warn if pointing at production
+  if (BASE_URL.includes('workers.dev')) {
+    console.log('WARNING: Running against production API.\n');
+  }
 
-    // if live mode, make sure the API key is set
-    if (!MOCK_MODE && !ANTHROPIC_API_KEY) {
-        log('ERROR', 'ANTHROPIC_API_KEY is not set.');
-        log('HINT', 'Option 1: Add ANTHROPIC_API_KEY=sk-ant-... to your .env file');
-        log('HINT', 'Option 2: Run with --mock flag to skip Claude');
-        return;
-    }
+  // if live mode, make sure the API key is set
+  if (!MOCK_MODE && !ANTHROPIC_API_KEY) {
+    log('ERROR', 'ANTHROPIC_API_KEY is not set.');
+    log('HINT', 'Option 1: Add ANTHROPIC_API_KEY=sk-ant-... to your .env file');
+    log('HINT', 'Option 2: Run with --mock flag to skip Claude');
+    return;
+  }
 
 
-    // STEP 1: Fetch all issues
-    log('FETCH', 'Getting issues from API...');
+  // STEP 1: Fetch all issues
+  log('FETCH', 'Getting issues from API...');
 
-    let allIssues;
-    try {
-        const response = await fetchWithTimeout(`${BASE_URL}/api/issues`);
+  let allIssues;
+  try {
+    const response = await fetchWithTimeout(`${BASE_URL}/api/issues`);
 
-        if (!response.ok) {
-            log('ERROR', `API returned status ${response.status}`);
-            return;
-        }
-
-        const data = await response.json();
-        allIssues = Array.isArray(data) ? data : data.issues;
-
-        // defensive check — make sure we got an array
-        if (!Array.isArray(allIssues)) {
-            log('ERROR', 'API did not return an array of issues.');
-            return;
-        }
-    } catch (error) {
-        log('ERROR', `Could not reach API: ${error.message}`);
-        log('HINT', 'Is the worker running? Try: npx wrangler dev --remote');
-        return;
+    if (!response.ok) {
+      log('ERROR', `API returned status ${response.status}`);
+      return;
     }
 
-    // filter to only open issues assigned to this agent
-    // a human must explicitly assign an issue to Claude before the runner will work on it
-    const openIssues = allIssues.filter(
-        (i) => i.issue_status === 'open' && i.assigned_to_agent === AGENT_ID
-    );
+    const data = await response.json();
+    allIssues = Array.isArray(data) ? data : data.issues;
 
-    if (openIssues.length === 0) {
-        log('DONE', `No open issues assigned to ${AGENT_ID}. Nothing to do.`);
-        log('HINT', 'Assign an open issue to this agent through the UI to give it work.');
-        return;
+    // defensive check — make sure we got an array
+    if (!Array.isArray(allIssues)) {
+      log('ERROR', 'API did not return an array of issues.');
+      return;
     }
+  } catch (error) {
+    log('ERROR', `Could not reach API: ${error.message}`);
+    log('HINT', 'Is the worker running? Try: npx wrangler dev --remote');
+    return;
+  }
 
-    log('FETCH', `Found ${openIssues.length} issue(s) assigned to ${AGENT_ID} out of ${allIssues.length} total`);
+  // filter to only open issues assigned to this agent
+  // a human must explicitly assign an issue to Claude before the runner will work on it
+  const openIssues = allIssues.filter(
+    (i) => i.issue_status === 'open' && i.assigned_to_agent === AGENT_ID
+  );
+
+  if (openIssues.length === 0) {
+    log('DONE', `No open issues assigned to ${AGENT_ID}. Nothing to do.`);
+    log('HINT', 'Assign an open issue to this agent through the UI to give it work.');
+    return;
+  }
+
+  log('FETCH', `Found ${openIssues.length} issue(s) assigned to ${AGENT_ID} out of ${allIssues.length} total`);
 
 
-    // STEP 2: Pick highest priority issue
-    // tiebreaker: when priorities are equal, pick the oldest (FIFO fairness)
-    openIssues.sort((a, b) => {
-        const priorityDiff = (PRIORITY_RANK[a.issue_priority] ?? 99) - (PRIORITY_RANK[b.issue_priority] ?? 99);
-        if (priorityDiff !== 0) return priorityDiff;
-        // same priority — older issue wins
-        return (a.created_at || '').localeCompare(b.created_at || '');
+  // STEP 2: Pick highest priority issue
+  // tiebreaker: when priorities are equal, pick the oldest (FIFO fairness)
+  openIssues.sort((a, b) => {
+    const priorityDiff = (PRIORITY_RANK[a.issue_priority] ?? 99) - (PRIORITY_RANK[b.issue_priority] ?? 99);
+    if (priorityDiff !== 0) {return priorityDiff;}
+    // same priority — older issue wins
+    return (a.created_at || '').localeCompare(b.created_at || '');
+  });
+
+  const target = openIssues[0];
+  log('PICK', `Selected: "${target.title}" (${target.id}) — priority: ${target.issue_priority}`);
+
+  await sleep(MIN_DELAY_MS);
+
+
+  // STEP 3: Claim the issue
+  log('CLAIM', `Claiming ${target.id} as ${AGENT_ID}...`);
+
+  try {
+    const claimResponse = await fetchWithTimeout(`${BASE_URL}/api/issues/${target.id}/claim`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ agent_id: AGENT_ID }),
     });
 
-    const target = openIssues[0];
-    log('PICK', `Selected: "${target.title}" (${target.id}) — priority: ${target.issue_priority}`);
+    const claimData = await claimResponse.json().catch(() => ({}));
 
-    await sleep(MIN_DELAY_MS);
+    if (!claimResponse.ok) {
+      log('ERROR', `Claim failed: ${claimData.error || claimResponse.statusText}`);
+      if (claimResponse.status === 404) {
+        log('HINT', 'Issue not found or claim route not deployed yet.');
+      }
+      if (claimResponse.status === 400) {
+        log('HINT', `Bad request: ${claimData.error || 'Issue may not be in open status anymore.'}`);
+      }
+      return;
+    }
+
+    log('CLAIM', `Claimed! ${claimData.message || 'Issue claimed.'}`);
+  } catch (error) {
+    log('ERROR', `Claim request failed: ${error.message}`);
+    return;
+  }
+
+  // From this point on, the issue is in 'in_progress' state.
+  // Any failure must either complete the workflow (review/blocked) or
+  // leave the issue blocked. We never leave it stuck in_progress on purpose.
+  await sleep(MIN_DELAY_MS);
 
 
-    // STEP 3: Claim the issue
-    log('CLAIM', `Claiming ${target.id} as ${AGENT_ID}...`);
+  // STEP 3.5: Check if the description is clear enough to work on (free, no API call)
+  const desc = target.issue_description || '';
+
+  // edge case: skip if this issue already has an agent_response from a previous run
+  // re-running would overwrite the previous result and waste tokens
+  if (target.agent_response && target.agent_response.trim().length > 0) {
+    log('QUALITY', 'Issue already has an agent response from a previous run. Skipping to avoid duplicate work.');
+    log('HINT', 'A human should review the existing response and either close or unblock the issue.');
+    return;
+  }
+
+  let blockReason = null;
+  const trimmedDesc = desc.trim();
+
+  if (trimmedDesc.length === 0) {
+    blockReason = 'Issue has no description. Please add details about what needs to be done.';
+  } else if (trimmedDesc.length < MIN_DESCRIPTION_LENGTH) {
+    blockReason = `Description is too short (${trimmedDesc.length} chars, need at least ${MIN_DESCRIPTION_LENGTH}). Please provide more detail.`;
+  } else if (trimmedDesc === target.title) {
+    blockReason = 'Description is identical to the title. Please add more context.';
+  }
+
+  if (blockReason) {
+    log('QUALITY', `Issue failed quality check: ${blockReason}`);
+
+    await saveAgentResponse(target.id, blockReason);
+    await blockIssue(target.id);
+    log('BLOCK', 'Issue blocked due to quality check. User should create a new issue with a better description.');
+    return;
+  }
+
+
+  // STEP 4: Do the work (Claude or mock)
+  let result;
+  let totalTokens;
+  let estimatedCost = 0;
+
+  if (MOCK_MODE) {
+    // mock mode: fake the work
+    log('WORK', 'MOCK MODE — skipping Claude API call...');
+    await sleep(2000);
+    result = pickRandom(FAKE_RESULTS);
+    totalTokens = Math.floor(Math.random() * 5000) + 500;
+  } else {
+    // live mode: send the issue to Claude with project context
+    try {
+      // build project context from other issues
+      const contextSummary = allIssues
+        .filter((i) => i.id !== target.id)
+        .slice(0, 10)
+        .map((i) => `- [${i.issue_status}] ${i.title} (${i.issue_priority})`)
+        .join('\n');
+
+      const claudeResponse = await askClaude(
+        target.title,
+        target.issue_description || '',
+        contextSummary || null
+      );
+
+      result = claudeResponse.result;
+      totalTokens = claudeResponse.totalTokens;
+      estimatedCost = claudeResponse.estimatedCost;
+
+      log('CLAUDE', `Input: ${claudeResponse.inputTokens} tokens | Output: ${claudeResponse.outputTokens} tokens`);
+      log('CLAUDE', `Total: ${totalTokens} tokens | Cost: ~$${estimatedCost.toFixed(4)}`);
+
+      // warn on expensive runs so the user notices runaway costs
+      if (estimatedCost > COST_WARNING_THRESHOLD) {
+        log('WARN', `This run cost $${estimatedCost.toFixed(4)} — higher than the $${COST_WARNING_THRESHOLD} threshold.`);
+      }
+    } catch (error) {
+      // if Claude fails (timeout, bad key, rate limit, malformed response, etc.) don't leave it stuck in_progress
+      log('ERROR', `Claude API failed: ${error.message}`);
+
+      log('BLOCK', `Marking ${target.id} as blocked due to agent failure...`);
+
+      await saveAgentResponse(target.id, `Agent failed: ${error.message}`);
+      await blockIssue(target.id);
+      log('BLOCK', 'Issue marked as blocked. A human needs to investigate.');
+      return;
+    }
+  }
+
+  // detect if Claude indicated it couldn't solve the issue
+  // (only runs in live mode — mock results are always treated as solutions)
+  const isBlocked = !MOCK_MODE && isClaudeBlocked(result);
+
+  // show a preview of Claude's response
+  const preview = result.length > 500 ? result.substring(0, 500) + '...[see UI for full response]' : result;
+  log('WORK', `Result preview:\n${preview}`);
+
+  await sleep(MIN_DELAY_MS);
+
+
+  // STEP 5: Save token usage to the issue
+  // this lets the frontend dashboard show how many tokens each issue used
+  log('TOKENS', `Saving token usage (${totalTokens}) to ${target.id}...`);
+
+  try {
+    const tokenResponse = await fetchWithTimeout(`${BASE_URL}/api/issues/${target.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tokens_used: totalTokens }),
+    });
+    if (tokenResponse.ok) {
+      log('TOKENS', 'Token usage saved.');
+    } else {
+      // graceful degradation: column may not exist yet in some environments
+      log('WARN', 'Could not save token usage — tokens_used column may not exist yet.');
+    }
+  } catch (error) {
+    log('WARN', `Could not save token usage: ${error.message}`);
+  }
+
+  await sleep(MIN_DELAY_MS);
+
+
+  // STEP 6: Post the result status
+  if (isBlocked) {
+    // Claude couldn't solve it — save reason and block
+    log('BLOCK', `Claude couldn't solve this issue. Blocking ${target.id}...`);
+
+    await saveAgentResponse(target.id, result);
+
+    const blocked = await blockIssue(target.id);
+    if (blocked) {
+      log('BLOCK', 'Issue blocked with response saved. A human needs to review.');
+    }
+  } else {
+    // Claude solved it — save response and send to review
+    log('RESULT', `Posting result for ${target.id}...`);
+
+    await saveAgentResponse(target.id, result);
 
     try {
-        const claimResponse = await fetchWithTimeout(`${BASE_URL}/api/issues/${target.id}/claim`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ agent_id: AGENT_ID }),
-        });
-
-        const claimData = await claimResponse.json().catch(() => ({}));
-
-        if (!claimResponse.ok) {
-            log('ERROR', `Claim failed: ${claimData.error || claimResponse.statusText}`);
-            if (claimResponse.status === 404) {
-                log('HINT', 'Issue not found or claim route not deployed yet.');
-            }
-            if (claimResponse.status === 400) {
-                log('HINT', `Bad request: ${claimData.error || 'Issue may not be in open status anymore.'}`);
-            }
-            return;
-        }
-
-        log('CLAIM', `Claimed! ${claimData.message || 'Issue claimed.'}`);
+      const resultResponse = await fetchWithTimeout(`${BASE_URL}/api/issues/${target.id}/result`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ new_status: 'review' }),
+      });
+      const resultData = await resultResponse.json().catch(() => ({}));
+      if (!resultResponse.ok) {
+        log('ERROR', `Result failed: ${resultData.error || resultResponse.statusText}`);
+        // even if result post fails, the description was saved — log and exit cleanly
+        return;
+      }
+      log('RESULT', `${resultData.message || 'Result posted.'} — issue is now in review.`);
     } catch (error) {
-        log('ERROR', `Claim request failed: ${error.message}`);
-        return;
+      log('ERROR', `Result request failed: ${error.message}`);
+      return;
     }
+  }
 
-    // From this point on, the issue is in 'in_progress' state.
-    // Any failure must either complete the workflow (review/blocked) or
-    // leave the issue blocked. We never leave it stuck in_progress on purpose.
+
+  // STEP 7: Close the issue (only if it went to review AND --no-close wasn't passed)
+  // in a real workflow a human would review first, so this step is optional
+  if (!isBlocked && AUTO_CLOSE) {
     await sleep(MIN_DELAY_MS);
-
-
-    // STEP 3.5: Check if the description is clear enough to work on (free, no API call)
-    const desc = target.issue_description || '';
-
-    // edge case: skip if this issue already has an agent_response from a previous run
-    // re-running would overwrite the previous result and waste tokens
-    if (target.agent_response && target.agent_response.trim().length > 0) {
-        log('QUALITY', 'Issue already has an agent response from a previous run. Skipping to avoid duplicate work.');
-        log('HINT', 'A human should review the existing response and either close or unblock the issue.');
-        return;
-    }
-
-    let blockReason = null;
-    const trimmedDesc = desc.trim();
-
-    if (trimmedDesc.length === 0) {
-        blockReason = 'Issue has no description. Please add details about what needs to be done.';
-    } else if (trimmedDesc.length < MIN_DESCRIPTION_LENGTH) {
-        blockReason = `Description is too short (${trimmedDesc.length} chars, need at least ${MIN_DESCRIPTION_LENGTH}). Please provide more detail.`;
-    } else if (trimmedDesc === target.title) {
-        blockReason = 'Description is identical to the title. Please add more context.';
-    }
-
-    if (blockReason) {
-        log('QUALITY', `Issue failed quality check: ${blockReason}`);
-
-        await saveAgentResponse(target.id, blockReason);
-        await blockIssue(target.id);
-        log('BLOCK', 'Issue blocked due to quality check. User should create a new issue with a better description.');
-        return;
-    }
-
-
-    // STEP 4: Do the work (Claude or mock)
-    let result;
-    let totalTokens;
-    let estimatedCost = 0;
-
-    if (MOCK_MODE) {
-        // mock mode: fake the work
-        log('WORK', 'MOCK MODE — skipping Claude API call...');
-        await sleep(2000);
-        result = pickRandom(FAKE_RESULTS);
-        totalTokens = Math.floor(Math.random() * 5000) + 500;
-    } else {
-        // live mode: send the issue to Claude with project context
-        try {
-            // build project context from other issues
-            const contextSummary = allIssues
-                .filter((i) => i.id !== target.id)
-                .slice(0, 10)
-                .map((i) => `- [${i.issue_status}] ${i.title} (${i.issue_priority})`)
-                .join('\n');
-
-            const claudeResponse = await askClaude(
-                target.title,
-                target.issue_description || '',
-                contextSummary || null
-            );
-
-            result = claudeResponse.result;
-            totalTokens = claudeResponse.totalTokens;
-            estimatedCost = claudeResponse.estimatedCost;
-
-            log('CLAUDE', `Input: ${claudeResponse.inputTokens} tokens | Output: ${claudeResponse.outputTokens} tokens`);
-            log('CLAUDE', `Total: ${totalTokens} tokens | Cost: ~$${estimatedCost.toFixed(4)}`);
-
-            // warn on expensive runs so the user notices runaway costs
-            if (estimatedCost > COST_WARNING_THRESHOLD) {
-                log('WARN', `This run cost $${estimatedCost.toFixed(4)} — higher than the $${COST_WARNING_THRESHOLD} threshold.`);
-            }
-        } catch (error) {
-            // if Claude fails (timeout, bad key, rate limit, malformed response, etc.) don't leave it stuck in_progress
-            log('ERROR', `Claude API failed: ${error.message}`);
-
-            log('BLOCK', `Marking ${target.id} as blocked due to agent failure...`);
-
-            await saveAgentResponse(target.id, `Agent failed: ${error.message}`);
-            await blockIssue(target.id);
-            log('BLOCK', 'Issue marked as blocked. A human needs to investigate.');
-            return;
-        }
-    }
-
-    // detect if Claude indicated it couldn't solve the issue
-    // (only runs in live mode — mock results are always treated as solutions)
-    const isBlocked = !MOCK_MODE && isClaudeBlocked(result);
-
-    // show a preview of Claude's response
-    const preview = result.length > 500 ? result.substring(0, 500) + '...[see UI for full response]' : result;
-    log('WORK', `Result preview:\n${preview}`);
-
-    await sleep(MIN_DELAY_MS);
-
-
-    // STEP 5: Save token usage to the issue
-    // this lets the frontend dashboard show how many tokens each issue used
-    log('TOKENS', `Saving token usage (${totalTokens}) to ${target.id}...`);
+    log('CLOSE', `Closing ${target.id}...`);
 
     try {
-        const tokenResponse = await fetchWithTimeout(`${BASE_URL}/api/issues/${target.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tokens_used: totalTokens }),
-        });
-        if (tokenResponse.ok) {
-            log('TOKENS', 'Token usage saved.');
-        } else {
-            // graceful degradation: column may not exist yet in some environments
-            log('WARN', 'Could not save token usage — tokens_used column may not exist yet.');
-        }
+      const closeResponse = await fetchWithTimeout(`${BASE_URL}/api/issues/${target.id}/close`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const closeData = await closeResponse.json().catch(() => ({}));
+      if (!closeResponse.ok) {
+        log('ERROR', `Close failed: ${closeData.error || closeResponse.statusText}`);
+        return;
+      }
+      log('CLOSE', `${closeData.message || 'Issue closed.'}`);
     } catch (error) {
-        log('WARN', `Could not save token usage: ${error.message}`);
+      log('ERROR', `Close request failed: ${error.message}`);
+      return;
     }
-
-    await sleep(MIN_DELAY_MS);
-
-
-    // STEP 6: Post the result status
-    if (isBlocked) {
-        // Claude couldn't solve it — save reason and block
-        log('BLOCK', `Claude couldn't solve this issue. Blocking ${target.id}...`);
-
-        await saveAgentResponse(target.id, result);
-
-        const blocked = await blockIssue(target.id);
-        if (blocked) {
-            log('BLOCK', 'Issue blocked with response saved. A human needs to review.');
-        }
-    } else {
-        // Claude solved it — save response and send to review
-        log('RESULT', `Posting result for ${target.id}...`);
-
-        await saveAgentResponse(target.id, result);
-
-        try {
-            const resultResponse = await fetchWithTimeout(`${BASE_URL}/api/issues/${target.id}/result`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ new_status: 'review' }),
-            });
-            const resultData = await resultResponse.json().catch(() => ({}));
-            if (!resultResponse.ok) {
-                log('ERROR', `Result failed: ${resultData.error || resultResponse.statusText}`);
-                // even if result post fails, the description was saved — log and exit cleanly
-                return;
-            }
-            log('RESULT', `${resultData.message || 'Result posted.'} — issue is now in review.`);
-        } catch (error) {
-            log('ERROR', `Result request failed: ${error.message}`);
-            return;
-        }
-    }
+  } else if (!AUTO_CLOSE && !isBlocked) {
+    log('REVIEW', 'Issue is in review. A human needs to approve and close it.');
+  }
 
 
-    // STEP 7: Close the issue (only if it went to review AND --no-close wasn't passed)
-    // in a real workflow a human would review first, so this step is optional
-    if (!isBlocked && AUTO_CLOSE) {
-        await sleep(MIN_DELAY_MS);
-        log('CLOSE', `Closing ${target.id}...`);
-
-        try {
-            const closeResponse = await fetchWithTimeout(`${BASE_URL}/api/issues/${target.id}/close`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-            });
-            const closeData = await closeResponse.json().catch(() => ({}));
-            if (!closeResponse.ok) {
-                log('ERROR', `Close failed: ${closeData.error || closeResponse.statusText}`);
-                return;
-            }
-            log('CLOSE', `${closeData.message || 'Issue closed.'}`);
-        } catch (error) {
-            log('ERROR', `Close request failed: ${error.message}`);
-            return;
-        }
-    } else if (!AUTO_CLOSE && !isBlocked) {
-        log('REVIEW', 'Issue is in review. A human needs to approve and close it.');
-    }
-
-
-    console.log('\n===========================================');
-    log('DONE', `Runner complete! Mode: ${MOCK_MODE ? 'MOCK' : 'LIVE'}`);
-    if (!MOCK_MODE) {
-        log('COST', `Total tokens: ${totalTokens} | Estimated cost: ~$${estimatedCost.toFixed(4)}`);
-    }
-    console.log('===========================================');
+  console.log('\n===========================================');
+  log('DONE', `Runner complete! Mode: ${MOCK_MODE ? 'MOCK' : 'LIVE'}`);
+  if (!MOCK_MODE) {
+    log('COST', `Total tokens: ${totalTokens} | Estimated cost: ~$${estimatedCost.toFixed(4)}`);
+  }
+  console.log('===========================================');
 }
 
 

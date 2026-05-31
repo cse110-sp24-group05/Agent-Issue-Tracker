@@ -27,7 +27,7 @@ const { runRunner, isClaudeBlocked, smartTruncate } = await import('../runner/cl
 
 /**
  * Build a mock fetch response object that matches the shape Node's fetch returns.
- * @param {object|array} data - The JSON body the response should return.
+ * @param {object | Array} data - The JSON body the response should return.
  * @param {number} status - HTTP status code (default 200).
  * @returns {Promise<object>} - A fake Response object.
  */
@@ -95,7 +95,7 @@ describe('isClaudeBlocked', () => {
 
   // successful solutions should NOT be flagged as blocked
   test('returns false for clear solution starting with "Here\'s how"', () => {
-    expect(isClaudeBlocked("Here's how to add input validation: 1. Open login.js, 2. Add a check.")).toBe(false);
+    expect(isClaudeBlocked('Here\'s how to add input validation: 1. Open login.js, 2. Add a check.')).toBe(false);
   });
 
   test('returns false for code solution', () => {
@@ -323,7 +323,7 @@ describe('runRunner workflow', () => {
         },
       ]))
       .mockResolvedValueOnce(mockResponse({ success: true })) // claim
-      .mockResolvedValueOnce(mockClaudeResponse("Here's how to add validation: Step 1...")) // Claude
+      .mockResolvedValueOnce(mockClaudeResponse('Here\'s how to add validation: Step 1...')) // Claude
       .mockResolvedValueOnce(mockResponse({ success: true })) // save tokens
       .mockResolvedValueOnce(mockResponse({ success: true })) // save agent_response
       .mockResolvedValueOnce(mockResponse({ success: true, message: 'Result posted' })); // result -> review
