@@ -45,8 +45,13 @@ import { config as loadDotenv } from 'dotenv';
 const globalConfig = join(homedir(), '.ait', '.env');
 const localConfig  = join(process.cwd(), '.env');
 
-if (existsSync(globalConfig)) loadDotenv({ path: globalConfig });
-if (existsSync(localConfig))  loadDotenv({ path: localConfig });
+if (existsSync(globalConfig)) {
+  loadDotenv({ path: globalConfig });
+};
+
+if (existsSync(localConfig))  {
+  loadDotenv({ path: localConfig });
+};
 
 // --- Config -----------------------------------------------------------
 
@@ -69,15 +74,20 @@ const MIN_DELAY_MS = 300;
 // --- Helpers ----------------------------------------------------------
 
 /**
- * @param {string} label
- * @param {string} message
+ * Simple logger with timestamps and labels.
+ * @param {string} label - the part of the workflow, e.g. "FETCH", "CLAIM", "ERROR"
+ * @param {string} message - details about the current step or error
  */
 function log(label, message) {
   const time = new Date().toISOString().slice(11, 19);
   console.log(`[${time}] [${label}] ${message}`);
 }
 
-/** @param {number} ms */
+/** 
+ * Tiny helper to add a delay between API calls, making it easier to read
+ * @param {number} ms - milliseconds to sleep
+ * @returns {Promise} resolves after the specified delay
+ */
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -131,6 +141,9 @@ Do not skip this — it is how AIT updates the dashboard.
 
 // --- Main workflow ----------------------------------------------------
 
+/**
+ * Main runner function. Executes the workflow:
+ */
 async function runAIT() {
   const isProduction = BASE_URL.includes('workers.dev');
 
@@ -139,7 +152,9 @@ async function runAIT() {
   console.log(`  API:       ${BASE_URL}`);
   console.log(`  Workspace: ${WORKSPACE_ID}`);
   console.log(`  Agent:     ${AGENT_ID}`);
-  if (isProduction) console.log('  WARNING:   Targeting production Worker');
+  if (isProduction) {
+    console.log('  WARNING:   Targeting production Worker');
+  }
   console.log('===========================================\n');
 
   // STEP 1 — Fetch the next ready issue --------------------------------
