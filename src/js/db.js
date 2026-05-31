@@ -185,6 +185,60 @@ export function updateIssueStatus(env, id, newStatus, updatedAt) {
 
 
 /**
+ * Return the single highest-priority open unclaimed issue, ordered by
+ * priority rank then creation time. Returns null when none exist.
+ * @param {object} env - Worker env bindings.
+ * @returns {Promise<object|null>} The row, or null.
+ */
+export function selectReadyIssue(env) {
+  return env.issues_db
+    .prepare(`
+      SELECT * FROM issues
+      WHERE issue_status = 'open'
+        AND (assigned_to_agent IS NULL OR assigned_to_agent = '')
+      ORDER BY
+        CASE issue_priority
+          WHEN 'critical' THEN 0
+          WHEN 'high'     THEN 1
+          WHEN 'medium'   THEN 2
+          WHEN 'low'      THEN 3
+          ELSE 99
+        END ASC,
+        created_at ASC
+      LIMIT 1
+    `)
+    .first();
+}
+
+
+/**
+ * Store the result of a completed agent run: transitions status, saves
+ * result_text and tokens_used, and stamps updated_at.
+ * result_text requires migration 0002. tokens_used is defined in 0001_schema.sql.
+ * @param {object} env - Worker env bindings.
+ * @param {string} id - Issue id.
+ * @param {string} newStatus - Target status ('review' or 'blocked').
+ * @param {string|null} resultText - Summary text from the agent.
+ * @param {number|null} tokensUsed - Token count reported by the agent.
+ * @param {string} updatedAt - ISO timestamp for updated_at.
+ * @returns {Promise<object>} The D1 .run() result.
+ */
+export function storeIssueResult(env, id, newStatus, resultText, tokensUsed, updatedAt) {
+  return env.issues_db.prepare(`
+    UPDATE issues
+    SET
+      issue_status = ?,
+      result_text  = ?,
+      tokens_used  = ?,
+      updated_at   = ?
+    WHERE id = ?
+  `)
+    .bind(newStatus, resultText ?? null, tokensUsed ?? null, updatedAt, id)
+    .run();
+}
+
+
+/**
  * Mark an issue as closed: sets status, closed_at, and updated_at.
  * @param {object} env - Worker env bindings.
  * @param {string} id - Issue id.
@@ -207,4 +261,22 @@ export function closeIssueRow(env, id, now) {
       id
     )
     .run();
+}
+
+/**
+ * select issue history by issue id, ordered from latest to oldest.
+ * @param {object} env - Worker env bindings.
+ * @param {string} id - Issue id.
+ * @returns {Promise<Array>} Array of history records, ordered from latest to oldest.
+ */
+export function selectIssueHistory(env, id) {
+  return env.issues_db
+    .prepare(`
+      SELECT * FROM issue_status_history
+      WHERE issue_id = ?
+      ORDER BY changed_at DESC
+    `)
+    .bind(id)
+    .all()
+    .then(r => r.results);
 }

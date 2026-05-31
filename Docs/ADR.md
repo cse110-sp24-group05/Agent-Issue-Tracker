@@ -434,3 +434,30 @@ Chosen option: **Random UUID stored in localStorage**, because it requires three
 - Identity is browser-bound — clearing localStorage loses access to the workspace
 - No recovery flow if the ID is lost
 - Not suitable if AIT ever needs real identity verification
+
+# ADR 008: Schema and Database Modification
+
+**Status:** Accepted
+**Date:** 2026-05-28
+**Decision-makers:** Whole Team
+
+## Context and Problem Statement
+
+We need a way to incorporate logs and a history of status changes and updates to an issue on AIT, including the timestamp they were updated/changed at. The problem is that as of right now, with our current schema and database setup, our json fields (notably things like issue_status) can only hold one value at a time, preventing our issues table from storing a full history of a given issue’s timeline.
+
+### Additional Table in DB: `issue_status_history`
+We added an additional table to the database called `issue_status_history`, and we also added 3 triggers that activate whenever an issue is updated in any way, newly created, or deleted entirely. The changes would all be reflected in the new issue_status_history table. It has fields: `id`, `issue_id`, `issue_status`, `changed_at`, `changed_by_user`, and `changed_by_agent`. The triggers live under the issues table.
+
+## Decision Outcome:
+The Schema has been modified, and these changes are reflected on our D1 Cloudflare database as well. 
+
+## Consequences
+
+### Good
+
+- Minimal edits or changes needed to be made to the backend logic, as we only needed to add a new endpoint and function
+- Now we have a full timeline of changes that occur for the issues, as well as a way to query these changes to be used for the audit logs.
+
+### Bad
+
+- Storage and performance take a small hit from adding an extra table (very minor)

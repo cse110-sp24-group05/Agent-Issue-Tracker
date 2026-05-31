@@ -1,3 +1,4 @@
+// Created with Chatgpt assistance — human reviewed and tested
 // handlers.js
 // Request handlers for the issues API: 5 CRUD operations and 3 workflow
 // transitions. HTTP routing lives in worker.js; SQL lives in db.js;
@@ -20,11 +21,14 @@ import {
   insertIssue,
   selectAllIssues,
   selectIssueById,
+  selectReadyIssue,
   updateIssueFields,
   deleteIssueById,
   claimIssueRow,
   updateIssueStatus,
-  closeIssueRow
+  storeIssueResult,
+  closeIssueRow,
+  selectIssueHistory
 } from './db.js';
 
 
@@ -113,6 +117,33 @@ export async function getAllIssues(env) {
   try {
     const { results } = await selectAllIssues(env);
     return Response.json(results, { headers: CORS_HEADERS });
+  } catch (error) {
+    return serverError(error.message);
+  }
+}
+
+
+/**
+ * getReadyIssue returns the single highest-priority open unclaimed issue.
+ * The X-Workspace-ID header is read and logged now; full workspace-scoped
+ * filtering is a placeholder until user auth is implemented.
+ *
+ * @param {Request} request - Incoming request; reads X-Workspace-ID header.
+ * @param {object} env - Environment bindings containing the database connection.
+ * @returns {Response} The ready issue, or 404 if none are available.
+ */
+export async function getReadyIssue(request, env) {
+  try {
+    const workspaceId = request.headers.get('X-Workspace-ID') || 'unknown';
+    console.log(`getReadyIssue: workspace=${workspaceId}`);
+
+    const issue = await selectReadyIssue(env);
+
+    if (!issue) {
+      return notFound('No open issues available');
+    }
+
+    return ok({ success: true, issue });
   } catch (error) {
     return serverError(error.message);
   }
@@ -287,7 +318,6 @@ export async function claimIssue(request, env) {
     await claimIssueRow(env, id, agent_id, expiration, new Date().toISOString());
 
     const updatedIssue = await selectIssueById(env, id);
-    console.log('Updated Issue after claim:', updatedIssue.agent_id);
 
     return ok({ success: true, message: 'Issue claimed successfully', issue: updatedIssue });
   } catch (error) {
@@ -311,7 +341,7 @@ export async function claimIssue(request, env) {
  */
 export async function putResult(id, request, env) {
   try {
-    const { new_status } = await request.json();
+    const { new_status, result_text, tokens_used } = await request.json();
 
     // Allowed statuses after processing
     const validStatuses = ['blocked', 'review'];
@@ -330,7 +360,14 @@ export async function putResult(id, request, env) {
       return badRequest('Issue must be in progress before posting results.');
     }
 
-    await updateIssueStatus(env, id, new_status, new Date().toISOString());
+    await storeIssueResult(
+      env,
+      id,
+      new_status,
+      result_text ?? null,
+      tokens_used ?? null,
+      new Date().toISOString()
+    );
 
     return ok({ success: true, message: 'Result posted successfully' });
   } catch (error) {
@@ -368,10 +405,6 @@ export async function closeIssue(id, env) {
   }
 }
 
-
-// TODO: implement blockIssue, filterIssues, sortIssues
-
-
 /**
  * blockIssue transitions an issue into a blocked state when processing
  * cannot continue due to some unresolved problem or prereq.
@@ -384,25 +417,62 @@ export async function closeIssue(id, env) {
  * @param {object} env - Environment bindings containing the database connection.
  * @returns {Response} A JSON response indicating success or failure.
  */
-// async function blockIssue(id, env) {}
+export async function blockIssue(id, env) {
+  try {
 
+    const issue = await selectIssueById(env, id);
+    if (!issue) {
+      return notFound();
+    }
+
+    const currentStatus = issue.issue_status;
+    if(currentStatus === 'blocked'){
+      return badRequest('Issue already blocked');
+    }
+
+    if(currentStatus === 'closed'){
+      return badRequest('Issue already closed');
+    }
+
+    const now = new Date().toISOString();
+
+    await updateIssueStatus(env, id,'blocked', now);
+
+    const updated = await selectIssueById(env, id);
+
+    return ok({
+      success: true,
+      message: 'Issue updated successfully',
+      issue: updated
+    });
+  } catch (error) {
+    return serverError(error.message);
+  }
+}
 
 /**
- * filterIssues returns a filtered subset of issues based on provided criteria.
- *
- * @param {object} filters - Key/value pairs to filter issues by (e.g. status, priority).
- * @param {object} env - Environment bindings containing the database connection.
- * @returns {Response} A JSON response containing the filtered issues or an error message.
+ * getIssueHistory retrieves the history of status changes for a specific issue
+ * based on its issue id. It checks if the issue exists and then queries the
+ * database for all status change records associated with that issue. The function
+ * formats the results into a JSON response, which includes an array of historical
+ * entries detailing the status changes along with their corresponding timestamps.
+ * If the issue does not exist or if there is an error during retrieval,
+ * it returns an appropriate error message.
+ * @param {string} id - A unique identifier for an issue.
+ * @param {object} env - The environment object containing bindings and configurations,
+ * including the database connection.
+ * @returns {Response} A JSON response containing the issue history or an error message.
  */
-// async function filterIssues(filters, env) {}
+export async function getIssueHistory(id, env) {
+  try {
+    const issue = await selectIssueById(env, id);
+    if (!issue) {
+      return notFound();
+    }
 
-
-/**
- * sortIssues returns all issues sorted by a specified field.
- *
- * @param {string} field - The field to sort by (e.g. created_at, issue_priority).
- * @param {string} direction - Sort direction, either "asc" or "desc".
- * @param {object} env - Environment bindings containing the database connection.
- * @returns {Response} A JSON response containing the sorted issues or an error message.
- */
-// async function sortIssues(field, direction, env) {}
+    const history = await selectIssueHistory(env, id);
+    return ok({ success: true, issue_id: id, history });
+  } catch (error) {
+    return serverError(error.message);
+  }
+}
