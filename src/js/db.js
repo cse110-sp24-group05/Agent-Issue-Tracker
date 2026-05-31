@@ -214,7 +214,7 @@ export function selectReadyIssue(env) {
 /**
  * Store the result of a completed agent run: transitions status, saves
  * result_text and tokens_used, and stamps updated_at.
- * Requires migration 0002 (result_text and tokens_used columns).
+ * result_text requires migration 0002. tokens_used is defined in 0001_schema.sql.
  * @param {object} env - Worker env bindings.
  * @param {string} id - Issue id.
  * @param {string} newStatus - Target status ('review' or 'blocked').

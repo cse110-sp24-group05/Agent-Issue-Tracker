@@ -318,7 +318,6 @@ export async function claimIssue(request, env) {
     await claimIssueRow(env, id, agent_id, expiration, new Date().toISOString());
 
     const updatedIssue = await selectIssueById(env, id);
-    console.log('Updated Issue after claim:', updatedIssue.agent_id);
 
     return ok({ success: true, message: 'Issue claimed successfully', issue: updatedIssue });
   } catch (error) {

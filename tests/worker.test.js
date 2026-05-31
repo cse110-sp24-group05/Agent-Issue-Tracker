@@ -564,7 +564,7 @@ describe('Issues API Tests', () => {
     test('sucessful', async() => {
       mockD1Sequence([
         {response: {id: '80', issue_status: 'in_progress',}, method: 'first'}, // selectIssueById 
-        {response: {meta: {changes: 1}}, method: 'run'} // updateIssueStatus
+        {response: {meta: {changes: 1}}, method: 'run'} // storeIssueResult
       ]);
 
       const request = new Request('http://localhost/api/issues/80/result', {
@@ -637,7 +637,7 @@ describe('Issues API Tests', () => {
     test('issue blocked successfully', async () => {
       mockD1Sequence([
         { response: { id: '1', issue_status: 'open' },    method: 'first' }, // selectIssueById
-        { response: { meta: { changes: 1 } },              method: 'run'   }, // updateIssueStatus
+        { response: { meta: { changes: 1 } },              method: 'run'   }, // storeIssueResult
         { response: { id: '1', issue_status: 'blocked' }, method: 'first' }  // selectIssueById re-fetch
       ]);
 

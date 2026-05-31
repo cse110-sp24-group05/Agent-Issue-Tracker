@@ -648,7 +648,7 @@ async function runRunner() {
   }
 
 
-  // STEP 7: Close the issue (only if it went to review AND --no-close wasn't passed)
+  // STEP 7: Close the issue (only if it went to review AND --auto-close was passed)
   // in a real workflow a human would review first, so this step is optional
   if (!isBlocked && AUTO_CLOSE) {
     await sleep(MIN_DELAY_MS);

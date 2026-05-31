@@ -32,7 +32,7 @@ const env = {
 };
 
 /**
- * Mirror of the helper in src/tests/worker.test.js.
+ * Mirror of the helper in tests/worker.test.js.
  * Sets up a D1 mock chain and wires the requested method to return `response`.
  * Uses mockReturnValue — every call to prepare() gets this chain.
  *

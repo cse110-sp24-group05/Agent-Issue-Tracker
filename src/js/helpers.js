@@ -27,8 +27,7 @@ export const ALLOWED_UPDATE_FIELDS = [
   'tokens_used',
   'claim_timeout_minutes',
   'closed_at',
-  'result_text',
-  'tokens_used'
+  'result_text'
 ];
 
 
