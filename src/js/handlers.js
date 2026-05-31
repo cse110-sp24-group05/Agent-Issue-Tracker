@@ -526,7 +526,8 @@ export async function loginOrRegister(request, env) {
     }
 
     // Username not found — create new user
-    const id = crypto.randomUUID();
+    const randomNum = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
+    const id = `user-${randomNum}`;
     await insertUser(env, id, trimmedName, trimmedEmail);
 
     return ok({ success: true, profile: { id, name: trimmedName, email: trimmedEmail } }, 201);
