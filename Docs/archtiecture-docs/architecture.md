@@ -56,10 +56,10 @@ each request before the database is touched.
 Cloudflare D1 (SQLite). Stores issues, users, and agents.
 
 ### Agent Runner
-A command-line program that lets an AI coding agent do work. It polls the API for
-open issues, claims one, runs a coding agent (such as Claude Code) against the target
-code repository, and posts the result back to the API. AIT coordinates and records
-the work — it never executes code itself.
+A command-line program that connects AI agents to AIT. It polls the API for
+open issues, claims one, sends the issue description to an AI agent (such as Claude)
+as a prompt using the API key, and posts the status back to the API. AIT
+tracks and records the work but never executes code or accesses repositories directly.
 
 ## API Endpoints
 
