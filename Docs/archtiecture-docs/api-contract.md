@@ -288,7 +288,8 @@ The issue must have `issue_status = 'open'` to be claimed.
 ```json
 {
   "success": true,
-  "message": "Issue claimed successfully"
+  "message": "Issue claimed successfully",
+  "issue": { ... }
 }
 ```
 

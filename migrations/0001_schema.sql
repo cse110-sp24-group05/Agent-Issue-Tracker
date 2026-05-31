@@ -14,7 +14,9 @@ CREATE TABLE IF NOT EXISTS issues (
 
     claim_expires_at INTEGER,        -- Unix timestamp
     retry_count INTEGER NOT NULL DEFAULT 0,
+    tokens_used INTEGER DEFAULT 0,   -- token consumed by agent
     claim_timeout_minutes INTEGER NOT NULL DEFAULT 30,
+    agent_response TEXT,             -- Claude's response or block reason
 
     created_at TEXT NOT NULL,        -- ISO timestamp
     updated_at TEXT NOT NULL,        -- ISO timestamp

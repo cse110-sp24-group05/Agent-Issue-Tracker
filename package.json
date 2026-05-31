@@ -4,6 +4,7 @@
     "dev": "python3 -m http.server 8080 --directory src",
     "dev:api": "dotenv -e .env -- wrangler dev",
     "sim": "dotenv -e .env -- node src/runner/simulator.js",
+    "ait-runner": "dotenv -e .env -- node src/runner/claude-runner.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand"
   },
   "jest": {
