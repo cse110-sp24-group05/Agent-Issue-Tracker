@@ -16,7 +16,8 @@ import {
   putResult,
   closeIssue,
   blockIssue,
-  getIssueHistory
+  getIssueHistory,
+  loginOrRegister
 } from './handlers.js';
 
 import { CORS_HEADERS } from './helpers.js';
@@ -91,6 +92,10 @@ export default {
       return putResult(id, request, env);
     }
 
+    // POST /api/login
+    if (url.pathname === '/api/login' && method === 'POST') {
+      return loginOrRegister(request, env);
+    }
 
     // PUT /api/issues/:id
     const isPlainIssuePath = url.pathname.startsWith('/api/issues/')

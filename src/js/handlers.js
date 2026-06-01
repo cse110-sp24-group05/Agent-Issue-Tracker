@@ -28,7 +28,9 @@ import {
   updateIssueStatus,
   storeIssueResult,
   closeIssueRow,
-  selectIssueHistory
+  selectIssueHistory,
+  selectUserByUsername,
+  insertUser
 } from './db.js';
 
 
@@ -472,6 +474,63 @@ export async function getIssueHistory(id, env) {
 
     const history = await selectIssueHistory(env, id);
     return ok({ success: true, issue_id: id, history });
+  } catch (error) {
+    return serverError(error.message);
+  }
+}
+
+/**
+ * loginOrRegister handles profile-based login.
+ * - If username exists and email matches → login (return profile)
+ * - If username exists and email doesn't match → return 401 error
+ * - If username doesn't exist → create new user and login
+ *
+ * @param {Request} request - Contains name and email in the body.
+ * @param {object} env - Environment bindings containing the database connection.
+ * @returns {Response} A JSON response containing the profile or an error message.
+ */
+export async function loginOrRegister(request, env) {
+  try {
+    const body = await request.json();
+    const { name, email } = body;
+
+    if (!name || !email) {
+      return badRequest('Missing required fields: name and email');
+    }
+
+    if (typeof name !== 'string' || typeof email !== 'string') {
+      return badRequest('name and email must be strings');
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return badRequest('Invalid email format');
+    }
+
+    const trimmedName  = name.trim();
+    const trimmedEmail = email.trim();
+
+    // Check if user already exists
+    const existing = await selectUserByUsername(env, trimmedName);
+
+    if (existing) {
+      // Username found — check email matches
+      if (existing.email !== trimmedEmail) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Email does not match the name provided' }),
+          { status: 401, headers: CORS_HEADERS }
+        );
+      }
+      // Email matches — login
+      return ok({ success: true, profile: { id: existing.id, name: existing.username, email: existing.email } });
+    }
+
+    // Username not found — create new user
+    const randomNum = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
+    const id = `user-${randomNum}`;
+    await insertUser(env, id, trimmedName, trimmedEmail);
+
+    return ok({ success: true, profile: { id, name: trimmedName, email: trimmedEmail } }, 201);
   } catch (error) {
     return serverError(error.message);
   }
