@@ -21,6 +21,7 @@ export function insertIssue(env, fields) {
     claim_expires_at,
     retry_count,
     claim_timeout_minutes,
+    created_by_user,
     created_at,
     updated_at,
     closed_at
@@ -38,11 +39,12 @@ export function insertIssue(env, fields) {
       claim_expires_at,
       retry_count,
       claim_timeout_minutes,
+      created_by_user,
       created_at,
       updated_at,
       closed_at
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `)
     .bind(
       id,
@@ -55,6 +57,7 @@ export function insertIssue(env, fields) {
       claim_expires_at || null,
       retry_count,
       claim_timeout_minutes,
+      created_by_user || null,
       created_at,
       updated_at,
       closed_at || null
@@ -220,6 +223,36 @@ export function selectReadyIssue(env) {
         created_at ASC
       LIMIT 1
     `)
+    .first();
+}
+
+
+/**
+ * Return the single highest-priority open unclaimed issue belonging to a
+ * specific user (by created_by_user), ordered by priority then creation time.
+ * @param {object} env - Worker env bindings.
+ * @param {string} userId - The user's DB id (e.g. "user-12345").
+ * @returns {Promise<object|null>} The row, or null.
+ */
+export function selectReadyIssueByUserId(env, userId) {
+  return env.issues_db
+    .prepare(`
+      SELECT * FROM issues
+      WHERE issue_status = 'open'
+        AND (assigned_to_agent IS NULL OR assigned_to_agent = '')
+        AND created_by_user = ?
+      ORDER BY
+        CASE issue_priority
+          WHEN 'critical' THEN 0
+          WHEN 'high'     THEN 1
+          WHEN 'medium'   THEN 2
+          WHEN 'low'      THEN 3
+          ELSE 99
+        END ASC,
+        created_at ASC
+      LIMIT 1
+    `)
+    .bind(userId)
     .first();
 }
 

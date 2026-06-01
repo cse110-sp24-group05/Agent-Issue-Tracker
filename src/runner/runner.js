@@ -6,8 +6,9 @@
  * bash command. Claude Code is already running — this script does not
  * spawn it. The flow is:
  *
- *  1. Read config (AIT_API_BASE, AIT_WORKSPACE_ID, AIT_AGENT_ID)
+ *  1. Read config (AIT_API_BASE, AIT_USER_ID, AIT_AGENT_ID)
  *  2. GET  /api/issues/ready   — fetch highest-priority open unclaimed issue
+ *     belonging to the authenticated user (sent as X-User-ID header)
  *  3. PUT  /api/issues/:id/claim — lock it (status → in_progress)
  *  4. Print the task to stdout — Claude reads this and works on it
  *  5. Exit — Claude continues, finishes the work, then runs the
@@ -23,14 +24,18 @@
  *   2. ~/.ait/.env   — recommended for global installs
  *   3. .env in the current working directory
  *
- * Global install (run `ait` from any repo):
+ * Global install:
  *   npm link          # dev — symlinks from this repo
  *   mkdir -p ~/.ait && cp .env.example ~/.ait/.env
- *   # edit ~/.ait/.env with AIT_WORKSPACE_ID, AIT_AGENT_ID, AIT_API_BASE
+ *   # Edit ~/.ait/.env: set AIT_USER_ID to your user-XXXXX id from the AIT login page
+ *
+ * To find your AIT_USER_ID:
+ *   Open browser DevTools on any AIT page → Application → Local Storage
+ *   → look for 'ait_profile' → copy the "id" field (e.g. user-04821)
  *
  * Prerequisites:
- *   - AIT_WORKSPACE_ID in config (placeholder until user auth lands)
- *   - Migration 0002 applied: npx wrangler d1 migrations apply issues-db --remote
+ *   - AIT_USER_ID set to your user-XXXXX id from the AIT login
+ *   - Migration 0003 applied: npx wrangler d1 migrations apply issues-db --remote
  */
 
 import { existsSync } from 'fs';
@@ -47,11 +52,11 @@ const localConfig  = join(process.cwd(), '.env');
 
 if (existsSync(globalConfig)) {
   loadDotenv({ path: globalConfig });
-};
+}
 
-if (existsSync(localConfig))  {
+if (existsSync(localConfig)) {
   loadDotenv({ path: localConfig });
-};
+}
 
 // --- Config -----------------------------------------------------------
 
@@ -62,11 +67,11 @@ const BASE_URL =
     ? args[urlFlagIdx + 1]
     : process.env.AIT_API_BASE || 'https://agent-issue-tracker.stc021.workers.dev';
 
-// PLACEHOLDER: workspace ID identifies the user's AIT account.
-// No user auth yet. When auth lands this comes from a session token.
-const WORKSPACE_ID = process.env.AIT_WORKSPACE_ID || 'ws-placeholder-001';
+// AIT_USER_ID: the user-XXXXX id from the AIT login flow.
+// Find it at: DevTools → Application → Local Storage → ait_profile → "id"
+const USER_ID = process.env.AIT_USER_ID || '';
 
-// PLACEHOLDER: agent identifier recorded in the claim.
+// Agent identifier recorded in the claim request (which agent picked this up).
 const AGENT_ID = process.env.AIT_AGENT_ID || `ait-runner-${Date.now()}`;
 
 const MIN_DELAY_MS = 300;
@@ -75,85 +80,116 @@ const MIN_DELAY_MS = 300;
 
 /**
  * Simple logger with timestamps and labels.
- * @param {string} label - the part of the workflow, e.g. "FETCH", "CLAIM", "ERROR"
- * @param {string} message - details about the current step or error
+ * @param {string} label
+ * @param {string} message
  */
 function log(label, message) {
   const time = new Date().toISOString().slice(11, 19);
   console.log(`[${time}] [${label}] ${message}`);
 }
 
-/** 
- * Tiny helper to add a delay between API calls, making it easier to read
- * @param {number} ms - milliseconds to sleep
- * @returns {Promise} resolves after the specified delay
+/**
+ * @param {number} ms
  */
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
 /**
- * Print the claimed task to stdout so the surrounding Claude Code
- * session can read it, work on it, and run the result curl.
+ * Print the claimed task to stdout so Claude Code can read it, work on it,
+ * and report the result.
  *
- * The curl command is pre-filled with the base URL, issue ID, and
- * workspace ID. Claude only fills in its own result summary text.
+ * All values Claude Code might ever need (user ID, base URL, issue ID, headers)
+ * are printed explicitly here — Claude has no access to localStorage, .env, or
+ * this source file.
+ *
+ * ID disambiguation:
+ *   issue.id  = the AIT tracker ID (e.g. "issue-007"). Used ONLY in the AIT
+ *               API curl commands below. It is NOT a file, a function name,
+ *               a git hash, or any identifier inside the repository you are
+ *               working on. Do not search the codebase for this string.
  *
  * @param {object} issue - Issue row returned by the API
  */
 function printTask(issue) {
   const description = issue.issue_description?.trim() || '(no description provided)';
+  const issueUrl    = `${BASE_URL}/api/issues/${issue.id}`;
   const resultUrl   = `${BASE_URL}/api/issues/${issue.id}/result`;
+
+  // Build the header lines for curl commands so Claude has them pre-filled.
+  const curlUserHeader  = USER_ID  ? `    -H "X-User-ID: ${USER_ID}" \\` : '';
+  const curlAgentHeader = `    -H "X-Agent-ID: ${AGENT_ID}" \\`;
+
+  // Build the header block for the info section.
+  const infoUserId = USER_ID || '(not set — global pool mode)';
 
   console.log(`
 ╔══════════════════════════════════════════════════════╗
 ║               AIT — Task Assigned                    ║
 ╚══════════════════════════════════════════════════════╝
 
-Issue ID:    ${issue.id}
-Title:       ${issue.title}
-Priority:    ${issue.issue_priority}
-Status:      in_progress (just claimed)
+AIT Issue ID : ${issue.id}
+Title        : ${issue.title}
+Priority     : ${issue.issue_priority}
+Status       : in_progress (just claimed by this runner)
+AIT User ID  : ${infoUserId}
+AIT Agent ID : ${AGENT_ID}
+AIT API Base : ${BASE_URL}
 
 Description:
 ${description}
 
 ──────────────────────────────────────────────────────
-INSTRUCTIONS FOR CLAUDE
+INSTRUCTIONS FOR CLAUDE CODE
 ──────────────────────────────────────────────────────
-Work on the issue above using your available tools.
+Work on the task described above using your available
+tools (file edits, bash commands, etc.).
 
-When you have finished (or determined you are blocked),
-run the following command to report your result to AIT.
-Replace the placeholder with a brief summary of what
-you did. Use "blocked" instead of "review" if you could
-not complete the work.
+▸ ID DISAMBIGUATION (read carefully)
+  The AIT Issue ID "${issue.id}" is a tracker label
+  used ONLY in the curl commands below.
+  It is NOT a filename, function, variable, git hash,
+  or any symbol inside the repository you are editing.
+  Do not search the codebase for "${issue.id}".
 
-curl -X PUT "${resultUrl}" \\
-  -H "Content-Type: application/json" \\
-  -H "X-Workspace-ID: ${WORKSPACE_ID}" \\
-  -d '{"new_status":"review","result_text":"<your summary here>"}'
+▸ IF YOU NEED TO RE-READ THE ISSUE VIA API
+  Single-issue lookup — no user_id query param needed:
 
-Do not skip this — it is how AIT updates the dashboard.
+  curl "${issueUrl}" \\
+${curlUserHeader ? curlUserHeader + '\n' : ''}${curlAgentHeader}
+
+▸ WHEN FINISHED (or blocked), run EXACTLY this curl
+  to report your result to AIT. Fill in your summary
+  and the actual token count. Use "blocked" instead of
+  "review" only if you could not complete the work:
+
+  curl -X PUT "${resultUrl}" \\
+    -H "Content-Type: application/json" \\
+${curlUserHeader ? curlUserHeader + '\n' : ''}${curlAgentHeader}
+    -d '{"new_status":"review","result_text":"<your summary here>","tokens_used":<number>}'
+
+  Do NOT skip this step — it is the only way AIT
+  marks the issue as reviewed and updates the dashboard.
 ──────────────────────────────────────────────────────
 `);
 }
 
 // --- Main workflow ----------------------------------------------------
 
-/**
- * Main runner function. Executes the workflow:
- */
 async function runAIT() {
   const isProduction = BASE_URL.includes('workers.dev');
 
   console.log('===========================================');
   console.log('  AIT Runner');
-  console.log(`  API:       ${BASE_URL}`);
-  console.log(`  Workspace: ${WORKSPACE_ID}`);
-  console.log(`  Agent:     ${AGENT_ID}`);
+  console.log(`  API:      ${BASE_URL}`);
+  console.log(`  User ID:  ${USER_ID || '(none — falling back to global pool)'}`);
+  console.log(`  Agent ID: ${AGENT_ID}`);
   if (isProduction) {
-    console.log('  WARNING:   Targeting production Worker');
+    console.log('  WARNING:  Targeting production Worker');
+  }
+  if (!USER_ID) {
+    console.log('  WARNING:  AIT_USER_ID not set. Set it in ~/.ait/.env to');
+    console.log('            scope issues to your account. See runner.js header.');
   }
   console.log('===========================================\n');
 
@@ -162,15 +198,17 @@ async function runAIT() {
 
   let issue;
   try {
-    const res = await fetch(`${BASE_URL}/api/issues/ready`, {
-      headers: {
-        'X-Workspace-ID': WORKSPACE_ID,
-        'X-Agent-ID': AGENT_ID,
-      },
-    });
+    const headers = {
+      'X-Agent-ID': AGENT_ID,
+    };
+    if (USER_ID) {
+      headers['X-User-ID'] = USER_ID;
+    }
+
+    const res = await fetch(`${BASE_URL}/api/issues/ready`, { headers });
 
     if (res.status === 404) {
-      log('DONE', 'No open issues available. Nothing to do.');
+      log('DONE', 'No open issues available for this user. Nothing to do.');
       return;
     }
 
@@ -187,7 +225,7 @@ async function runAIT() {
     return;
   }
 
-  log('FETCH', `Found: "${issue.title}" (${issue.id}) — priority: ${issue.issue_priority}`);
+  log('FETCH', `Found: "${issue.title}" (AIT Issue ID: ${issue.id}) — priority: ${issue.issue_priority}`);
 
   await sleep(MIN_DELAY_MS);
 
@@ -195,12 +233,16 @@ async function runAIT() {
   log('CLAIM', `PUT /api/issues/${issue.id}/claim ...`);
 
   try {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    if (USER_ID) {
+      headers['X-User-ID'] = USER_ID;
+    }
+
     const res = await fetch(`${BASE_URL}/api/issues/${issue.id}/claim`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Workspace-ID': WORKSPACE_ID,
-      },
+      headers,
       body: JSON.stringify({ agent_id: AGENT_ID }),
     });
 
@@ -224,7 +266,7 @@ async function runAIT() {
   printTask(issue);
 
   // Runner exits here. Claude (already running) reads the printed task,
-  // does the work, and runs the curl command above when finished.
+  // does the work, then runs the curl command printed above.
 }
 
 runAIT();

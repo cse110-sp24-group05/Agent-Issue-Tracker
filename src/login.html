@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIT — Sign In</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-bg-subtle);
+      margin: 0;
+    }
+
+    .login-card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+
+    .login-logo {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--color-text);
+      text-align: center;
+      margin-bottom: 0.25rem;
+    }
+
+    .login-logo span { color: var(--color-accent); }
+
+    .login-sub {
+      text-align: center;
+      color: var(--color-text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+    }
+
+    .login-form { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .login-error {
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      color: #DC2626;
+      border-radius: 6px;
+      padding: 0.625rem 0.75rem;
+      font-size: 0.875rem;
+      display: none;
+    }
+
+    .login-error.visible { display: block; }
+
+    .login-btn {
+      width: 100%;
+      padding: 0.625rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-top: 0.25rem;
+    }
+
+    .login-hint {
+      text-align: center;
+      color: var(--color-text-muted);
+      font-size: 0.8125rem;
+      margin-top: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="login-logo">A<span>I</span>T</div>
+    <p class="login-sub">Agent Issue Tracker</p>
+
+    <form class="login-form" id="login-form" novalidate>
+      <div id="login-error" class="login-error" role="alert"></div>
+
+      <div class="form-group">
+        <label class="form-label" for="login-name">
+          Display Name <span class="required">*</span>
+        </label>
+        <input
+          class="form-input"
+          type="text"
+          id="login-name"
+          placeholder="e.g. patrick"
+          autocomplete="username"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="login-email">
+          Email <span class="required">*</span>
+        </label>
+        <input
+          class="form-input"
+          type="email"
+          id="login-email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          required
+        />
+      </div>
+
+      <button class="btn btn-primary login-btn" type="submit" id="login-btn">
+        Continue
+      </button>
+    </form>
+
+    <p class="login-hint">
+      New users are registered automatically.<br>
+      Returning users: use the same name + email to sign back in.
+    </p>
+  </div>
+
+  <script type="module">
+    import { login } from './js/data.js';
+
+    const form     = document.getElementById('login-form');
+    const errorEl  = document.getElementById('login-error');
+    const submitBtn = document.getElementById('login-btn');
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.add('visible');
+    }
+
+    function clearError() {
+      errorEl.textContent = '';
+      errorEl.classList.remove('visible');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearError();
+
+      const name  = document.getElementById('login-name').value.trim();
+      const email = document.getElementById('login-email').value.trim();
+
+      if (!name || !email) {
+        showError('Both fields are required.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in…';
+
+      try {
+        await login(name, email);
+        // Redirect to the page the user originally wanted, or index
+        const dest = new URLSearchParams(location.search).get('next') || 'index.html';
+        location.replace(dest);
+      } catch (err) {
+        showError(err.message || 'Login failed. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Continue';
+      }
+    });
+  </script>
+</body>
+</html>

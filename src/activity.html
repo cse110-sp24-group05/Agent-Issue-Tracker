@@ -2,9 +2,21 @@
 <html lang="">
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>AIT — Activity</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/activity.css">
+    <script>
+      // Auth guard: redirect to login if no profile is stored.
+      (function () {
+        try {
+          const raw = localStorage.getItem('ait_profile');
+          if (!raw || !JSON.parse(raw).id) throw new Error();
+        } catch {
+          const next = encodeURIComponent(location.pathname + location.search);
+          location.replace('login.html?next=' + next);
+        }
+      })();
+    </script>
   </head>
   <body>
     <script src="./js/activity-app.js" type="module"></script>

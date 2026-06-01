@@ -9,7 +9,7 @@ export const VALID_PRIORITIES = ['low', 'medium', 'high', 'critical'];
 export const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Workspace-ID, X-Agent-ID'
+  'Access-Control-Allow-Headers': 'Content-Type, X-User-ID, X-Agent-ID, X-Workspace-ID'
 };
 
 
