@@ -11,30 +11,22 @@
   <body>
     <script src="./js/components/navbar.js"></script>
     <my-navbar></my-navbar>
-    <!-- ── Page ──────────────────────────────────────────────────── -->
     <main class="page">
       <div class="container">
-        <!-- Summary bar -->
         <div class="summary-bar">
-          <!-- Open Card -->
           <button class="stat-card card stat-open" data-filter="open">
-            <!-- container: pushes text left, icon right -->
             <div class="stat-card-content">
-              <!-- left side: label on top, number below -->
               <div class="stat-card-text">
                 <div class="stat-number" id="sum-open">0</div>
                 <div class="stat-label">Open</div>
               </div>
 
-              <!-- Checkmark icon -->
               <status-icon>
                 <img src="./assets/svg/todo.svg" class="status-icon large" data-filter="todo">
               </status-icon>
-              </svg>
             </div>
           </button>
 
-          <!-- In Progress Card -->
           <button
             class="stat-card card stat-progress"
             data-filter="in-progress"
@@ -44,7 +36,6 @@
                 <div class="stat-number" id="sum-progress">0</div>
                 <div class="stat-label">In Progress</div>
               </div>
-              <!-- Clock icon -->
               <status-icon>
                 <img src="./assets/svg/in-progress.svg" class="status-icon large" data-filter="in-progress">
               </status-icon>
@@ -53,22 +44,18 @@
 
           
 
-          <!-- Blocked Card -->
           <button class="stat-card card stat-blocked" data-filter="blocked">
             <div class="stat-card-content">
               <div class="stat-card-text">
                 <div class="stat-number" id="sum-blocked">0</div>
                 <div class="stat-label">Blocked</div>
               </div>
-              <!-- Blocked circle icon -->
-              
               <status-icon>
                 <img src="./assets/svg/blocked.svg" class="status-icon large" data-filter="blocked">
               </status-icon>
             </div>
           </button>
 
-          <!-- Pending Review Card -->
           <button
             class="stat-card card stat-review"
             data-filter="pending-review"
@@ -78,30 +65,24 @@
                 <div class="stat-number" id="sum-review">0</div>
                 <div class="stat-label">Pending Review</div>
               </div>
-              <!-- Review clipboard icon -->
-              
               <status-icon>
                 <img src="./assets/svg/pending.svg" class="status-icon large" data-filter="pending">
               </status-icon>
             </div>
           </button>
 
-          <!-- Closed Card -->
           <button class="stat-card card stat-closed" data-filter="closed">
             <div class="stat-card-content">
               <div class="stat-card-text">
                 <div class="stat-number" id="sum-closed">0</div>
                 <div class="stat-label">Closed</div>
               </div>
-              <!-- Circle with dot icon -->
               <status-icon>
                 <img src="./assets/svg/closed.svg" class="status-icon large" data-filter="closed">
               </status-icon>
             </div>
           </button>
         </div>
-        <!--  -->
-        <!-- Toolbar: filters + view toggle + new issue -->
         <div class="list-toolbar">
           <div class="filter-bar">
             <select
@@ -170,7 +151,6 @@
             </button>
           </div>
         </div>
-        <!-- ── List view ───────────────────────────────────────── -->
         <div id="list-view" class="view-container">
           <div class="card issue-table-wrapper">
             <table class="issue-table">
@@ -197,16 +177,13 @@
                 </tr>
               </thead>
               <tbody>
-                <!-- Populated by JS -->
-              </tbody>
+                </tbody>
             </table>
           </div>
         </div>
-        <!-- ── End Container ──────────────────────────────────────── -->
-      </div>
+        </div>
 
       <div class="container-board">
-        <!-- ── Kanban Board view ──────────────────────────────────────── -->
         <div id="board-view" class="view-container hidden">
           <div class="board">
             <div class="board-column board-column-open">
@@ -215,8 +192,7 @@
                 <span class="board-col-count" id="count-open">0</span>
               </div>
               <div class="board-cards" id="col-open" data-status="open">
-                <!-- Populated by JS -->
-              </div>
+                </div>
             </div>
             <div class="board-column board-column-progress">
               <div class="board-col-header">
@@ -228,7 +204,6 @@
                 id="col-progress"
                 data-status="in-progress"
               >
-              <!-- Populated by JS -->
               </div>
             </div>
             <div class="board-column board-column-blocked">
@@ -237,8 +212,7 @@
                 <span class="board-col-count" id="count-blocked">0</span>
               </div>
               <div class="board-cards" id="col-blocked" data-status="blocked">
-                <!-- Populated by JS -->
-              </div>
+                </div>
             </div>
             <div class="board-column board-column-review">
               <div class="board-col-header">
@@ -251,8 +225,7 @@
                 data-status="pending-review"
               >
                 
-                <!-- Populated by JS -->
-              </div>
+                </div>
             </div>
             <div class="board-column board-column-closed">
               <div class="board-col-header">
@@ -260,15 +233,12 @@
                 <span class="board-col-count" id="count-closed">0</span>
               </div>
               <div class="board-cards" id="col-closed" data-status="closed">
-                <!-- Populated by JS -->
-              </div>
+                </div>
             </div>
           </div>
         </div>
       </div>
     </main>
-    <!-- ── End Main ──────────────────────────────────────────────────── -->
-    <!-- ── New Issue Modal ───────────────────────────────────────── -->
     <div
       class="modal-overlay hidden"
       id="modal-new-issue"
@@ -284,7 +254,6 @@
           </button>
         </div>
 
-        <!-- New Issue Form -->
         <form class="modal-body" id="form-new-manual">
           <div class="form-group">
             <label class="form-label" for="new-title">Title<span class="required">*</span></label>
@@ -356,7 +325,233 @@
         </div>
       </div>
     </div>
+    <div
+      class="modal-overlay hidden"
+      id="modal-settings"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settings-modal-title"
+    >
+      <div class="modal settings-modal">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <h2 class="modal-title" id="settings-modal-title">Settings</h2>
+          </div>
+          <button class="modal-close" id="settings-close" aria-label="Close">
+            &#10005;
+          </button>
+        </div>
+
+        <div class="settings-body-layout">
+          <aside class="settings-sidebar">
+            <button class="settings-tab active" data-target="tab-general">General</button>
+            <button class="settings-tab" data-target="tab-integrations">Integrations</button>
+            <button class="settings-tab" data-target="tab-rules">Agent Rules</button>
+            <button class="settings-tab" data-target="tab-tokens">Token Usage</button>
+          </aside>
+
+          <div class="settings-content">
+            
+            <div id="tab-general" class="settings-tab-content">
+              <div class="settings-section">
+                <h3 class="settings-section-title">General</h3>
+                <p class="settings-section-desc">Manage your personal profile and system-wide preferences</p>
+                
+                <div class="form-group">
+                  <label class="form-label" for="setting-name">Your Name</label>
+                  <input class="form-input" type="text" id="setting-name" placeholder="e.g. Patrick" />
+                </div>
+                
+                <div class="form-group">
+                  <label class="form-label" for="setting-theme">Interface Theme</label>
+                  <select class="form-select" id="setting-theme">
+                    <option value="system">System Default</option>
+                    <option value="light">Light Mode</option>
+                    <option value="dark">Dark Mode</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="setting-comm">Agent Communication Style</label>
+                  <select class="form-select" id="setting-comm">
+                    <option value="professional">Professional & Concise</option>
+                    <option value="casual">Casual & Friendly</option>
+                    <option value="detailed">Highly Detailed</option>
+                  </select>
+                </div>
+              </div>
+
+              <hr class="settings-divider" />
+
+              <div class="settings-section">
+                <h3 class="settings-section-title">Data Management</h3>
+                <p class="settings-section-desc">Clear all local data and reset the tracker to first-time setup</p>
+                <button class="btn btn-danger" type="button" id="settings-reset-system">
+                  Reset System
+                </button>
+              </div>
+            </div>
+
+            <div id="tab-integrations" class="settings-tab-content hidden">
+              <div class="settings-section">
+                <h3 class="settings-section-title">Integrations</h3>
+                <p class="settings-section-desc">Connect your development stack</p>
+                
+                <div class="form-group">
+                  <label class="form-label" for="setting-repo">GitHub Repository<span class="required">*</span></label>
+                  <div class="input-with-status">
+                    <input class="form-input" type="text" id="setting-repo" placeholder="owner/repo" />
+                    <span class="status-indicator success">● Connected</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="setting-git-token">GitHub Personal Access Token<span class="required">*</span></label>
+                  <div class="input-with-icon">
+                    <input class="form-input" type="password" id="setting-git-token" placeholder="ghp_..." />
+                    <button class="btn-icon-inside" id="toggle-git-token" type="button">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <span>View</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="setting-slack">Slack Webhook URL</label>
+                  <input class="form-input" type="text" id="setting-slack" placeholder="https://hooks.slack.com/services/..." />
+                </div>
+              </div>
+
+              <hr class="settings-divider" />
+
+              <div class="settings-section">
+                <h3 class="settings-section-title">LLM Provider (Optional)</h3>
+                <p class="settings-section-desc">Used for auto-triage and summary features</p>
+                
+                <div class="form-group">
+                  <label class="form-label" for="setting-llm-provider">Provider</label>
+                  <select class="form-select" id="setting-llm-provider">
+                    <option value="openai">OpenAI</option>
+                    <option value="anthropic">Anthropic</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label class="form-label" for="setting-llm-key">LLM API Key</label>
+                  <input class="form-input" type="password" id="setting-llm-key" placeholder="sk-..." />
+                </div>
+              </div>
+            </div>
+
+            <div id="tab-rules" class="settings-tab-content hidden">
+              <div class="settings-section">
+                <h3 class="settings-section-title">Agent Rules</h3>
+                <p class="settings-section-desc">Configure autonomous behavior and safety boundaries</p>
+                
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <h4 class="setting-label">Smart Auto-Assignment</h4>
+                    <p class="setting-subtext">Allow the triage agent to automatically assign issues based on token budgets and past agent performance.</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <h4 class="setting-label">Enforce Strict JSON Schema</h4>
+                    <p class="setting-subtext">Automatically reject agent payloads that do not match the required issue schema.</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <h4 class="setting-label">Agent Claim Timeout</h4>
+                    <p class="setting-subtext">Number of minutes to release issues back to the "Open" queue if an agent is unresponsive for.</p>
+                  </div>
+                  <div class="inline-input">
+                    <input class="form-input num-input" type="number" value="15" />
+                    <span>minutes</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab-tokens" class="settings-tab-content hidden">
+              <div class="settings-section">
+                <h3 class="settings-section-title">Token Usage</h3>
+                <p class="settings-section-desc">Configure spending limits and monitor agent efficiency across sprints</p>
+                
+                <div class="token-progress-container">
+                  <div class="token-progress-track">
+                    <div class="token-progress-fill" style="width: 24%;"></div>
+                  </div>
+                  <p class="token-progress-text"><strong>Current usage:</strong> 24,450 tokens (24%)</p>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <h4 class="setting-label">Global Sprint Budget</h4>
+                    <p class="setting-subtext">Maximum total tokens allowed across all agents per sprint.</p>
+                  </div>
+                  <div class="inline-input">
+                    <input class="form-input num-input large" type="text" value="100,000" />
+                    <span>tokens</span>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <h4 class="setting-label">Default Issue Budget</h4>
+                    <p class="setting-subtext">Automatically assign this token limit to any new issue created without a specific budget.</p>
+                  </div>
+                  <div class="inline-input">
+                    <input class="form-input num-input large" type="text" value="2,500" />
+                    <span>tokens</span>
+                  </div>
+                </div>
+
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <h4 class="setting-label">Usage Alerts</h4>
+                    <p class="setting-subtext">Send a Slack/System notification when the sprint budget reaches a certain threshold.</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                
+                <div class="setting-row sub-row">
+                  <div class="inline-input">
+                    <span class="text-muted">Notify at</span>
+                    <input class="form-input num-input" type="number" value="80" />
+                    <span class="text-muted">% of budget</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-footer settings-footer">
+          <button class="btn btn-primary" type="button" id="settings-save-changes">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
     <script type="module" src="js/list-app.js"></script>
-    <!-- ── End Body ──────────────────────────────────────────────────── -->
-  </body>
+    </body>
 </html>
