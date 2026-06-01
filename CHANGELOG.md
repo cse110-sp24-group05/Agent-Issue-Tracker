@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.0](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/compare/v1.0.0...v1.1.0) (2026-05-28)
+
+
+### Features
+
+* add blockIssue endpoint and API routing support ([94798e2](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/94798e21717c87ea58cf4463fadfd2be5e9031b4))
+* add issue_status_history for audit log ([c9bcd5c](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/c9bcd5ccc27dcaf36ee25a3850250872cc04e037))
+* add issue_status_history for audit log ([cc8e50b](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/cc8e50ba26c3f688b97da15a7ffe7b67c3dea464))
+
 ## 1.0.0 (2026-05-27)
 
 

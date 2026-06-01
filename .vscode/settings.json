@@ -4,4 +4,8 @@
         "source.fixAll.eslint": "explicit"
     },
     "eslint.validate": ["javascript"],
+    "eslint.useFlatConfig": true,
+    "eslint.options": {
+        "overrideConfigFile": "config/eslint.config.js"
+    }
 }

@@ -1,4 +1,8 @@
 /**
+ * 
+ * Created and debuged with Claude AI assistance — human reviewed and tested
+ * 
+ * 
  * Agent Simulator
  * It pretends to be an AI agent to test the full AIT workflow without making real LLM API calls. It does this:
  *
@@ -20,12 +24,8 @@ const BASE_URL =
     ? args[urlFlagIndex + 1]
     : process.env.AIT_API_BASE || 'https://agent-issue-tracker.stc021.workers.dev';
 
-// --- SAFETY CHECKS ---
-// Randomize the simulator agent ID so it doesn't clash with real agents
-// in production or staging. Each run gets a unique ID like "sim-agent-a3f1b2"
-const RANDOM_SUFFIX = Math.random().toString(36).substring(2, 8);
-// const AGENT_ID = `sim-agent-${RANDOM_SUFFIX}`;
-const AGENT_ID = 'agent-simulator-01';
+
+const AGENT_ID = 'agent-simulator';
 
 // minimum seconds between API calls to avoid overloading the API
 const MIN_DELAY_BETWEEN_CALLS_MS = 500;
@@ -54,7 +54,7 @@ const PRIORITY_RANK = {
   critical: 0, // most urgent
   high: 1,
   medium: 2,
-  low: 3, // least urgent
+  low: 3, // least
 };
 
 

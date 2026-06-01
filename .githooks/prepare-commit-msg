@@ -1,0 +1,4 @@
+#!/bin/sh
+# Strip Cursor co-author attribution if the IDE/CLI injects it.
+sed -i '' '/[Cc]o-[Aa]uthored-by:.*[Cc]ursor.*cursoragent@cursor\.com/d' "$1" 2>/dev/null \
+  || sed -i '/[Cc]o-[Aa]uthored-by:.*[Cc]ursor.*cursoragent@cursor\.com/d' "$1"
