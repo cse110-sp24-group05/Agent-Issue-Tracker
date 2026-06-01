@@ -190,13 +190,13 @@ async function reclaimExpiredClaims() {
   try {
     const query = USER_ID ? `?user_id=${encodeURIComponent(USER_ID)}` : '';
     const headers = { 'Content-Type': 'application/json' };
-    if (USER_ID) headers['X-User-ID'] = USER_ID;
+    if (USER_ID) { headers['X-User-ID'] = USER_ID; }
 
     const res = await fetch(`${BASE_URL}/api/issues${query}`, { headers });
-    if (!res.ok) return;
+    if (!res.ok) { return; }
 
     const issues = await res.json();
-    if (!Array.isArray(issues)) return;
+    if (!Array.isArray(issues)) { return; }
 
     const now     = Date.now();
     const expired = issues.filter(i =>

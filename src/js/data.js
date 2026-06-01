@@ -30,7 +30,7 @@ let _issues = [];
  */
 export function getProfile() {
   const raw = localStorage.getItem('ait_profile');
-  if (!raw) return null;
+  if (!raw) { return null; }
   try { return JSON.parse(raw); } catch { return null; }
 }
 
