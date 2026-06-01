@@ -108,4 +108,4 @@ npm test
 ## Team
 
 CSE 110 — Spring 2026 — Teams #1–5  
-TA: Helena
+TA: Helena Bender

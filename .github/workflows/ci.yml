@@ -41,7 +41,7 @@ jobs:
 
       # checks every commit in this PR, not just the latest one
       - name: Lint commits in this PR
-        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+        run: npx commitlint --config config/commitlint.config.js --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
   # runs eslint across all js files
   # the jsdoc plugin is included so missing function comments also fail here
@@ -64,7 +64,7 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
-        run: npx eslint "**/*.js"
+        run: npx eslint --config config/eslint.config.js "**/*.js"
 
   # runs after lint passes - no point running tests on code that doesn't even lint
   # saves the coverage report as an artifact so we can look at it later
