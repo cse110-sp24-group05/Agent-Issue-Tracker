@@ -174,9 +174,57 @@ ${curlUserHeader ? curlUserHeader + '\n' : ''}${curlAgentHeader}
 `);
 }
 
+// --- Pre-flight: reclaim expired claims -------------------------------
+
+/**
+ * Silently resets any in_progress issues whose claim window has expired
+ * back to open, so the next run can pick them up.
+ *
+ * Blocked issues are intentionally left alone — they require a human to
+ * unblock via the dashboard before the agent retries.
+ *
+ * Produces no output on success; logs a single warning only if an API
+ * call unexpectedly fails.
+ */
+async function reclaimExpiredClaims() {
+  try {
+    const query = USER_ID ? `?user_id=${encodeURIComponent(USER_ID)}` : '';
+    const headers = { 'Content-Type': 'application/json' };
+    if (USER_ID) headers['X-User-ID'] = USER_ID;
+
+    const res = await fetch(`${BASE_URL}/api/issues${query}`, { headers });
+    if (!res.ok) return;
+
+    const issues = await res.json();
+    if (!Array.isArray(issues)) return;
+
+    const now     = Date.now();
+    const expired = issues.filter(i =>
+      i.issue_status === 'in_progress' &&
+      i.claim_expires_at !== null &&
+      i.claim_expires_at < now
+    );
+
+    for (const issue of expired) {
+      const resetRes = await fetch(`${BASE_URL}/api/issues/${encodeURIComponent(issue.id)}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ issue_status: 'open', assigned_to_agent: null })
+      });
+      if (!resetRes.ok) {
+        log('WARN', `Could not reset expired claim on ${issue.id} (${resetRes.status})`);
+      }
+    }
+  } catch {
+    // Never let a reclaim failure block the main workflow
+  }
+}
+
 // --- Main workflow ----------------------------------------------------
 
 async function runAIT() {
+  await reclaimExpiredClaims();
+
   const isProduction = BASE_URL.includes('workers.dev');
 
   console.log('===========================================');
