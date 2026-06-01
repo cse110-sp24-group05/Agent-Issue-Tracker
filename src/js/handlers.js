@@ -19,7 +19,7 @@ import {
 
 import {
   insertIssue,
-  selectAllIssues,
+  //selectAllIssues,
   selectIssueById,
   selectReadyIssue,
   updateIssueFields,
@@ -28,7 +28,11 @@ import {
   updateIssueStatus,
   storeIssueResult,
   closeIssueRow,
-  selectIssueHistory
+  selectIssueHistory,
+  selectIssuesByUserId,
+  selectUserById,
+  selectUserByUsername,
+  insertUser
 } from './db.js';
 
 
@@ -105,17 +109,32 @@ export async function createIssue(request, env) {
 
 
 /**
- * getAllIssues will retrieve all issues from the database and return them in a structured format.
- * It will query the database for all issues, format the results into a JSON response,
- * and handle any potential errors that may occur during the retrieval process.
- * The response will include an array of issues, each containing relevant details such as title,
- * description, status, priority, and assignment information.
+ * getAllIssues retrieves all issues visible to a user, which includes issues they
+ * created or are assigned to the user with the specified user_id query parameter.
+ * The function validates the presence of the user_id parameter, checks if the
+ * user exists, and then queries the database for all issues associated with that
+ * user. The results are formatted into a JSON response containing the list of issues. If the user_id is
+ * missing, the user does not exist, or if there is an error during retrieval, the function returns an appropriate error message.
+ * 
+ * @param {Request} request - The incoming request, which contains a user_id query parameter to filter issues
  * @param {object} env - The environment object containing bindings and configurations, including the database connection.
  * @returns {Response} - A JSON response containing the list of all issues or an error message if the retrieval fails.
  */
-export async function getAllIssues(env) {
+export async function getAllIssues(request,env) {
   try {
-    const { results } = await selectAllIssues(env);
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('user_id');
+
+    if (!userId) {
+      return badRequest('Missing user_id query parameter');
+    }
+
+    const user = await selectUserById(env, userId);
+    if (!user) {
+      return notFound('User not found');
+    }
+
+    const { results } = await selectIssuesByUserId(env, userId);
     return Response.json(results, { headers: CORS_HEADERS });
   } catch (error) {
     return serverError(error.message);
@@ -472,6 +491,63 @@ export async function getIssueHistory(id, env) {
 
     const history = await selectIssueHistory(env, id);
     return ok({ success: true, issue_id: id, history });
+  } catch (error) {
+    return serverError(error.message);
+  }
+}
+
+/**
+ * loginOrRegister handles profile-based login.
+ * - If username exists and email matches → login (return profile)
+ * - If username exists and email doesn't match → return 401 error
+ * - If username doesn't exist → create new user and login
+ *
+ * @param {Request} request - Contains name and email in the body.
+ * @param {object} env - Environment bindings containing the database connection.
+ * @returns {Response} A JSON response containing the profile or an error message.
+ */
+export async function loginOrRegister(request, env) {
+  try {
+    const body = await request.json();
+    const { name, email } = body;
+
+    if (!name || !email) {
+      return badRequest('Missing required fields: name and email');
+    }
+
+    if (typeof name !== 'string' || typeof email !== 'string') {
+      return badRequest('name and email must be strings');
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return badRequest('Invalid email format');
+    }
+
+    const trimmedName  = name.trim();
+    const trimmedEmail = email.trim();
+
+    // Check if user already exists
+    const existing = await selectUserByUsername(env, trimmedName);
+
+    if (existing) {
+      // Username found — check email matches
+      if (existing.email !== trimmedEmail) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Email does not match the name provided' }),
+          { status: 401, headers: CORS_HEADERS }
+        );
+      }
+      // Email matches — login
+      return ok({ success: true, profile: { id: existing.id, name: existing.username, email: existing.email } });
+    }
+
+    // Username not found — create new user
+    const randomNum = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
+    const id = `user-${randomNum}`;
+    await insertUser(env, id, trimmedName, trimmedEmail);
+
+    return ok({ success: true, profile: { id, name: trimmedName, email: trimmedEmail } }, 201);
   } catch (error) {
     return serverError(error.message);
   }

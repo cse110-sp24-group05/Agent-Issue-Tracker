@@ -68,12 +68,25 @@ export function insertIssue(env, fields) {
  * @param {object} env - Worker env bindings.
  * @returns {Promise<object>} The D1 .all() result ({ results, ... }).
  */
-export function selectAllIssues(env) {
+//export function selectAllIssues(env) {
+//  return env.issues_db
+//   .prepare('SELECT * FROM issues')
+//   .all();
+//}
+
+/**
+ * Fetch all issues visible to a user: issues they created or are assigned to.
+ * Requires migration 0003 (created_by_user column).
+ * @param {object} env - Worker env bindings.
+ * @param {string} userId - The logged-in user's id.
+ * @returns {Promise<object>} The D1 .all() result ({ results, ... }).
+ */
+export function selectIssuesByUserId(env, userId) {
   return env.issues_db
-    .prepare('SELECT * FROM issues')
+    .prepare('SELECT * FROM issues WHERE assigned_to_user = ? OR created_by_user = ?')
+    .bind(userId, userId)
     .all();
 }
-
 
 /**
  * Fetch a single issue by id, or null if it doesn't exist.
@@ -279,4 +292,43 @@ export function selectIssueHistory(env, id) {
     .bind(id)
     .all()
     .then(r => r.results);
+}
+
+/**
+ * Fetch a single user by id, or null if they don't exist.
+ * @param {object} env - Worker env bindings.
+ * @param {string} id - User id.
+ * @returns {Promise<object|null>} The row, or null.
+ */
+export function selectUserById(env, id) {
+  return env.issues_db
+    .prepare('SELECT * FROM users WHERE id = ?')
+    .bind(id)
+    .first();
+}
+
+/**
+ * Looks up a user by username.
+ * @param {object} env - Worker env bindings.
+ * @param {string} username - the username to look up
+ * @returns {object|null} the user row or null
+ */
+export async function selectUserByUsername(env, username) {
+  return env.issues_db.prepare(
+    'SELECT * FROM users WHERE username = ?'
+  ).bind(username).first();
+}
+
+/**
+ * Inserts a new user into the users table.
+ * @param {object} env - Worker env bindings.
+ * @param {string} id - the user id (UUID)
+ * @param {string} username - the username
+ * @param {string} email - the user's email address
+ * @returns {object} the D1 .run() result
+ */
+export async function insertUser(env, id, username, email) {
+  return env.issues_db.prepare(
+    'INSERT INTO users (id, username, email) VALUES (?, ?, ?)'
+  ).bind(id, username, email).run();
 }

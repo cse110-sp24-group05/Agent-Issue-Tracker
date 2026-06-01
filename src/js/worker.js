@@ -16,7 +16,8 @@ import {
   putResult,
   closeIssue,
   blockIssue,
-  getIssueHistory
+  getIssueHistory,
+  loginOrRegister
 } from './handlers.js';
 
 import { CORS_HEADERS } from './helpers.js';
@@ -35,7 +36,7 @@ export default {
 
     // GET /api/issues
     if (url.pathname === '/api/issues' && method === 'GET') {
-      return getAllIssues(env);
+      return getAllIssues(request,env);
     }
 
     // GET /api/issues/:id/history
@@ -91,6 +92,10 @@ export default {
       return putResult(id, request, env);
     }
 
+    // POST /api/login
+    if (url.pathname === '/api/login' && method === 'POST') {
+      return loginOrRegister(request, env);
+    }
 
     // PUT /api/issues/:id
     const isPlainIssuePath = url.pathname.startsWith('/api/issues/')
