@@ -19,7 +19,7 @@ import {
 
 import {
   insertIssue,
-  selectAllIssues,
+  //selectAllIssues,
   selectIssueById,
   selectReadyIssue,
   updateIssueFields,
@@ -29,6 +29,8 @@ import {
   storeIssueResult,
   closeIssueRow,
   selectIssueHistory,
+  selectIssuesByUserId,
+  selectUserById,
   selectUserByUsername,
   insertUser
 } from './db.js';
@@ -107,17 +109,32 @@ export async function createIssue(request, env) {
 
 
 /**
- * getAllIssues will retrieve all issues from the database and return them in a structured format.
- * It will query the database for all issues, format the results into a JSON response,
- * and handle any potential errors that may occur during the retrieval process.
- * The response will include an array of issues, each containing relevant details such as title,
- * description, status, priority, and assignment information.
+ * getAllIssues retrieves all issues visible to a user, which includes issues they
+ * created or are assigned to the user with the specified user_id query parameter.
+ * The function validates the presence of the user_id parameter, checks if the
+ * user exists, and then queries the database for all issues associated with that
+ * user. The results are formatted into a JSON response containing the list of issues. If the user_id is
+ * missing, the user does not exist, or if there is an error during retrieval, the function returns an appropriate error message.
+ * 
+ * @param {Request} request - The incoming request, which contains a user_id query parameter to filter issues
  * @param {object} env - The environment object containing bindings and configurations, including the database connection.
  * @returns {Response} - A JSON response containing the list of all issues or an error message if the retrieval fails.
  */
-export async function getAllIssues(env) {
+export async function getAllIssues(request,env) {
   try {
-    const { results } = await selectAllIssues(env);
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('user_id');
+
+    if (!userId) {
+      return badRequest('Missing user_id query parameter');
+    }
+
+    const user = await selectUserById(env, userId);
+    if (!user) {
+      return notFound('User not found');
+    }
+
+    const { results } = await selectIssuesByUserId(env, userId);
     return Response.json(results, { headers: CORS_HEADERS });
   } catch (error) {
     return serverError(error.message);
