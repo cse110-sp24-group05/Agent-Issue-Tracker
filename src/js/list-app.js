@@ -1,4 +1,3 @@
-// ── 1. IMPORTS ─────────────────────────────────────────
 import {
   initData,
   getIssues,
@@ -11,18 +10,18 @@ import {
   priBadge,
   staBadge,
   staLabel,
-  createdByIcon,
   fmtRelTime,
   esc,
   flashEntity,
 } from './ui.js';
 
-// ── 2. STATE ───────────────────────────────────────────
-// remembers if user prefers list or board view
+import { tokenLevel, filterIssues, countByStatus } from './issue-helpers.js';
+
+// Remembers if user prefers list or board view
 const VIEW_KEY = 'ait_view_pref';
 let currentView = localStorage.getItem(VIEW_KEY) === 'board' ? 'board' : 'list';
 
-// reads ?status= from URL (used when clicking activity pills)
+// Reads ?status= from URL (used when clicking activity pills)
 const initStatusFilter =
   new URLSearchParams(window.location.search).get('status') || '';
 
@@ -36,30 +35,33 @@ try {
  * Updates the summary bar counts for each issue status column
  */
 function updateSummary() {
-  const all = getIssues();
-  const c = {
-    open: 0,
-    'in-progress': 0,
-    'pending-review': 0,
-    blocked: 0,
-    closed: 0,
-  };
-  all.forEach((i) => {
-    if (i.status in c) {
-      c[i.status]++;
-    }
-  });
-  document.getElementById('sum-open').textContent = c['open'];
-  document.getElementById('sum-progress').textContent = c['in-progress'];
-  document.getElementById('sum-review').textContent = c['pending-review'];
-  document.getElementById('sum-blocked').textContent = c['blocked'];
-  document.getElementById('sum-closed').textContent = c['closed'];
+  const counts = countByStatus(getIssues());
+
+  document.getElementById('sum-open').textContent = counts['open'];
+  document.getElementById('sum-progress').textContent = counts['in-progress'];
+  document.getElementById('sum-review').textContent = counts['pending-review'];
+  document.getElementById('sum-blocked').textContent = counts['blocked'];
+  document.getElementById('sum-closed').textContent = counts['closed'];
 
   // Highlight active pill matching filter-status
   const cur = document.getElementById('filter-status').value;
   document.querySelectorAll('.summary-bar .stat-card').forEach((el) => {
     el.classList.toggle('active', el.dataset.filter === cur);
   });
+}
+/**
+ * Gets issues filtered by status, priority, assignee, and search
+ * @returns {Array} - Filtered list of issue objects
+ */
+function getFiltered() {
+  const status = document.getElementById('filter-status').value;
+  const priority = document.getElementById('filter-priority').value;
+  const assignee = document
+    .getElementById('filter-assignee')
+    .value.trim()
+    .toLowerCase();
+  const search = document.getElementById('filter-search').value.toLowerCase();
+  return filterIssues(getIssues(), status, priority, assignee, search);
 }
 
 /**
@@ -103,7 +105,6 @@ function renderList(issues) {
             <td><a class="issue-id mono" href="issue.html?id=${esc(i.id)}">${esc(i.id.replace('issue-', ''))}</a></td>
             <td><span class="badge ${priBadge(i.priority)}">${i.priority}</span></td>
             <td>
-              <span class="created-by-icon" title="created by ${esc(i.created_by || 'unknown')}">${createdByIcon(i.created_by)}</span>
               <a class="issue-title-link" href="issue.html?id=${esc(i.id)}" title="${esc(i.title)}">${esc(i.title)}</a>
             </td>
             <td><span class="badge ${staBadge(i.status)}">${staLabel(i.status)}</span></td>
@@ -137,27 +138,7 @@ function renderList(issues) {
   });
 }
 
-/**
- * Returns the token usage level based on remaining budget
- * @param {number} used - Number of tokens used
- * @param {number} budget - Total token buget remaining
- * @returns {string}
- */
-function tokenLevel(used, budget) {
-  const remaining = budget ? 1 - used / budget : 1;
-  if (remaining < 0.3) {
-    return 'token-over';
-  }
-
-  if (remaining < 0.6) {
-    return 'token-warn';
-  }
-
-  return 'token-ok';
-}
-
-// ── 5. BOARD RENDER ────────────────────────────────────
-// builds the kanban cards and handles drag and drop
+// Builds the kanban cards and handles drag and drop
 const ZONE_ID = {
   open: 'col-open',
   'in-progress': 'col-progress',
@@ -192,7 +173,6 @@ function makeCard(issue) {
   div.dataset.status = issue.status;
   div.innerHTML = `
           <div class="board-card-title">
-            <span class="created-by-icon" title="created by ${esc(issue.created_by || 'unknown')}">${createdByIcon(issue.created_by)}</span>
             ${esc(issue.title)}
           </div>
           <div class="board-card-meta">
@@ -359,27 +339,6 @@ document.querySelectorAll('.board-cards').forEach((zone) => {
     requestAnimationFrame(() => flashEntity(id, kind));
   });
 });
-
-/**
- * Returns issues filtered by current status, priority, assignee, and search input
- * @returns {Array} - Filtered list of issue objects
- */
-function getFiltered() {
-  const status = document.getElementById('filter-status').value;
-  const priority = document.getElementById('filter-priority').value;
-  const assignee = document
-    .getElementById('filter-assignee')
-    .value.trim()
-    .toLowerCase();
-  const search = document.getElementById('filter-search').value.toLowerCase();
-  return getIssues().filter(
-    (i) =>
-      (!status || i.status === status) &&
-      (!priority || i.priority === priority) &&
-      (!assignee || (i.assignee || '').toLowerCase().includes(assignee)) &&
-      (!search || i.title.toLowerCase().includes(search)),
-  );
-}
 
 /**
  * Applies current filters and re-renders both list and board views
