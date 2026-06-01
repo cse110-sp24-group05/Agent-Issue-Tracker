@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.2.0](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/compare/v1.1.0...v1.2.0) (2026-06-01)
+
+
+### Features
+
+* added a checker during the runner that finds all in_progress issues that have crashed/failed, and unblocks them to be reran or reviewed by human on frontend ([b9038e6](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/b9038e6fd1144218671b5f508fc710cc98054194))
+* added created_by_user column for the issue database ([a4f9118](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/a4f9118522b23973993f28b2d9169012be7e6208))
+* **auth:** add login and register endpoint with D1 user lookup ([21dd6c3](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/21dd6c39db5eef6f94a53f442eb946a54904363e))
+* **auth:** add login and register endpoint with D1 user lookup ([8eac6e8](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/8eac6e86774c752c26059566da429dae6bbc8472))
+* **auth:** change user ID format to user-XXXXX with zero-padded random number ([d58e5fb](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/d58e5fb4655bf05f7439bbbeacb2ea5f0fd8b9f4))
+* **issues:** filter GET /api/issues by logged-in user ([ded5b9a](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/ded5b9aad934d1498375ad312b96476bb29f550c))
+* **issues:** filter GET /api/issues by logged-in user and add auth endpoint ([9181032](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/9181032e03ba1dd70f20b743f2489a47eadd7d4e))
+* major overhaul + user login for per-user issues ([2756334](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/275633497fa5112cb954e3ab1763da5055ff271d))
+* **runner:** add Claude API integration with quality checks and tests ([754d879](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/754d87953e1c7ef4cf6f390adbabe655a0af7deb))
+
+
+### Bug Fixes
+
+* changed api endpoint for get all issues ([e769ba8](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/e769ba88ccae49d871fd79dacdff913c4ac1cbd4))
+* cleaned up stale files and filxed sql migration query ([b6f3480](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/b6f3480fce072cadd9ee4311f53f18131bb4a8b2))
+* fixed worker.test.js to comply with the update for getAllIssues ([5cfd515](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/5cfd515ecab2b7b6331d6e48e942286219cf43d2))
+* regenerate package-lock.json to resolve missing @emnapi/core dependency ([d306151](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/d30615146b95c565b63e18f3c39492caf2a6afaf))
+* resolve eslint errors and add missing JSDoc annotations ([b5798ba](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/b5798ba7270607c9b9d79663a47f4cf1958a4713))
+* **tests:** update import paths after moving tests to src/tests ([2f73b7e](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/2f73b7ef4d37629d4817e9ee6f4ef30d790683bf))
+
 ## [1.1.0](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/compare/v1.0.0...v1.1.0) (2026-05-28)
 
 
