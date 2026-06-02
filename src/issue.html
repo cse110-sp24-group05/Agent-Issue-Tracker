@@ -6,8 +6,21 @@
   <title>AIT — issue-001</title>
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/issue.css">
+  <script>
+    // Auth guard: redirect to login if no profile is stored.
+    (function () {
+      try {
+        const raw = localStorage.getItem('ait_profile');
+        if (!raw || !JSON.parse(raw).id) throw new Error();
+      } catch {
+        const next = encodeURIComponent(location.pathname + location.search);
+        location.replace('login.html?next=' + next);
+      }
+    })();
+  </script>
 </head>
 <body>
+  <script src="./js/themes.js" type="module"></script>
   <script src="./js/components/navbar.js"></script>
   <script src="./js/components/setup-modal.js"></script>
   <my-navbar></my-navbar>

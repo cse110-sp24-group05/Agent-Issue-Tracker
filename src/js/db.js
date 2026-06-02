@@ -21,6 +21,7 @@ export function insertIssue(env, fields) {
     claim_expires_at,
     retry_count,
     claim_timeout_minutes,
+    created_by_user,
     created_at,
     updated_at,
     closed_at
@@ -38,11 +39,12 @@ export function insertIssue(env, fields) {
       claim_expires_at,
       retry_count,
       claim_timeout_minutes,
+      created_by_user,
       created_at,
       updated_at,
       closed_at
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `)
     .bind(
       id,
@@ -55,6 +57,7 @@ export function insertIssue(env, fields) {
       claim_expires_at || null,
       retry_count,
       claim_timeout_minutes,
+      created_by_user || null,
       created_at,
       updated_at,
       closed_at || null
@@ -68,12 +71,25 @@ export function insertIssue(env, fields) {
  * @param {object} env - Worker env bindings.
  * @returns {Promise<object>} The D1 .all() result ({ results, ... }).
  */
-export function selectAllIssues(env) {
+//export function selectAllIssues(env) {
+//  return env.issues_db
+//   .prepare('SELECT * FROM issues')
+//   .all();
+//}
+
+/**
+ * Fetch all issues visible to a user: issues they created or are assigned to.
+ * Requires migration 0003 (created_by_user column).
+ * @param {object} env - Worker env bindings.
+ * @param {string} userId - The logged-in user's id.
+ * @returns {Promise<object>} The D1 .all() result ({ results, ... }).
+ */
+export function selectIssuesByUserId(env, userId) {
   return env.issues_db
-    .prepare('SELECT * FROM issues')
+    .prepare('SELECT * FROM issues WHERE assigned_to_user = ? OR created_by_user = ?')
+    .bind(userId, userId)
     .all();
 }
-
 
 /**
  * Fetch a single issue by id, or null if it doesn't exist.
@@ -212,6 +228,36 @@ export function selectReadyIssue(env) {
 
 
 /**
+ * Return the single highest-priority open unclaimed issue belonging to a
+ * specific user (by created_by_user), ordered by priority then creation time.
+ * @param {object} env - Worker env bindings.
+ * @param {string} userId - The user's DB id (e.g. "user-12345").
+ * @returns {Promise<object|null>} The row, or null.
+ */
+export function selectReadyIssueByUserId(env, userId) {
+  return env.issues_db
+    .prepare(`
+      SELECT * FROM issues
+      WHERE issue_status = 'open'
+        AND (assigned_to_agent IS NULL OR assigned_to_agent = '')
+        AND created_by_user = ?
+      ORDER BY
+        CASE issue_priority
+          WHEN 'critical' THEN 0
+          WHEN 'high'     THEN 1
+          WHEN 'medium'   THEN 2
+          WHEN 'low'      THEN 3
+          ELSE 99
+        END ASC,
+        created_at ASC
+      LIMIT 1
+    `)
+    .bind(userId)
+    .first();
+}
+
+
+/**
  * Store the result of a completed agent run: transitions status, saves
  * result_text and tokens_used, and stamps updated_at.
  * result_text requires migration 0002. tokens_used is defined in 0001_schema.sql.
@@ -279,6 +325,19 @@ export function selectIssueHistory(env, id) {
     .bind(id)
     .all()
     .then(r => r.results);
+}
+
+/**
+ * Fetch a single user by id, or null if they don't exist.
+ * @param {object} env - Worker env bindings.
+ * @param {string} id - User id.
+ * @returns {Promise<object|null>} The row, or null.
+ */
+export function selectUserById(env, id) {
+  return env.issues_db
+    .prepare('SELECT * FROM users WHERE id = ?')
+    .bind(id)
+    .first();
 }
 
 /**

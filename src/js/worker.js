@@ -36,7 +36,7 @@ export default {
 
     // GET /api/issues
     if (url.pathname === '/api/issues' && method === 'GET') {
-      return getAllIssues(env);
+      return getAllIssues(request,env);
     }
 
     // GET /api/issues/:id/history

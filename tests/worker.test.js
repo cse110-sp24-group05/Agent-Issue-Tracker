@@ -87,45 +87,81 @@ describe('Issues API Tests', () => {
 
   // GET ALL ISSUES
   describe('GET /api/issues', () => {
-    test('returns all issues (schema-valid shape)', async () => {
-      mockD1Response(
+    // success case: returns issues for a given user_id
+    test('returns issues for the logged-in user (assigned or created)', async () => {
+      mockD1Sequence([
         {
-          results: [
-            {
-              id: '1',
-              title: 'Test Issue',
-              issue_status: 'open',
-              issue_priority: 'high',
-              retry_count: 0,
-              claim_timeout_minutes: 30
-            },
-            {
-              id: '2',
-              title: 'Fix Bug',
-              issue_status: 'in_progress',
-              issue_priority: 'low',
-              retry_count: 1,
-              claim_timeout_minutes: 30
-            }
-          ]
+          response: { id: 'user-00001', username: 'steven', email: 'steven@ucsd.edu' },
+          method: 'first'
         },
-        'all'
-      );
+        {
+          response: {
+            results: [
+              {
+                id: '1',
+                title: 'Test Issue',
+                issue_status: 'open',
+                issue_priority: 'high',
+                retry_count: 0,
+                claim_timeout_minutes: 30,
+                assigned_to_user: 'user-00001',
+                created_by_user: null
+              },
+              {
+                id: '2',
+                title: 'Fix Bug',
+                issue_status: 'in_progress',
+                issue_priority: 'low',
+                retry_count: 1,
+                claim_timeout_minutes: 30,
+                assigned_to_user: null,
+                created_by_user: 'user-00001'
+              }
+            ]
+          },
+          method: 'all'
+        }
+      ]);
 
-      const res = await worker.fetch(new Request('http://localhost/api/issues', { method: 'GET' }), env);
+      const res = await worker.fetch(
+        new Request('http://localhost/api/issues?user_id=user-00001', { method: 'GET' }),
+        env
+      );
       const data = await res.json();
 
       expect(res.status).toBe(200);
       expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*');
       expect(data.length).toBe(2);
-      expect(data[0]).toHaveProperty('issue_status');
-      expect(data[0]).toHaveProperty('issue_priority');
       expect(data[0].issue_status).toBe('open');
-      expect(data[0].issue_priority).toBe('high');
-      expect(data[1]).toHaveProperty('issue_status');
-      expect(data[1]).toHaveProperty('issue_priority');
+      expect(data[0].assigned_to_user).toBe('user-00001');
       expect(data[1].issue_status).toBe('in_progress');
-      expect(data[1].issue_priority).toBe('low');
+      expect(data[1].created_by_user).toBe('user-00001');
+    });
+
+    // failure case: missing user_id
+    test('returns 400 when user_id query param is missing', async () => {
+      const res = await worker.fetch(
+        new Request('http://localhost/api/issues', { method: 'GET' }),
+        env
+      );
+      const data = await res.json();
+
+      expect(res.status).toBe(400);
+      expect(data.success).toBe(false);
+    });
+
+    // failure case: user not found
+    test('returns 404 when user does not exist', async () => {
+      mockD1Response(null, 'first');
+
+      const res = await worker.fetch(
+        new Request('http://localhost/api/issues?user_id=user-99999', { method: 'GET' }),
+        env
+      );
+      const data = await res.json();
+
+      expect(res.status).toBe(404);
+      expect(data.success).toBe(false);
     });
   });
 
