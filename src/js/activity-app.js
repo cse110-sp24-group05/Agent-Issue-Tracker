@@ -8,7 +8,6 @@ import {
 } from './data.js';
 
 
-
 await initData();
 const issuesList = await getIssues();
 const issueObjects = [];
