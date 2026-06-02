@@ -55,7 +55,7 @@ function notifyChange() {
  * @returns {Promise<UiIssue[]>}
  */
 export async function initData() {
-  const data = await request('/api/issues?user_id=user-045');
+  const data = await request('/api/issues');
   _issues = Array.isArray(data) ? data.map(toUiIssue) : [];
   return _issues;
 }
