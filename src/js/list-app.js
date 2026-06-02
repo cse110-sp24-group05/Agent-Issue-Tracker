@@ -30,7 +30,6 @@ try {
 } catch (err) {
   console.error('[data.js] Failed to load issues:', err.message);
 }
-
 /**
  * Updates the summary bar counts for each issue status column
  */
@@ -119,11 +118,7 @@ function renderList(issues) {
               </div>
             </td>
             <td class="align-right text-muted">${fmtRelTime(i.updated_at)}</td>
-            <td class="col-edit-cell">
-              <a class="row-action-btn" href="issue.html?id=${esc(i.id)}" aria-label="Edit issue ${esc(i.id)}">
-                <img src="./assets/svg/edit.svg" alt="" width="16" height="16">
-              </a>
-            </td>
+            
           </tr>`,
     )
     .join('');
