@@ -300,6 +300,15 @@ export function getSettings() {
 }
 
 /**
+ * Ready-to-paste line for ~/.ait/.env (AIT runner user scoping).
+ * @returns {string|null}
+ */
+export function getAgentEnvLine() {
+  const profile = getProfile();
+  return profile?.id ? `AIT_USER_ID=${profile.id}` : null;
+}
+
+/**
  * @param {{ ait_user?: string }} settings
  */
 export function saveSettings(settings) {
