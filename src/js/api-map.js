@@ -39,6 +39,7 @@ const API_PRIORITY_TO_UI = {
 export function toUiIssue(row) {
   return {
     id: row.id,
+    display_id: Number.isInteger(row.display_no) ? formatDisplayId(row.display_no) : '',
     title: row.title,
     description: row.issue_description || '',
     status: API_STATUS_TO_UI[row.issue_status] || row.issue_status,
@@ -62,18 +63,16 @@ export function toUiIssue(row) {
 
 /**
  * @param {object} fields - createIssue() input from the UI
- * @param {string} id
  * @param {string} now
  * @param {string|null} [createdByUserId] - DB user id of the logged-in user
  * @returns {object} POST /api/issues body
  */
-export function toApiCreate(fields, id, now, createdByUserId = null) {
+export function toApiCreate(fields, now, createdByUserId = null) {
   const assignee = fields.assignee && fields.assignee !== 'unassigned'
     ? fields.assignee
     : null;
 
   return {
-    id,
     title: fields.title || '',
     issue_description: fields.description || null,
     issue_status: 'open',
@@ -118,13 +117,11 @@ export function toApiUpdate(fields) {
 }
 
 /**
- * @param {object[]} issues
+ * Format a cosmetic, human-friendly issue label (e.g. `issue-001`). This is a
+ * display-only reference, not the stored id (which is a server-assigned UUID).
+ * @param {number} n - 1-based rank within the user's issues.
  * @returns {string}
  */
-export function nextIssueId(issues) {
-  const max = issues.reduce((m, i) => {
-    const n = parseInt(String(i.id).replace('issue-', ''), 10);
-    return Number.isNaN(n) ? m : Math.max(m, n);
-  }, 0);
-  return `issue-${String(max + 1).padStart(3, '0')}`;
+export function formatDisplayId(n) {
+  return `issue-${String(n).padStart(3, '0')}`;
 }

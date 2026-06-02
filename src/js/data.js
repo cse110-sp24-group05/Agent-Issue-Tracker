@@ -8,7 +8,7 @@
  *   issue queries to the logged-in user.
  */
 
-import { nextIssueId, toApiCreate, toApiUpdate, toUiIssue } from './api-map.js';
+import { toApiCreate, toApiUpdate, toUiIssue } from './api-map.js';
 
 /** @typedef {ReturnType<typeof toUiIssue>} UiIssue */
 /** @typedef {{ id: string, name: string, email: string }} UserProfile */
@@ -159,15 +159,15 @@ export function getIssue(id) {
  */
 export async function createIssue(fields) {
   const now     = new Date().toISOString();
-  const id      = nextIssueId(_issues);
   const profile = getProfile();
-  const payload = toApiCreate(fields, id, now, profile?.id ?? null);
+  const payload = toApiCreate(fields, now, profile?.id ?? null);
 
   const data = await request('/api/issues', {
     method: 'POST',
     body: JSON.stringify(payload)
   });
 
+  // The server assigns the id (a UUID); trust the response over the payload.
   const issue = toUiIssue(data.issue || payload);
   issue.created_by    = fields.created_by || 'human-manual';
   issue.token_budget  = Number(fields.token_budget) || 2000;

@@ -49,10 +49,9 @@ import {
  */
 export async function createIssue(request, env) {
   try {
-    const issueData = await request.json();
+    const body = await request.json();
 
     const {
-      id,
       title,
       issue_status,
       issue_priority,
@@ -62,11 +61,17 @@ export async function createIssue(request, env) {
       claim_timeout_minutes,
       created_at,
       updated_at
-    } = issueData;
+    } = body;
 
+
+    // The id is assigned by the server, never the client: a globally-unique
+    // UUID guarantees no collisions across users. Any client-supplied id is
+    // ignored.
+    const id = crypto.randomUUID();
+    const issueData = { ...body, id };
 
     // Validate required fields
-    if (!id || !title || !issue_status || !issue_priority
+    if (!title || !issue_status || !issue_priority
       || retry_count === undefined || claim_timeout_minutes === undefined
       || !created_at || !updated_at) {
       return badRequest('Missing required fields');
@@ -92,7 +97,10 @@ export async function createIssue(request, env) {
     }
 
 
-    await insertIssue(env, issueData);
+    const inserted = await insertIssue(env, issueData);
+    if (inserted && Number.isInteger(inserted.display_no)) {
+      issueData.display_no = inserted.display_no;
+    }
 
     return ok(
       {

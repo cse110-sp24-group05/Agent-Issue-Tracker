@@ -4,10 +4,13 @@
 
 
 /**
- * Insert a new row into the issues table.
+ * Insert a new row into the issues table. The display_no is assigned
+ * server-side as MAX(display_no)+1 — a stable, globally-sequential, never-reused
+ * cosmetic number — computed atomically within the INSERT...SELECT and returned
+ * via RETURNING.
  * @param {object} env - Worker env bindings.
  * @param {object} fields - Issue fields. Optional fields fall back to null.
- * @returns {Promise<object>} The D1 .run() result.
+ * @returns {Promise<object|null>} The inserted row's { display_no }.
  */
 export function insertIssue(env, fields) {
   const {
@@ -27,6 +30,9 @@ export function insertIssue(env, fields) {
     closed_at
   } = fields;
 
+  // INSERT...SELECT (not VALUES) so MAX(display_no) is computed over the
+  // existing table within the same statement. An aggregate query returns one
+  // row even when the table is empty, so the first issue gets display_no = 1.
   return env.issues_db.prepare(`
     INSERT INTO issues (
       id,
@@ -42,9 +48,12 @@ export function insertIssue(env, fields) {
       created_by_user,
       created_at,
       updated_at,
-      closed_at
+      closed_at,
+      display_no
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(MAX(display_no), 0) + 1
+    FROM issues
+    RETURNING display_no
   `)
     .bind(
       id,
@@ -62,7 +71,7 @@ export function insertIssue(env, fields) {
       updated_at,
       closed_at || null
     )
-    .run();
+    .first();
 }
 
 

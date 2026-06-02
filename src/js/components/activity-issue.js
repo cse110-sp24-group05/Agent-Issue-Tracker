@@ -30,7 +30,7 @@ export class ActivityIssue extends HTMLElement {
     this.feedEntry.innerHTML += `
         <div class="feed-body">
           <div class="feed-top">
-            <a class="feed-issue-id" href="issue.html?id=${data.id}">${data.id}</a>
+            <a class="feed-issue-id" href="issue.html?id=${data.id}">${data.display_id || data.id}</a>
             <span class="feed-action">${data.title}</span>
           </div>
           <div class="feed-meta">by <strong>${data.created_by}</strong></div>

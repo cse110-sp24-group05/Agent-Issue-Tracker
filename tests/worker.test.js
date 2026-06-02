@@ -274,12 +274,13 @@ describe('Issues API Tests', () => {
   describe('POST /api/issues', () => {
     // success case for POST /api/issues
     test('creates a new issue and returns it', async () => {
-      mockD1Response({ success: true }, 'run');
+      // insertIssue assigns display_no via INSERT...RETURNING, read with .first()
+      mockD1Response({ display_no: 1 }, 'first');
       const request = new Request('http://localhost/api/issues', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          id: '4',
+          id: 'client-supplied-id',
           title: 'POST Try Issue',
           issue_status: 'open',
           issue_priority: 'high',
@@ -296,8 +297,13 @@ describe('Issues API Tests', () => {
       expect(response.status).toBe(201);
       expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*');
       expect(data.success).toBe(true);
+      // The server assigns the id (a UUID) and ignores any client-supplied id.
       expect(data.issue).toHaveProperty('id');
-      expect(data.issue.id).toBe('4');
+      expect(typeof data.issue.id).toBe('string');
+      expect(data.issue.id.length).toBeGreaterThan(0);
+      expect(data.issue.id).not.toBe('client-supplied-id');
+      // The server assigns a persistent, sequential display_no.
+      expect(data.issue.display_no).toBe(1);
       expect(data.issue).toHaveProperty('title');
       expect(data.issue.title).toBe('POST Try Issue');
       expect(data.issue).toHaveProperty('issue_status');
