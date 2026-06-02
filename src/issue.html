@@ -210,8 +210,9 @@
         return;
       }
 
-      document.title = 'AIT — ' + issue.id;
-      document.querySelector('.issue-header .issue-id').textContent = issue.id;
+      const label = issue.display_id || issue.id;
+      document.title = 'AIT — ' + label;
+      document.querySelector('.issue-header .issue-id').textContent = label;
 
       // Title (skip if in edit mode)
       const titleText  = document.getElementById('issue-title');
