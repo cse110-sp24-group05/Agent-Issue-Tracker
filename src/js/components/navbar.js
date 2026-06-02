@@ -1,3 +1,5 @@
+import { saveTheme, useDarkTheme, useLightTheme } from "../themes.js";
+
 /**
  * Top bar, includes tabs for different pages and for settings
  */
@@ -37,6 +39,7 @@ class Navbar extends HTMLElement {
       const settingsModal = document.getElementById('modal-settings');
       const closeBtn = document.getElementById('settings-close');
       const saveBtn = document.getElementById('settings-save-changes');
+      const themeToggle = document.getElementById('setting-theme');
 
       if (settingsModal && settingsBtn) {
         
@@ -63,8 +66,29 @@ class Navbar extends HTMLElement {
         if (saveBtn) {
           saveBtn.addEventListener('click', () => {
             settingsModal.classList.add('hidden');
+            saveTheme();
           });
         }
+
+        // Theme toggle 
+        console.log(themeToggle);
+        themeToggle.addEventListener("change", (e) => {
+          switch (themeToggle.value) {
+            case "light":
+              useLightTheme();
+              break;
+
+            case "dark": 
+              useDarkTheme();
+              break;
+            
+            case "system":
+              const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+              if (prefersDarkMode) useDarkTheme();
+              else useLightTheme();
+              break;
+          }
+        });
 
         // ─── NEW TAB SWITCHING LOGIC ───
         const tabs = settingsModal.querySelectorAll('.settings-tab');

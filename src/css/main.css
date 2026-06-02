@@ -758,7 +758,7 @@ select {
   text-align: left;
   padding: var(--space-3) var(--space-6);
   font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  color: var(--color-text-theme);
   cursor: pointer;
   font-weight: var(--weight-medium);
   transition: all var(--transition-fast);
@@ -766,13 +766,12 @@ select {
 }
 
 .settings-tab:hover {
-  background-color: var(--color-border);
-  color: var(--color-text);
+  background-color: var(--color-hover-theme);
 }
 
 .settings-tab.active {
   color: var(--color-accent); 
-  background-color: var(--priority-p2-bg);
+  background-color: var(--color-hover-theme);
   border-left: 3px solid var(--color-accent);
 }
 
@@ -792,7 +791,7 @@ select {
 
 .settings-section-desc {
   font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
   margin-bottom: var(--space-6);
 }
 

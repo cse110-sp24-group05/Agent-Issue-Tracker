@@ -3,6 +3,10 @@
  * Currently only dark and light themes are supported.
  */
 
+/**
+ * These color names are not actually used in the script,
+ * but they're good to have as a reference
+ */
 const themeColorNames = [
   "--color-text-theme",
   "--color-text-gray-theme",
@@ -36,38 +40,53 @@ const themes = {
 }
 let activeTheme = themes.LIGHT;
 
+/**
+ * Applies the dark theme to the entire website
+ * This does not save the theme in local storage
+ */
 export function useDarkTheme() {
-  // for (let i = 0; i < themeColorNames.length; i++) {
-  //   const newColor = getComputedStyle(document.documentElement, null).getPropertyValue(darkColorNames[i]);
-  //   document.documentElement.style.setProperty(themeColorNames[i], newColor);
-  // }
   if (document.body.classList.contains("light-theme")) document.body.classList.replace("light-theme", "dark-theme");
   else document.body.classList.add("dark-theme");
   activeTheme = themes.DARK;
-  localStorage.setItem("theme", "dark-theme");
 }
 
+/**
+ * Applies the light theme to the entire website
+ * This does not save the theme in local storage
+ */
 export function useLightTheme() {
-  // for (let i = 0; i < themeColorNames.length; i++) {
-  //   const newColor = document.documentElement.style.getPropertyValue(lightColorNames[i]);
-  //   document.documentElement.style.setProperty(themeColorNames[i], newColor);
-  // }
   if (document.body.classList.contains("dark-theme")) document.body.classList.replace("dark-theme", "light-theme");
   else document.body.classList.add("light-theme");
   activeTheme = themes.LIGHT;
-  localStorage.setItem("theme", "light-theme");
 }
 
+/**
+ * Save the currently-selected theme in local storage
+ */
+export function saveTheme() {
+  if (activeTheme == themes.DARK) {
+    localStorage.setItem("theme", "dark-theme");
+  }
+  else if (activeTheme == themes.LIGHT) {
+    localStorage.setItem("theme", "light-theme");
+  }
+}
+
+/**
+ * @returns The theme (light or dark) being used by the page
+ */
 export function getActiveTheme() {
   console.log(activeTheme);
   return activeTheme;
 }
 
+/**
+ * Loads the theme from local storage
+ */
 function init() {
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme == "dark-theme") useDarkTheme();
   else if (savedTheme == "light-theme") useLightTheme();
 }
 
-useDarkTheme();
 init();
