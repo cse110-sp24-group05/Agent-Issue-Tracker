@@ -39,7 +39,7 @@ const API_PRIORITY_TO_UI = {
 export function toUiIssue(row) {
   return {
     id: row.id,
-    display_id: row.display_no == null ? '' : formatDisplayId(row.display_no),
+    display_id: Number.isInteger(row.display_no) ? formatDisplayId(row.display_no) : '',
     title: row.title,
     description: row.issue_description || '',
     status: API_STATUS_TO_UI[row.issue_status] || row.issue_status,
@@ -64,9 +64,10 @@ export function toUiIssue(row) {
 /**
  * @param {object} fields - createIssue() input from the UI
  * @param {string} now
- * @returns {object} POST /api/issues body. No id: the server assigns it.
+ * @param {string|null} [createdByUserId] - DB user id of the logged-in user
+ * @returns {object} POST /api/issues body
  */
-export function toApiCreate(fields, now) {
+export function toApiCreate(fields, now, createdByUserId = null) {
   const assignee = fields.assignee && fields.assignee !== 'unassigned'
     ? fields.assignee
     : null;
@@ -81,6 +82,7 @@ export function toApiCreate(fields, now) {
     claim_expires_at: null,
     retry_count: 0,
     claim_timeout_minutes: 30,
+    created_by_user: createdByUserId,
     created_at: now,
     updated_at: now,
     closed_at: null

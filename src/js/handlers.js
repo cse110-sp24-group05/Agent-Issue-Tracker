@@ -19,9 +19,9 @@ import {
 
 import {
   insertIssue,
-  //selectAllIssues,
   selectIssueById,
   selectReadyIssue,
+  selectReadyIssueByUserId,
   updateIssueFields,
   deleteIssueById,
   claimIssueRow,
@@ -98,7 +98,7 @@ export async function createIssue(request, env) {
 
 
     const inserted = await insertIssue(env, issueData);
-    if (inserted && inserted.display_no != null) {
+    if (inserted && Number.isInteger(inserted.display_no)) {
       issueData.display_no = inserted.display_no;
     }
 
@@ -151,20 +151,26 @@ export async function getAllIssues(request,env) {
 
 
 /**
- * getReadyIssue returns the single highest-priority open unclaimed issue.
- * The X-Workspace-ID header is read and logged now; full workspace-scoped
- * filtering is a placeholder until user auth is implemented.
+ * getReadyIssue returns the single highest-priority open unclaimed issue
+ * that belongs to the requesting user (identified by X-User-ID header).
+ * Falls back to the global pool when the header is absent (e.g. local dev).
  *
- * @param {Request} request - Incoming request; reads X-Workspace-ID header.
+ * @param {Request} request - Incoming request; reads X-User-ID header.
  * @param {object} env - Environment bindings containing the database connection.
  * @returns {Response} The ready issue, or 404 if none are available.
  */
 export async function getReadyIssue(request, env) {
   try {
-    const workspaceId = request.headers.get('X-Workspace-ID') || 'unknown';
-    console.log(`getReadyIssue: workspace=${workspaceId}`);
+    const userId = request.headers.get('X-User-ID');
 
-    const issue = await selectReadyIssue(env);
+    let issue;
+    if (userId) {
+      issue = await selectReadyIssueByUserId(env, userId);
+    } else {
+      // No user ID supplied — fall back to global pool (local dev / runner misconfiguration)
+      console.warn('getReadyIssue: X-User-ID header missing, returning from global pool');
+      issue = await selectReadyIssue(env);
+    }
 
     if (!issue) {
       return notFound('No open issues available');
