@@ -8,36 +8,36 @@
  * but they're good to have as a reference
  */
 const themeColorNames = [
-  "--color-text-theme",
-  "--color-text-gray-theme",
-  "--color-background-theme",
-  "--color-fill-theme",
-  "--color-priority-low-theme",
-  "--color-hover-theme",
-]
+  '--color-text-theme',
+  '--color-text-gray-theme',
+  '--color-background-theme',
+  '--color-fill-theme',
+  '--color-priority-low-theme',
+  '--color-hover-theme',
+];
 
 const darkColorNames = [
-  "--color-text-light", // with dark theme, the text is going to be light
-  "--color-text-gray-light", 
-  "--color-background-dark",
-  "--color-fill-dark",
-  "--color-priority-low-dark",
-  "--color-hover-dark",
-]
+  '--color-text-light', // with dark theme, the text is going to be light
+  '--color-text-gray-light', 
+  '--color-background-dark',
+  '--color-fill-dark',
+  '--color-priority-low-dark',
+  '--color-hover-dark',
+];
 
 const lightColorNames = [
-  "--color-text-dark", // with light theme, the text is going to be dark
-  "--color-text-gray-dark", 
-  "--color-background-light",
-  "--color-fill-light",
-  "--color-priority-low",
-  "--color-hover-light",
-]
+  '--color-text-dark', // with light theme, the text is going to be dark
+  '--color-text-gray-dark', 
+  '--color-background-light',
+  '--color-fill-light',
+  '--color-priority-low',
+  '--color-hover-light',
+];
 
 const themes = {
-  LIGHT: "light",
-  DARK: "dark",
-}
+  LIGHT: 'light',
+  DARK: 'dark',
+};
 let activeTheme = themes.LIGHT;
 
 /**
@@ -45,8 +45,8 @@ let activeTheme = themes.LIGHT;
  * This does not save the theme in local storage
  */
 export function useDarkTheme() {
-  if (document.body.classList.contains("light-theme")) document.body.classList.replace("light-theme", "dark-theme");
-  else document.body.classList.add("dark-theme");
+  if (document.body.classList.contains('light-theme')) {document.body.classList.replace('light-theme', 'dark-theme');}
+  else {document.body.classList.add('dark-theme');}
   activeTheme = themes.DARK;
 }
 
@@ -55,8 +55,8 @@ export function useDarkTheme() {
  * This does not save the theme in local storage
  */
 export function useLightTheme() {
-  if (document.body.classList.contains("dark-theme")) document.body.classList.replace("dark-theme", "light-theme");
-  else document.body.classList.add("light-theme");
+  if (document.body.classList.contains('dark-theme')) {document.body.classList.replace('dark-theme', 'light-theme');}
+  else {document.body.classList.add('light-theme');}
   activeTheme = themes.LIGHT;
 }
 
@@ -64,11 +64,11 @@ export function useLightTheme() {
  * Save the currently-selected theme in local storage
  */
 export function saveTheme() {
-  if (activeTheme == themes.DARK) {
-    localStorage.setItem("theme", "dark-theme");
+  if (activeTheme === themes.DARK) {
+    localStorage.setItem('theme', 'dark-theme');
   }
-  else if (activeTheme == themes.LIGHT) {
-    localStorage.setItem("theme", "light-theme");
+  else if (activeTheme === themes.LIGHT) {
+    localStorage.setItem('theme', 'light-theme');
   }
 }
 
@@ -84,9 +84,9 @@ export function getActiveTheme() {
  * Loads the theme from local storage
  */
 function init() {
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme == "dark-theme") useDarkTheme();
-  else if (savedTheme == "light-theme") useLightTheme();
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark-theme') {useDarkTheme();}
+  else if (savedTheme === 'light-theme') {useLightTheme();}
 }
 
 init();

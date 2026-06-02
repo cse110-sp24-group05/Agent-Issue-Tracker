@@ -1,6 +1,6 @@
 /* Code for rendering and handling the sidebar */
 
-import { getActiveTheme } from "../themes.js";
+import { getActiveTheme } from '../themes.js';
 
 /**
  *
@@ -42,11 +42,11 @@ export class StatusIcon extends HTMLElement {
     case 'closed':
       fileName = 'closed';
       const activeTheme = getActiveTheme();
-      if (activeTheme == activeTheme.LIGHT) {
-        this.style.setProperty("filter", "var(--filter-issue-closed)");
+      if (activeTheme === activeTheme.LIGHT) {
+        this.style.setProperty('filter', 'var(--filter-issue-closed)');
       }
-      else if (activeTheme == activeTheme.DARK) {
-        this.style.setProperty("filter", "var(--filter-issue-closed-dark)");
+      else if (activeTheme === activeTheme.DARK) {
+        this.style.setProperty('filter', 'var(--filter-issue-closed-dark)');
       }
       break;
     default:

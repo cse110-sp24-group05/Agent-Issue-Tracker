@@ -1,14 +1,20 @@
-import { saveTheme, useDarkTheme, useLightTheme } from "../themes.js";
+import { saveTheme, useDarkTheme, useLightTheme } from '../themes.js';
 
 /**
  * Top bar, includes tabs for different pages and for settings
  */
 class Navbar extends HTMLElement {
   
+  /**
+   *
+   */
   constructor() {
     super(); 
   }
 
+  /**
+   *
+   */
   connectedCallback() {
     const tabNames = ['index.html', 'activity.html'];
     const displayTabNames = ['Dashboard', 'Activity'];
@@ -72,21 +78,21 @@ class Navbar extends HTMLElement {
 
         // Theme toggle 
         console.log(themeToggle);
-        themeToggle.addEventListener("change", (e) => {
+        themeToggle.addEventListener('change', (e) => {
           switch (themeToggle.value) {
-            case "light":
-              useLightTheme();
-              break;
+          case 'light':
+            useLightTheme();
+            break;
 
-            case "dark": 
-              useDarkTheme();
-              break;
+          case 'dark': 
+            useDarkTheme();
+            break;
             
-            case "system":
-              const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
-              if (prefersDarkMode) useDarkTheme();
-              else useLightTheme();
-              break;
+          case 'system':
+            const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+            if (prefersDarkMode) {useDarkTheme();}
+            else {useLightTheme();}
+            break;
           }
         });
 
