@@ -64,9 +64,10 @@ export function toUiIssue(row) {
  * @param {object} fields - createIssue() input from the UI
  * @param {string} id
  * @param {string} now
+ * @param {string|null} [createdByUserId] - DB user id of the logged-in user
  * @returns {object} POST /api/issues body
  */
-export function toApiCreate(fields, id, now) {
+export function toApiCreate(fields, id, now, createdByUserId = null) {
   const assignee = fields.assignee && fields.assignee !== 'unassigned'
     ? fields.assignee
     : null;
@@ -82,6 +83,7 @@ export function toApiCreate(fields, id, now) {
     claim_expires_at: null,
     retry_count: 0,
     claim_timeout_minutes: 30,
+    created_by_user: createdByUserId,
     created_at: now,
     updated_at: now,
     closed_at: null

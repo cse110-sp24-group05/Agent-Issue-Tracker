@@ -1,11 +1,17 @@
 /**
  * data.js — frontend client for the Cloudflare Worker issues API.
  * All issue reads/writes go through fetch(). UI pages import from here only.
+ *
+ * Auth model:
+ *   After login(), the user profile { id, name, email } is stored in
+ *   localStorage. Every request attaches X-User-ID so the Worker can scope
+ *   issue queries to the logged-in user.
  */
 
 import { nextIssueId, toApiCreate, toApiUpdate, toUiIssue } from './api-map.js';
 
 /** @typedef {ReturnType<typeof toUiIssue>} UiIssue */
+/** @typedef {{ id: string, name: string, email: string }} UserProfile */
 
 const API_BASE =
   localStorage.getItem('ait_api_base')
@@ -16,14 +22,79 @@ const API_BASE =
 /** @type {UiIssue[]} */
 let _issues = [];
 
+// ── Auth helpers ───────────────────────────────────────────────────────────
+
+/**
+ * Returns the stored user profile from localStorage, or null if not logged in.
+ * @returns {UserProfile|null}
+ */
+export function getProfile() {
+  const raw = localStorage.getItem('ait_profile');
+  if (!raw) { return null; }
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
+/**
+ * @param {UserProfile} profile
+ */
+function saveProfile(profile) {
+  localStorage.setItem('ait_profile', JSON.stringify(profile));
+  // Keep legacy ait_user in sync so any code still reading it gets the name.
+  localStorage.setItem('ait_user', profile.name);
+}
+
+/**
+ * POST /api/login — registers the user on first call, signs them in on return.
+ * On success, saves the profile to localStorage and returns it.
+ * @param {string} name  - Display name / username
+ * @param {string} email - Email address
+ * @returns {Promise<UserProfile>}
+ */
+export async function login(name, email) {
+  const res = await fetch(`${API_BASE}/api/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email })
+  });
+
+  let body = null;
+  try { body = await res.json(); } catch { body = null; }
+
+  if (!res.ok) {
+    const msg = (body && body.error) ? body.error : res.statusText || 'Login failed';
+    throw new Error(msg);
+  }
+
+  const profile = body.profile;
+  saveProfile(profile);
+  return profile;
+}
+
+/**
+ * Clear the stored profile (log out). Callers should redirect to login.html.
+ */
+export function logout() {
+  localStorage.removeItem('ait_profile');
+  localStorage.removeItem('ait_user');
+}
+
+// ── Request helper ─────────────────────────────────────────────────────────
+
 /**
  * @param {string} path
  * @param {RequestInit} [options]
  * @returns {Promise<unknown>}
  */
 async function request(path, options = {}) {
+  const profile = getProfile();
+  const authHeader = profile ? { 'X-User-ID': profile.id } : {};
+
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeader,
+      ...options.headers
+    },
     ...options
   });
 
@@ -42,20 +113,23 @@ async function request(path, options = {}) {
   return body;
 }
 
-/**
- *
- */
+// ── Data change notification ───────────────────────────────────────────────
+
 function notifyChange() {
   document.dispatchEvent(new CustomEvent('ait:data-changed'));
 }
 
+// ── Issue reads ────────────────────────────────────────────────────────────
+
 /**
- * Load all issues from the API into the in-memory cache.
- * Call once before reading with getIssues() / getIssue().
+ * Load all issues visible to the logged-in user from the API.
+ * Call once on page load before reading with getIssues() / getIssue().
  * @returns {Promise<UiIssue[]>}
  */
 export async function initData() {
-  const data = await request('/api/issues');
+  const profile = getProfile();
+  const query = profile ? `?user_id=${encodeURIComponent(profile.id)}` : '';
+  const data = await request(`/api/issues${query}`);
   _issues = Array.isArray(data) ? data.map(toUiIssue) : [];
   return _issues;
 }
@@ -75,6 +149,8 @@ export function getIssue(id) {
   return _issues.find(i => i.id === id) ?? null;
 }
 
+// ── Issue writes ───────────────────────────────────────────────────────────
+
 /**
  * @param {{ title: string, description?: string, priority?: string,
  *           assignee?: string, token_budget?: number, time_estimate?: number,
@@ -82,9 +158,10 @@ export function getIssue(id) {
  * @returns {Promise<UiIssue>}
  */
 export async function createIssue(fields) {
-  const now = new Date().toISOString();
-  const id = nextIssueId(_issues);
-  const payload = toApiCreate(fields, id, now);
+  const now     = new Date().toISOString();
+  const id      = nextIssueId(_issues);
+  const profile = getProfile();
+  const payload = toApiCreate(fields, id, now, profile?.id ?? null);
 
   const data = await request('/api/issues', {
     method: 'POST',
@@ -92,12 +169,12 @@ export async function createIssue(fields) {
   });
 
   const issue = toUiIssue(data.issue || payload);
-  issue.created_by = fields.created_by || 'human-manual';
-  issue.token_budget = Number(fields.token_budget) || 2000;
+  issue.created_by    = fields.created_by || 'human-manual';
+  issue.token_budget  = Number(fields.token_budget) || 2000;
   issue.time_estimate = Number(fields.time_estimate) || 60;
   issue.audit_log = [{
     action: 'created',
-    by: fields.creator || getSettings().ait_user || 'unknown',
+    by: fields.creator || profile?.name || getSettings().ait_user || 'unknown',
     at: now
   }];
 
@@ -207,12 +284,18 @@ export async function blockIssue(id, reason) {
   return issue;
 }
 
+// ── Settings (legacy + convenience) ───────────────────────────────────────
+
 /**
- * @returns {{ ait_user: string }}
+ * Returns display-name and user_id from the stored profile (or fallbacks).
+ * Callers that only need ait_user for audit labels can keep using this.
+ * @returns {{ ait_user: string, user_id: string|null }}
  */
 export function getSettings() {
+  const profile = getProfile();
   return {
-    ait_user: localStorage.getItem('ait_user') || 'local-dev'
+    ait_user: profile?.name || localStorage.getItem('ait_user') || 'local-dev',
+    user_id:  profile?.id   || null
   };
 }
 
