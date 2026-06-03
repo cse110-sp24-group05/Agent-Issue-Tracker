@@ -28,8 +28,8 @@
   padding: 5px 14px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
-  background: var(--color-fill-light);
-  color: var(--color-text-dark);
+  background: var(--color-fill-theme);
+  color: var(--color-text-theme);
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
   cursor: pointer;
@@ -40,12 +40,12 @@
 }
 
 .pill:hover {
-  background: var(--color-background-light);
+  background: var(--color-background-theme);
   font-weight: var(--weight-bold);
 }
 
 .pill.active {
-  background: var(--color-background-light);
+  background: var(--color-background-theme);
   font-family: 'SmallFontBold';
   
 }
@@ -82,7 +82,7 @@
 .activity-page {
   padding-top: calc(var(--nav-height)); /* nav + sprint bar height */
   min-height: 100vh;
-  background: var(--color-bg-subtle);
+  background: var(--color-background-theme);
   padding-left: calc(var(--sidebar-width));
 }
 
@@ -102,7 +102,7 @@
 
 /* ─── Shared Section ─────────────────────────────────────────────── */
 .dash-section {
-  background: #FFFFFF;
+  background: var(--color-background-theme);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -114,14 +114,14 @@
   justify-content: space-between;
   padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid var(--color-border);
-  background: var(--color-fill-light);
+  background: var(--color-fill-theme);
   font-size: 28px;
 }
 
 .dash-section-title {
   font-family: 'HeadingFont';
   font-size: var(--text-md);
-  color: var(--color-text-dark);
+  color: var(--color-text-theme);
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -130,7 +130,7 @@
 
 .feed-filter-tag {
   font-size: var(--text-xs);
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
   background: var(--color-border);
   border-radius: var(--radius-full);
   padding: 2px var(--space-2);
@@ -169,7 +169,7 @@
 }
 
 .feed-entry:last-child { border-bottom: none; }
-.feed-entry:hover { background: #F5F7FF; }
+.feed-entry:hover { background: var(--color-hover-theme); }
 
 .feed-icon {
   font-size: 15px;
@@ -207,7 +207,7 @@
 
 .feed-action {
   font-size: var(--text-sm);
-  color: var(--color-text);
+  color: var(--color-text-theme);
   font-weight: var(--weight-medium);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -216,17 +216,17 @@
 
 .feed-meta {
   font-size: var(--text-xs);
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
 }
 
 .feed-meta strong {
-  color: var(--color-text);
+  color: var(--color-text-theme);
   font-weight: var(--weight-medium);
 }
 
 .feed-time {
   font-size: 11px;
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
   flex-shrink: 0;
   white-space: nowrap;
   font-family: ui-monospace, monospace;
@@ -236,7 +236,7 @@
 .feed-empty {
   padding: var(--space-10) var(--space-5);
   text-align: center;
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
   font-size: var(--text-sm);
 }
 
@@ -258,7 +258,7 @@
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
   margin-bottom: var(--space-3);
 }
 
@@ -272,7 +272,7 @@
 
 .budget-row label {
   font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
 }
 
 .budget-input {
@@ -283,8 +283,8 @@
   padding: var(--space-1) var(--space-2);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
-  background: var(--color-bg-subtle);
-  color: var(--color-text);
+  background: var(--color-background-theme);
+  color: var(--color-text-theme);
   text-align: right;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
@@ -300,14 +300,14 @@
   font-size: 34px;
   font-weight: var(--weight-bold);
   font-family: ui-monospace, "Cascadia Code", monospace;
-  color: var(--color-text);
+  color: var(--color-text-theme);
   line-height: 1.1;
   letter-spacing: -1px;
 }
 
 .token-total-sub {
   font-size: var(--text-xs);
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
   margin-top: 3px;
 }
 
@@ -333,7 +333,7 @@
 .sprint-pct {
   font-size: 11px;
   font-family: ui-monospace, monospace;
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
   text-align: right;
 }
 
@@ -355,7 +355,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--color-text);
+  color: var(--color-text-theme);
 }
 
 .agent-track {
@@ -376,7 +376,7 @@
 .agent-tokens {
   font-size: 11px;
   font-family: ui-monospace, monospace;
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
   width: 44px;
   text-align: right;
   flex-shrink: 0;
@@ -396,7 +396,7 @@
 
 .top-issue-title {
   font-size: var(--text-xs);
-  color: var(--color-text);
+  color: var(--color-text-theme);
   font-weight: var(--weight-medium);
   text-decoration: none;
   flex: 1;
@@ -413,14 +413,14 @@
 .top-issue-tokens {
   font-size: 11px;
   font-family: ui-monospace, monospace;
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .token-empty {
   font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
 }
 
 /* ─── Recent Completions ─────────────────────────────────────────── */
@@ -444,7 +444,7 @@
 .completion-title {
   font-size: var(--text-base);
   font-weight: var(--weight-semibold);
-  color: var(--color-text);
+  color: var(--color-text-theme);
   text-decoration: none;
   line-height: 1.35;
   display: -webkit-box;
@@ -461,23 +461,23 @@
   align-items: center;
   gap: var(--space-3);
   font-size: var(--text-xs);
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
   flex-wrap: wrap;
 }
 
 .completion-tokens {
   font-family: ui-monospace, monospace;
   font-size: 11px;
-  background: var(--color-bg-subtle);
+  background: var(--color-background-theme);
   padding: 2px var(--space-2);
   border-radius: var(--radius-full);
   border: 1px solid var(--color-border);
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
 }
 
 .completion-result {
   font-size: var(--text-xs);
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
   line-height: 1.55;
   flex: 1;
 }
@@ -495,7 +495,7 @@
 
 .completions-empty {
   font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  color: var(--color-text-gray-theme);
   padding: var(--space-6) 0;
 }
 

@@ -21,32 +21,26 @@
     </script>
   </head>
   <body>
-    <script type="module" src="./js/components/navbar.js"></script>
+    <script src="./js/themes.js" type="module"></script>
+    <script src="./js/components/navbar.js" type="module"></script>
     <my-navbar></my-navbar>
     <!-- ── Page ──────────────────────────────────────────────────── -->
     <main class="page">
       <div class="container">
-        <!-- Summary bar -->
         <div class="summary-bar">
-          <!-- Open Card -->
           <button class="stat-card card stat-open" data-filter="open">
-            <!-- container: pushes text left, icon right -->
             <div class="stat-card-content">
-              <!-- left side: label on top, number below -->
               <div class="stat-card-text">
                 <div class="stat-number" id="sum-open">0</div>
                 <div class="stat-label">Open</div>
               </div>
 
-              <!-- Checkmark icon -->
               <status-icon>
                 <img src="./assets/svg/todo.svg" class="status-icon large" data-filter="todo">
               </status-icon>
-              </svg>
             </div>
           </button>
 
-          <!-- In Progress Card -->
           <button
             class="stat-card card stat-progress"
             data-filter="in-progress"
@@ -56,7 +50,6 @@
                 <div class="stat-number" id="sum-progress">0</div>
                 <div class="stat-label">In Progress</div>
               </div>
-              <!-- Clock icon -->
               <status-icon>
                 <img src="./assets/svg/in-progress.svg" class="status-icon large" data-filter="in-progress">
               </status-icon>
@@ -65,22 +58,18 @@
 
           
 
-          <!-- Blocked Card -->
           <button class="stat-card card stat-blocked" data-filter="blocked">
             <div class="stat-card-content">
               <div class="stat-card-text">
                 <div class="stat-number" id="sum-blocked">0</div>
                 <div class="stat-label">Blocked</div>
               </div>
-              <!-- Blocked circle icon -->
-              
               <status-icon>
                 <img src="./assets/svg/blocked.svg" class="status-icon large" data-filter="blocked">
               </status-icon>
             </div>
           </button>
 
-          <!-- Pending Review Card -->
           <button
             class="stat-card card stat-review"
             data-filter="pending-review"
@@ -90,30 +79,24 @@
                 <div class="stat-number" id="sum-review">0</div>
                 <div class="stat-label">Pending Review</div>
               </div>
-              <!-- Review clipboard icon -->
-              
               <status-icon>
                 <img src="./assets/svg/pending.svg" class="status-icon large" data-filter="pending">
               </status-icon>
             </div>
           </button>
 
-          <!-- Closed Card -->
           <button class="stat-card card stat-closed" data-filter="closed">
             <div class="stat-card-content">
               <div class="stat-card-text">
                 <div class="stat-number" id="sum-closed">0</div>
                 <div class="stat-label">Closed</div>
               </div>
-              <!-- Circle with dot icon -->
               <status-icon>
                 <img src="./assets/svg/closed.svg" class="status-icon large" data-filter="closed">
               </status-icon>
             </div>
           </button>
         </div>
-        <!--  -->
-        <!-- Toolbar: filters + view toggle + new issue -->
         <div class="list-toolbar">
           <div class="filter-bar">
             <select
@@ -182,7 +165,6 @@
             </button>
           </div>
         </div>
-        <!-- ── List view ───────────────────────────────────────── -->
         <div id="list-view" class="view-container">
           <div class="card issue-table-wrapper">
             <table class="issue-table">
@@ -194,7 +176,6 @@
                 <col class="col-assign" />
                 <col class="col-budget" />
                 <col class="col-date" />
-                <col class="col-edit">
               </colgroup>
               <thead>
                 <tr>
@@ -209,16 +190,13 @@
                 </tr>
               </thead>
               <tbody>
-                <!-- Populated by JS -->
-              </tbody>
+                </tbody>
             </table>
           </div>
         </div>
-        <!-- ── End Container ──────────────────────────────────────── -->
-      </div>
+        </div>
 
       <div class="container-board">
-        <!-- ── Kanban Board view ──────────────────────────────────────── -->
         <div id="board-view" class="view-container hidden">
           <div class="board">
             <div class="board-column board-column-open">
@@ -227,8 +205,7 @@
                 <span class="board-col-count" id="count-open">0</span>
               </div>
               <div class="board-cards" id="col-open" data-status="open">
-                <!-- Populated by JS -->
-              </div>
+                </div>
             </div>
             <div class="board-column board-column-progress">
               <div class="board-col-header">
@@ -240,7 +217,6 @@
                 id="col-progress"
                 data-status="in-progress"
               >
-              <!-- Populated by JS -->
               </div>
             </div>
             <div class="board-column board-column-blocked">
@@ -249,8 +225,7 @@
                 <span class="board-col-count" id="count-blocked">0</span>
               </div>
               <div class="board-cards" id="col-blocked" data-status="blocked">
-                <!-- Populated by JS -->
-              </div>
+                </div>
             </div>
             <div class="board-column board-column-review">
               <div class="board-col-header">
@@ -263,8 +238,7 @@
                 data-status="pending-review"
               >
                 
-                <!-- Populated by JS -->
-              </div>
+                </div>
             </div>
             <div class="board-column board-column-closed">
               <div class="board-col-header">
@@ -272,15 +246,12 @@
                 <span class="board-col-count" id="count-closed">0</span>
               </div>
               <div class="board-cards" id="col-closed" data-status="closed">
-                <!-- Populated by JS -->
-              </div>
+                </div>
             </div>
           </div>
         </div>
       </div>
     </main>
-    <!-- ── End Main ──────────────────────────────────────────────────── -->
-    <!-- ── New Issue Modal ───────────────────────────────────────── -->
     <div
       class="modal-overlay hidden"
       id="modal-new-issue"
@@ -296,7 +267,6 @@
           </button>
         </div>
 
-        <!-- New Issue Form -->
         <form class="modal-body" id="form-new-manual">
           <div class="form-group">
             <label class="form-label" for="new-title">Title<span class="required">*</span></label>
@@ -329,15 +299,14 @@
             </div>
             <div class="form-group">
               <label class="form-label" for="new-assignee">Assignee</label>
-              <input
-                class="form-input"
-                type="text"
-                id="new-assignee"
-                placeholder="username or leave blank"
-              />
+              <select class="form-select" id="new-assignee">
+                <option value="human-only">Human-only</option>
+                <option value="open-to-all" selected>Open-to-all</option>
+                <option value="ai-only">AI-only</option>
+              </select>
             </div>
             <div class="form-group">
-              <label class="form-label" for="new-budget">Token Budget</label>
+              <label class="form-label" for="new-budget ">Token Budget</label>
               <input
                 class="form-input"
                 type="number"
@@ -369,7 +338,7 @@
         </div>
       </div>
     </div>
+    
     <script type="module" src="js/list-app.js"></script>
-    <!-- ── End Body ──────────────────────────────────────────────────── -->
-  </body>
+    </body>
 </html>

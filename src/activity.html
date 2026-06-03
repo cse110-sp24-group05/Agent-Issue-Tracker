@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="">
+
   <head>
     <meta charset="utf-8">
     <title>AIT — Activity</title>
@@ -18,63 +19,58 @@
       })();
     </script>
   </head>
+
   <body>
     <script src="./js/activity-app.js" type="module"></script>
-    <script type="module" src="./js/components/navbar.js"></script>
+    <script src="./js/themes.js" type="module"></script>
+    <script src="./js/components/navbar.js" type="module"></script>
     <my-navbar></my-navbar>
 
-       <!-- ── Page ─────────────────────────────────────────────────── -->
-        <main class="activity-page">
-          <div class="activity-wrap">
-            
-            <header>
-              <!-- ── Sprint Health Bar ──────────────────────────────────────── -->
-              <div class="sprint-bar">
-                <!-- <span class="sprint-bar-label">Sprint</span> -->
-                <div class="sprint-pills">
-                  <!-- Rendered in activity-app.js -->
-                </div>
+    <main class="activity-page">
+      <div class="activity-wrap">
+
+        <header>
+          <div class="sprint-bar">
+            <div class="sprint-pills">
               </div>
-            </header>
-
-            <!-- Two-column: feed + token burn -->
-            <div class="activity-grid">
-
-              <!-- ── Live Activity Feed ───────────────────────────── -->
-              <section class="dash-section">
-                <div class="dash-section-head">
-                  <h2 class="dash-section-title">
-                    <span class="live-dot" aria-hidden="true"></span>
-                    Live Activity
-                  </h2>
-                </div>
-                <div class="feed-list" id="feed-list">
-                  <!-- Rendered in activity-app.js -->
-                </div>
-              </section>
-
-              <!-- ── Token Burn ────────────────────────────────────── -->
-              <aside class="dash-section" id="token-burn">
-                
-              </aside>
-
-            </div>
-
-            <!-- ── Recent Completions ──────────────────────────────── -->
-            <section class="dash-section dash-completions-section">
-              <div class="dash-section-head">
-                <h2 class="dash-section-title">Recent Completions</h2>
-              </div>
-              <div class="completions-grid" id="completions-grid">
-                <!-- Rendered by JS -->
-              </div>
-            </section>
-
           </div>
-        </main>
+        </header>
 
-        
+        <div class="activity-grid">
+
+          <section class="dash-section">
+            <div class="dash-section-head">
+              <h2 class="dash-section-title">
+                <span class="live-dot" aria-hidden="true"></span>
+                Live Activity
+              </h2>
+            </div>
+            <div class="feed-list" id="feed-list">
+              </div>
+          </section>
+
+          <aside class="dash-section" id="token-burn">
+
+          </aside>
+
+        </div>
+
+        <section class="dash-section dash-completions-section">
+          <div class="dash-section-head">
+            <h2 class="dash-section-title">Recent Completions</h2>
+          </div>
+          <div class="completions-grid" id="completions-grid">
+            </div>
+        </section>
+
+      </div>
+    </main>
+
+
     <main></main>
     <footer></footer>
+    
+    
   </body>
+
 </html>
