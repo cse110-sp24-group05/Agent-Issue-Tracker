@@ -10,7 +10,7 @@ Jaylen:
 
 Pranav:
 
-Nick:
+Nick: I did not use AI to write code. Chat-GPT 5 Mini was used inside Duck-Duck-Go browser's AI search assist to help with research.
 
 Nikolas:
 
