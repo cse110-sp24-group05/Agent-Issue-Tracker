@@ -345,7 +345,8 @@ describe('Issues API Tests', () => {
           issue_priority: 'medium', retry_count: 0, claim_timeout_minutes: 30, 
           assigned_to_user: null, assigned_to_agent: null, created_at: new Date().toISOString(), 
           updated_at: new Date().toISOString() }, method: 'first' }, // selectIssueById (first call)
-        { response: { meta: { changes: 1 } }, method: 'run' },      // claimIssueRow 
+        { response: { meta: { changes: 1 } }, method: 'run' },      // ensureAgentRow
+        { response: { meta: { changes: 1 } }, method: 'run' },      // claimIssueRow
         { response: { id: '5', title: 'Claimable Issue', issue_status: 'in_progress', 
           issue_priority: 'medium', retry_count: 0, claim_timeout_minutes: 30, 
           assigned_to_user: null, assigned_to_agent: 'agent-123', created_at: new Date().toISOString(), 

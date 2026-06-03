@@ -154,6 +154,25 @@ export function deleteIssueById(env, id) {
 
 
 /**
+ * Ensure an agent row exists before assigning issues (FK on assigned_to_agent).
+ * Inserts with status idle when missing; no-op if the id already exists.
+ * @param {object} env - Worker env bindings.
+ * @param {string} id - Agent id.
+ * @param {string} [agentName] - Display name; defaults to id.
+ * @returns {Promise<object>} The D1 .run() result.
+ */
+export function ensureAgentRow(env, id, agentName = null) {
+  return env.issues_db.prepare(`
+    INSERT INTO agents (id, agent_name, agent_status)
+    VALUES (?, ?, 'idle')
+    ON CONFLICT(id) DO NOTHING
+  `)
+    .bind(id, agentName || id)
+    .run();
+}
+
+
+/**
  * Mark an issue as claimed by an agent: sets assigned_to_agent,
  * claim_expires_at, status → in_progress, and updated_at.
  * @param {object} env - Worker env bindings.

@@ -25,6 +25,7 @@ import {
   updateIssueFields,
   deleteIssueById,
   claimIssueRow,
+  ensureAgentRow,
   updateIssueStatus,
   storeIssueResult,
   closeIssueRow,
@@ -348,6 +349,7 @@ export async function claimIssue(request, env) {
 
     const expiration = Date.now() + 15 * 60 * 1000;
 
+    await ensureAgentRow(env, agent_id);
     await claimIssueRow(env, id, agent_id, expiration, new Date().toISOString());
 
     const updatedIssue = await selectIssueById(env, id);

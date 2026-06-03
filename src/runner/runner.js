@@ -73,7 +73,8 @@ const BASE_URL =
 const USER_ID = process.env.AIT_USER_ID || '';
 
 // Agent identifier recorded in the claim request (which agent picked this up).
-const AGENT_ID = process.env.AIT_AGENT_ID || `ait-runner-${Date.now()}`;
+// Must satisfy issues.assigned_to_agent → agents(id) FK (API auto-registers unknown ids).
+const AGENT_ID = process.env.AIT_AGENT_ID || 'ait-agent-cc';
 
 const MIN_DELAY_MS = 300;
 
