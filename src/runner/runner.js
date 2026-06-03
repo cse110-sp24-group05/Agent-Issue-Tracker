@@ -28,7 +28,7 @@
  *   npm install -g git+https://github.com/cse110-sp24-group05/Agent-Issue-Tracker.git
  *
  * Per-project config (recommended):
- *   cp ait.env.example .env   # in your project root; .env is gitignored
+ *   cp config/ait.env.example .env   # in your project root; .env is gitignored
  *   # Edit .env: paste AIT_USER_ID=… from the web app settings menu
  *
  * To find your AIT_USER_ID:
@@ -238,7 +238,7 @@ async function runAIT() {
   }
   if (!USER_ID) {
     console.log('  WARNING:  AIT_USER_ID not set. Add it to .env in this repo');
-    console.log('            (or ~/.ait/.env). See ait.env.example.');
+    console.log('            (or ~/.ait/.env). See config/ait.env.example.');
   }
   console.log('===========================================\n');
 
