@@ -34,9 +34,21 @@ const API_PRIORITY_TO_UI = {
 
 /**
  * @param {object} row - D1 / API issue row
+ * @param {{ id: string, name: string }|null} [profile] - logged-in user profile for display-name resolution
  * @returns {object}
  */
-export function toUiIssue(row) {
+export function toUiIssue(row, profile = null) {
+  let assignee;
+  if (row.assigned_to_agent) {
+    assignee = 'Agent';
+  } else if (row.assigned_to_user) {
+    assignee = (profile && profile.id === row.assigned_to_user)
+      ? profile.name
+      : row.assigned_to_user;
+  } else {
+    assignee = 'unassigned';
+  }
+
   return {
     id: row.id,
     display_id: Number.isInteger(row.display_no) ? formatDisplayId(row.display_no) : '',
@@ -44,7 +56,7 @@ export function toUiIssue(row) {
     description: row.issue_description || '',
     status: API_STATUS_TO_UI[row.issue_status] || row.issue_status,
     priority: API_PRIORITY_TO_UI[row.issue_priority] || 'P2',
-    assignee: row.assigned_to_user || row.assigned_to_agent || 'unassigned',
+    assignee,
     created_at: row.created_at,
     updated_at: row.updated_at,
     token_budget: 2000,
@@ -68,16 +80,21 @@ export function toUiIssue(row) {
  * @returns {object} POST /api/issues body
  */
 export function toApiCreate(fields, now, createdByUserId = null) {
-  const assignee = fields.assignee && fields.assignee !== 'unassigned'
-    ? fields.assignee
-    : null;
+  // assigned_to_user is a FK to users.id — only set it when we have a valid
+  // DB user ID to send (i.e. the logged-in user is assigning to themselves).
+  // Free-text display names from the form are stored locally only via
+  // patchIssueLocal after creation.
+  const assignedToUser =
+    (fields.assigneeUserId && fields.assigneeUserId !== 'unassigned')
+      ? fields.assigneeUserId
+      : null;
 
   return {
     title: fields.title || '',
     issue_description: fields.description || null,
     issue_status: 'open',
     issue_priority: UI_PRIORITY_TO_API[fields.priority] || 'medium',
-    assigned_to_user: assignee,
+    assigned_to_user: assignedToUser,
     assigned_to_agent: null,
     claim_expires_at: null,
     retry_count: 0,

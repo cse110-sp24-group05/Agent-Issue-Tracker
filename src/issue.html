@@ -200,7 +200,7 @@
   </div>
 
   <script type="module">
-    import { initData, getIssue, claimIssue, postResult, closeIssue, updateIssue, getSettings } from './js/data.js';
+    import { initData, getIssue, claimIssue, postResult, closeIssue, updateIssue, getSettings, patchIssueLocal } from './js/data.js';
     import { esc, staBadge, staLabel, createdByIcon, fmtRelTime, fmtDateTime } from './js/ui.js';
 
     try {
@@ -423,9 +423,11 @@
       assigneeInput.classList.remove('hidden');
       assigneeInput.focus(); assigneeInput.select();
     });
-    assigneeInput.addEventListener('blur', async () => {
+    assigneeInput.addEventListener('blur', () => {
       const val = assigneeInput.value.trim();
-      if (val) await updateIssue(id, { assignee: val, updatedBy: currentUser });
+      // Free-text assignee is display-only — assigned_to_user is a DB FK that
+      // only accepts registered user IDs, so we update the local cache only.
+      if (val) patchIssueLocal(id, { assignee: val });
       assigneeInput.classList.add('hidden');
       assigneeDisplay.classList.remove('hidden');
       render();
@@ -445,7 +447,7 @@
     document.getElementById('action-btn').addEventListener('click', async () => {
       const issue = getIssue(id);
       if (issue.status === 'open') {
-        await claimIssue(id, currentUser);
+        await claimIssue(id);
         render();
       } else if (issue.status === 'in-progress') {
         document.getElementById('modal-result').classList.remove('hidden');

@@ -119,6 +119,23 @@ function notifyChange() {
   document.dispatchEvent(new CustomEvent('ait:data-changed'));
 }
 
+// ── Local-only patch (no API call) ─────────────────────────────────────────
+
+/**
+ * Update the in-memory issue cache without making an API call.
+ * Use for display-only fields (e.g. free-text assignee) that can't be written
+ * to the DB directly due to schema constraints.
+ * @param {string} id
+ * @param {object} fields
+ */
+export function patchIssueLocal(id, fields) {
+  const idx = _issues.findIndex(i => i.id === id);
+  if (idx !== -1) {
+    _issues[idx] = { ..._issues[idx], ...fields };
+    notifyChange();
+  }
+}
+
 // ── Issue reads ────────────────────────────────────────────────────────────
 
 /**
@@ -130,7 +147,7 @@ export async function initData() {
   const profile = getProfile();
   const query = profile ? `?user_id=${encodeURIComponent(profile.id)}` : '';
   const data = await request(`/api/issues${query}`);
-  _issues = Array.isArray(data) ? data.map(toUiIssue) : [];
+  _issues = Array.isArray(data) ? data.map(row => toUiIssue(row, profile)) : [];
   return _issues;
 }
 
@@ -168,7 +185,7 @@ export async function createIssue(fields) {
   });
 
   // The server assigns the id (a UUID); trust the response over the payload.
-  const issue = toUiIssue(data.issue || payload);
+  const issue = toUiIssue(data.issue || payload, profile);
   issue.created_by    = fields.created_by || 'human-manual';
   issue.token_budget  = Number(fields.token_budget) || 2000;
   issue.time_estimate = Number(fields.time_estimate) || 60;
@@ -177,6 +194,15 @@ export async function createIssue(fields) {
     by: fields.creator || profile?.name || getSettings().ait_user || 'unknown',
     at: now
   }];
+
+  // If a free-text assignee display name was provided, apply it locally only.
+  // assigned_to_user is a DB FK and can only hold a registered user's UUID.
+  const freeTextAssignee = fields.assignee && fields.assignee !== 'unassigned'
+    ? fields.assignee
+    : null;
+  if (freeTextAssignee) {
+    issue.assignee = freeTextAssignee;
+  }
 
   _issues.push(issue);
   notifyChange();
@@ -199,7 +225,7 @@ export async function updateIssue(id, fields) {
     body: JSON.stringify(payload)
   });
 
-  const issue = toUiIssue(data.issue);
+  const issue = toUiIssue(data.issue, getProfile());
   const idx = _issues.findIndex(i => i.id === id);
   if (idx !== -1) {
     _issues[idx] = { ..._issues[idx], ...issue };
@@ -211,10 +237,9 @@ export async function updateIssue(id, fields) {
 
 /**
  * @param {string} id
- * @param {string} claimedBy - display name to show in the UI (e.g. profile.name)
  * @returns {Promise<UiIssue|null>}
  */
-export async function claimIssue(id, claimedBy) {
+export async function claimIssue(id) {
   const profile = getProfile();
   // assigned_to_user is a FK to users.id — must send the DB user ID, not the display name.
   const assigneeId = profile?.id ?? null;
@@ -225,9 +250,8 @@ export async function claimIssue(id, claimedBy) {
     body: JSON.stringify(payload)
   });
 
-  const issue = toUiIssue(data.issue);
-  // Show the human-readable display name locally rather than the raw DB ID.
-  issue.assignee = claimedBy || profile?.name || assigneeId || 'unassigned';
+  // toUiIssue resolves assigned_to_user → profile.name when IDs match
+  const issue = toUiIssue(data.issue, profile);
 
   const idx = _issues.findIndex(i => i.id === id);
   if (idx !== -1) {
