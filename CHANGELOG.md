@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.0](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/compare/v1.3.0...v1.4.0) (2026-06-03)
+
+
+### Features
+
+* description is now editable with clear indication for users ([6617fba](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/6617fba4552ff5cf18f764cafccf8ab54a480e57))
+
+
+### Bug Fixes
+
+* Claim issue and edit issue no longer errors during PUT/POST ([5b16060](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/5b16060c5e0923389f9546f90691d40e504a4d06))
+* Creating subsequent issues no longer errors due to FK constraint ([d5fac52](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/d5fac52dec31118ee6dd7ad65529214efb0a5ac0))
+
 ## [1.3.0](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/compare/v1.2.0...v1.3.0) (2026-06-02)
 
 
