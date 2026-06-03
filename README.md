@@ -1,110 +1,141 @@
 # AIT — Agent Issue Tracker
 
-An issue tracker built for AI-native workflows. Humans create and review issues through a clean UI. AI agents read, claim, and complete them through a structured JSON API. Sign in with a display name and email so your issues and agent runs stay scoped to your account.
-
----
-
-## Using AIT (live)
+Humans create and review issues in the web app. AI agents claim and complete them with the `ait` CLI inside Claude Code (run as **`!ait`** in shell mode — not as a chat message).
 
 | | URL |
 |---|---|
 | **Web app** | https://agent-issue-tracker.pages.dev |
 | **API** | https://agent-issue-tracker.stc021.workers.dev |
 
-**Typical flow**
-
-1. **Human** — Open the web app, create an issue (title, description, priority), and watch the dashboard or kanban as status changes.
-2. **Agent (Claude Code)** — In an active Claude Code session, run `ait`. It fetches the highest-priority open issue, claims it (`in_progress`), and prints the task plus a ready-made `curl` to post your result.
-3. **Agent** — Do the work with your normal tools, then run that `curl` (or let Claude run it). Status moves to `review` with your summary.
-4. **Human** — Review the result on the site and close or send back as needed.
-
-Claim timeouts return stuck issues to `open` if an agent crashes without reporting back.
-
 ---
 
-## What it does
+## Quick start
 
-- Create and manage issues with priority, assignee, and token budgets
-- List view and kanban board, always in sync
-- AI agents read open issues via JSON endpoints, claim them, and post results back
-- Dashboard shows live agent activity, token burn, and sprint health
-- Claim timeout system handles agent crashes automatically — issues return to open if an agent fails
+### 1. Install `ait` (outside Claude Code)
 
----
-
-## Stack
-
-Vanilla HTML, CSS, JavaScript frontend in `src/`. API on Cloudflare Workers + D1 (`src/js/worker.js`). The older clickable mock lives in `prototype/` and is not used for local dev.
-
----
-
-## Agents — Claude Code (`ait`)
-
-The `ait` CLI is meant to run **inside** an existing Claude Code session (bash). It does not start Claude; it talks to the API, claims one issue, prints instructions, and exits so Claude can continue.
-
-**One-time setup (any repo)**
+Run once in a normal terminal:
 
 ```bash
-cd /path/to/Agent-Issue-Tracker
+npm install -g git+https://github.com/cse110-sp24-group05/Agent-Issue-Tracker.git
+```
+
+---
+
+### 2. Add `.env` to your project (outside Claude Code)
+
+In **your project repo** (the one you will open in Claude Code), copy the template and edit it.
+
+**Mac / Linux (Terminal)**
+
+```bash
+cp "$(npm root -g)/agent-issue-tracker/config/ait.env.example" .env
+```
+
+**Windows (PowerShell)**
+
+```powershell
+Copy-Item (Join-Path (npm root -g) "agent-issue-tracker\config\ait.env.example") ".env"
+```
+
+Edit `.env`:
+
+```bash
+AIT_USER_ID=user-XXXXX
+AIT_API_BASE=https://agent-issue-tracker.stc021.workers.dev
+```
+
+Get `AIT_USER_ID` from the web app: sign in → settings icon (top right) → **Copy**.
+
+`.env` is gitignored — do not commit it. Anyone with your `AIT_USER_ID` can read and write your AIT issues.
+
+`ait` loads project `.env` automatically — no need to `source` it or set vars manually before running.
+
+---
+
+### Optional: global fallback (outside Claude Code)
+
+Use `~/.ait/.env` instead of a per-project `.env` if you prefer one config everywhere. Project `.env` wins when both exist.
+
+**Mac / Linux (Terminal)**
+
+```bash
+mkdir -p ~/.ait
+cp "$(npm root -g)/agent-issue-tracker/config/ait.env.example" ~/.ait/.env
+```
+
+**Windows (PowerShell)**
+
+```powershell
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.ait" | Out-Null
+Copy-Item (Join-Path (npm root -g) "agent-issue-tracker\config\ait.env.example") "$env:USERPROFILE\.ait\.env"
+```
+
+Edit the file and paste your `AIT_USER_ID` line from the web app.
+
+---
+
+### 3. Create an issue (browser)
+
+1. Open https://agent-issue-tracker.pages.dev and sign in.
+2. Create an issue on the dashboard.
+
+---
+
+### 4. Claim and work (inside Claude Code)
+
+Open your project repo in Claude Code, then run **`!ait`** in the Claude Code prompt ([shell mode](https://code.claude.com/docs/en/interactive-mode#shell-mode-with--prefix) — the `!` prefix runs a real shell command and adds the output to the session).
+
+```
+!ait
+```
+
+Do **not** type `ait` as a normal chat message; Claude will reply in prose instead of running the CLI.
+
+Alternatives that also work: the VS Code **Terminal** panel (`ait`), or ask Claude to run `ait` in bash.
+
+`ait` reads `.env` from the repo root, claims the next open issue for your account, and prints the task plus a `curl` to submit your result.
+
+Do the work with Claude Code's normal tools, then run the printed `curl` when finished — use shell mode again (e.g. `!curl ...`) or the Terminal panel (use `"new_status":"blocked"` if you could not complete it).
+
+---
+
+### 5. Review (browser)
+
+Review the result on the dashboard and close or send the issue back.
+
+---
+
+## Cheat sheet
+
+| Where | Mac / Linux | Windows (PowerShell) |
+|---|---|---|
+| **Outside Claude Code** | `npm install -g git+https://github.com/cse110-sp24-group05/Agent-Issue-Tracker.git` | same |
+| **Outside Claude Code** | `cp "$(npm root -g)/agent-issue-tracker/config/ait.env.example" .env` | `Copy-Item (Join-Path (npm root -g) "agent-issue-tracker\config\ait.env.example") ".env"` |
+| **Inside Claude Code** | `!ait` (shell mode; not plain chat) | same |
+| **Inside Claude Code** | printed `!curl ...` or Terminal `curl` → submit result | same |
+
+Config load order: shell `export AIT_*` → project `.env` → `~/.ait/.env`
+
+Local API (AIT development only): `!ait --url http://localhost:8787` in Claude Code, or `ait --url http://localhost:8787` in a normal terminal
+
+---
+
+## Developing AIT (contributors)
+
+Clone this repo if you are working on AIT itself:
+
+```bash
+git clone https://github.com/cse110-sp24-group05/Agent-Issue-Tracker.git
+cd Agent-Issue-Tracker
+npm install
 npm link
-mkdir -p ~/.ait && cp .env.example ~/.ait/.env
 ```
 
-Then sign in to the web app, click the **settings** icon (top right), and **Copy** the line shown (e.g. `AIT_USER_ID=user-04821`). Paste it into `~/.ait/.env`. Without `AIT_USER_ID`, `ait` falls back to the global issue pool.
+**UI:** `npm run dev` → http://localhost:8080  
+**API:** `npm run dev:api` → http://localhost:8787  
+**Tests:** `npm test`
 
-Also set `AIT_API_BASE` in the same file — use production by default, or `http://localhost:8787` when running `npm run dev:api` locally.
-
-**Commands**
-
-| Command | Purpose |
-|---|---|
-| `ait` | Claim next ready issue against production API (default) |
-| `npm run ait` | Same, from this repo (loads `.env` via dotenv-cli) |
-| `ait --url http://localhost:8787` | Point at local Worker (`npm run dev:api`) |
-
-Config loads in order: shell `AIT_*` vars → `~/.ait/.env` → `.env` in the current directory. See [`.env.example`](.env.example).
-
-After `ait` prints a task, finish the work in Claude Code, then run the printed `curl` to submit `result_text` and set status to `review` (or `blocked` if you could not finish).
-
-**Other CLI tools (repo only)**
-
-| Command | Purpose |
-|---|---|
-| `npm run ait-runner` | Automated runner: sends issue to Claude API and posts result (demo / CI-style) |
-| `npm run ait-runner -- --mock` | Same flow with a fake result (no Anthropic key) |
-| `npm run ait-runner -- --url http://localhost:8787` | Local API + real Claude |
-| `npm run ait-runner -- --auto-close` | Auto-close after review (testing only) |
-| `npm run sim` | Simulated agent loop for integration testing (no LLM) |
-
-`ait-runner` needs `ANTHROPIC_API_KEY` in `.env` unless `--mock` is used.
-
----
-
-## Local development
-
-**UI only** (static files in `src/`):
-
-```bash
-npm run dev
-```
-
-Open http://localhost:8080/ (redirects to the dashboard). The UI defaults to `http://localhost:8787` for the API when served locally.
-
-**API** (optional, for wiring the UI and `ait` to real endpoints):
-
-```bash
-npm run dev:api
-```
-
-Runs `wrangler dev` on port 8787 — see [`Docs/archtiecture-docs/api-contract.md`](Docs/archtiecture-docs/api-contract.md).
-
-Point agents at local API: `ait --url http://localhost:8787` or set `AIT_API_BASE=http://localhost:8787` in `.env` / `~/.ait/.env`.
-
-**Tests**
-
-```bash
-npm test
-```
+See [`.env.example`](.env.example) for Cloudflare and other repo-only settings.
 
 ---
 

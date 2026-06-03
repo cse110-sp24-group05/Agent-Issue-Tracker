@@ -13,3 +13,8 @@ Week 8:
 [https://ucsd-g025825.slack.com/archives/D0B2B6SL1N0/p1779230709069629](https://ucsd-g025825.slack.com/archives/D0B2B6SL1N0/p1779230709069629)  
 [https://ucsd-g025825.slack.com/archives/D0B2B6SL1N0/p1779403502926269](https://ucsd-g025825.slack.com/archives/D0B2B6SL1N0/p1779403502926269)  
 [https://ucsd-g025825.slack.com/archives/D0B2B6SL1N0/p1779576302531089](https://ucsd-g025825.slack.com/archives/D0B2B6SL1N0/p1779576302531089)  
+
+Week 9:
+https://ucsd-g025825.slack.com/archives/C0B18HWALFL/p1779864310635659
+https://ucsd-g025825.slack.com/archives/C0B18HWALFL/p1780037109949869
+https://ucsd-g025825.slack.com/archives/C0B18HWALFL/p1780209904415019
