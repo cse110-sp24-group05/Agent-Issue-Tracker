@@ -1,4 +1,5 @@
 {
+  "name": "agent-issue-tracker",
   "type": "module",
   "bin": {
     "ait": "src/runner/runner.js"
