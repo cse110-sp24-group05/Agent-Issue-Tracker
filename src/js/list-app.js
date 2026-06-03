@@ -101,7 +101,7 @@ function renderList(issues) {
           <tr data-issue-row data-id="${esc(i.id)}"
               data-status="${i.status}" data-priority="${i.priority}"
               data-assignee="${esc(i.assignee)}">
-            <td><a class="issue-id mono" href="issue.html?id=${esc(i.id)}">${esc(i.id.replace('issue-', ''))}</a></td>
+            <td><a class="issue-id mono" href="issue.html?id=${esc(i.id)}">${esc((i.display_id || '').replace('issue-', ''))}</a></td>
             <td><span class="badge ${priBadge(i.priority)}">${i.priority}</span></td>
             <td>
               <a class="issue-title-link" href="issue.html?id=${esc(i.id)}" title="${esc(i.title)}">${esc(i.title)}</a>

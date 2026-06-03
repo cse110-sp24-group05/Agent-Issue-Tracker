@@ -27,11 +27,11 @@
  * Global install:
  *   npm link          # dev — symlinks from this repo
  *   mkdir -p ~/.ait && cp .env.example ~/.ait/.env
- *   # Edit ~/.ait/.env: set AIT_USER_ID to your user-XXXXX id from the AIT login page
+ *   # Edit ~/.ait/.env: paste AIT_USER_ID=… from the web app settings menu
  *
  * To find your AIT_USER_ID:
- *   Open browser DevTools on any AIT page → Application → Local Storage
- *   → look for 'ait_profile' → copy the "id" field (e.g. user-04821)
+ *   Sign in → click the settings icon (top right) → Copy
+ *   (paste the full line into ~/.ait/.env)
  *
  * Prerequisites:
  *   - AIT_USER_ID set to your user-XXXXX id from the AIT login
@@ -67,8 +67,8 @@ const BASE_URL =
     ? args[urlFlagIdx + 1]
     : process.env.AIT_API_BASE || 'https://agent-issue-tracker.stc021.workers.dev';
 
-// AIT_USER_ID: the user-XXXXX id from the AIT login flow.
-// Find it at: DevTools → Application → Local Storage → ait_profile → "id"
+// AIT_USER_ID: scopes the runner to your issues (e.g. user-04821).
+// Copy from the web app: settings icon → Copy → paste into ~/.ait/.env
 const USER_ID = process.env.AIT_USER_ID || '';
 
 // Agent identifier recorded in the claim request (which agent picked this up).

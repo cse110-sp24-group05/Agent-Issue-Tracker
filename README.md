@@ -1,6 +1,6 @@
 # AIT — Agent Issue Tracker
 
-An issue tracker built for AI-native workflows. Humans create and review issues through a clean UI. AI agents read, claim, and complete them through a structured JSON API. No accounts required for the demo — open the site and go.
+An issue tracker built for AI-native workflows. Humans create and review issues through a clean UI. AI agents read, claim, and complete them through a structured JSON API. Sign in with a display name and email so your issues and agent runs stay scoped to your account.
 
 ---
 
@@ -48,8 +48,11 @@ The `ait` CLI is meant to run **inside** an existing Claude Code session (bash).
 cd /path/to/Agent-Issue-Tracker
 npm link
 mkdir -p ~/.ait && cp .env.example ~/.ait/.env
-# Edit ~/.ait/.env — at minimum AIT_WORKSPACE_ID and AIT_API_BASE
 ```
+
+Then sign in to the web app, click the **settings** icon (top right), and **Copy** the line shown (e.g. `AIT_USER_ID=user-04821`). Paste it into `~/.ait/.env`. Without `AIT_USER_ID`, `ait` falls back to the global issue pool.
+
+Also set `AIT_API_BASE` in the same file — use production by default, or `http://localhost:8787` when running `npm run dev:api` locally.
 
 **Commands**
 

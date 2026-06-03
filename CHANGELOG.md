@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/compare/v1.2.0...v1.3.0) (2026-06-02)
+
+
+### Features
+
+* users can now find their ait_user_id in the frontend in settings page. Can easily copy and paste into .env ([222689c](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/222689c10ae2d6bf81e3366cfaed80553fe4e095))
+
+
+### Bug Fixes
+
+* **issue id assignment:** use a global uuid for issue ids; display ids are globally sequential ([8ac1af2](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/8ac1af2e6f70361efc0e58bb997c60a2f13daf74))
+
 ## [1.2.0](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/compare/v1.1.0...v1.2.0) (2026-06-01)
 
 
