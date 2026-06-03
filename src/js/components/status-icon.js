@@ -3,7 +3,7 @@
 import { getActiveTheme } from '../themes.js';
 
 /**
- *
+ * Renders an SVG image corresponding to one of the 5 issue status codes
  */
 export class StatusIcon extends HTMLElement {
 

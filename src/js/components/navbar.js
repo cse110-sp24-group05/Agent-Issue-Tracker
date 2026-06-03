@@ -1,4 +1,5 @@
 import { saveTheme, useDarkTheme, useLightTheme } from '../themes.js';
+import { SettingsModal } from './settings-modal.js';
 
 /**
  * Top bar, includes tabs for different pages and for settings
@@ -6,14 +7,14 @@ import { saveTheme, useDarkTheme, useLightTheme } from '../themes.js';
 class Navbar extends HTMLElement {
   
   /**
-   *
+   * Creates a new Navbar
    */
   constructor() {
     super(); 
   }
 
   /**
-   *
+   * Initialize the navbar with tabs and the settings modal
    */
   connectedCallback() {
     const tabNames = ['index.html', 'activity.html'];
@@ -37,65 +38,24 @@ class Navbar extends HTMLElement {
         </button>
       </nav>
     `;
+    
 
     // ─── SETTINGS MODAL WIRING ──────────────────────────────────────────
     // Wrap the logic in a function so we can wait for the DOM to load
     const wireUpSettingsModal = () => {
+     
       const settingsBtn = this.querySelector('#nav-settings-btn');
+      const settingsModalParent = new SettingsModal();
+      this.appendChild(settingsModalParent);
       const settingsModal = document.getElementById('modal-settings');
-      const closeBtn = document.getElementById('settings-close');
-      const saveBtn = document.getElementById('settings-save-changes');
-      const themeToggle = document.getElementById('setting-theme');
+      
+      // Open modal
+      settingsBtn.addEventListener('click', () => {
+        settingsModal.classList.remove('hidden');
+        console.log(settingsModal);
+      });
 
       if (settingsModal && settingsBtn) {
-        
-        // Open modal
-        settingsBtn.addEventListener('click', () => {
-          settingsModal.classList.remove('hidden');
-        });
-
-        // Close modal via X button
-        if (closeBtn) {
-          closeBtn.addEventListener('click', () => {
-            settingsModal.classList.add('hidden');
-          });
-        }
-
-        // Close modal via overlay click
-        settingsModal.addEventListener('click', (event) => {
-          if (event.target === settingsModal) {
-            settingsModal.classList.add('hidden');
-          }
-        });
-
-        // Close modal via Save button
-        if (saveBtn) {
-          saveBtn.addEventListener('click', () => {
-            settingsModal.classList.add('hidden');
-            saveTheme();
-          });
-        }
-
-        // Theme toggle 
-        console.log(themeToggle);
-        themeToggle.addEventListener('change', (e) => {
-          switch (themeToggle.value) {
-          case 'light':
-            useLightTheme();
-            break;
-
-          case 'dark': 
-            useDarkTheme();
-            break;
-            
-          case 'system':
-            const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
-            if (prefersDarkMode) {useDarkTheme();}
-            else {useLightTheme();}
-            break;
-          }
-        });
-
         // ─── NEW TAB SWITCHING LOGIC ───
         const tabs = settingsModal.querySelectorAll('.settings-tab');
         const tabContents = settingsModal.querySelectorAll('.settings-tab-content');

@@ -880,6 +880,17 @@ select {
   margin-bottom: var(--space-1);
 }
 
+.setting-button {
+  background-color: var(--color-fill-theme);
+  color: var(--color-text-theme);
+  width: 25%;
+  justify-content: center;
+}
+
+.setting-button:hover {
+  background-color: var(--color-hover-theme);
+}
+
 .setting-subtext {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
