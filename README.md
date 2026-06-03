@@ -13,46 +13,89 @@ Humans create and review issues in the web app. AI agents claim and complete the
 
 ### 1. Install `ait` (outside Claude Code)
 
-Run once in a normal terminal — any directory is fine. You do **not** need to clone this repo or open it in Claude Code.
+Run once in a normal terminal:
 
 ```bash
 npm install -g git+https://github.com/cse110-sp24-group05/Agent-Issue-Tracker.git
-mkdir -p ~/.ait
 ```
 
-Create `~/.ait/.env`:
+---
+
+### 2. Add `.env` to your project (outside Claude Code)
+
+In **your project repo** (the one you will open in Claude Code), copy the template and edit it.
+
+**Mac / Linux (Terminal)**
+
+```bash
+cp "$(npm root -g)/agent-issue-tracker/ait.env.example" .env
+```
+
+**Windows (PowerShell)**
+
+```powershell
+Copy-Item (Join-Path (npm root -g) "agent-issue-tracker\ait.env.example") ".env"
+```
+
+Edit `.env`:
 
 ```bash
 AIT_USER_ID=user-XXXXX
 AIT_API_BASE=https://agent-issue-tracker.stc021.workers.dev
 ```
 
-Get `AIT_USER_ID` from the web app: sign in → settings icon (top right) → **Copy** (paste the full line).
+Get `AIT_USER_ID` from the web app: sign in → settings icon (top right) → **Copy**.
+
+`.env` is gitignored — do not commit it. Anyone with your `AIT_USER_ID` can read and write your AIT issues.
+
+`ait` loads project `.env` automatically — no need to `source` it or set vars manually before running.
 
 ---
 
-### 2. Create an issue (browser)
+### Optional: global fallback (outside Claude Code)
+
+Use `~/.ait/.env` instead of a per-project `.env` if you prefer one config everywhere. Project `.env` wins when both exist.
+
+**Mac / Linux (Terminal)**
+
+```bash
+mkdir -p ~/.ait
+cp "$(npm root -g)/agent-issue-tracker/ait.env.example" ~/.ait/.env
+```
+
+**Windows (PowerShell)**
+
+```powershell
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.ait" | Out-Null
+Copy-Item (Join-Path (npm root -g) "agent-issue-tracker\ait.env.example") "$env:USERPROFILE\.ait\.env"
+```
+
+Edit the file and paste your `AIT_USER_ID` line from the web app.
+
+---
+
+### 3. Create an issue (browser)
 
 1. Open https://agent-issue-tracker.pages.dev and sign in.
 2. Create an issue on the dashboard.
 
 ---
 
-### 3. Claim and work (inside Claude Code)
+### 4. Claim and work (inside Claude Code)
 
-Open **your project repo** in Claude Code (not this repo). Then:
+Open your project repo in Claude Code, then:
 
 ```bash
 ait
 ```
 
-`ait` claims the next open issue for your account and prints the task plus a `curl` to submit your result.
+`ait` reads `.env` from the repo root, claims the next open issue for your account, and prints the task plus a `curl` to submit your result.
 
 Do the work with Claude Code's normal tools, then run the printed `curl` when finished (use `"new_status":"blocked"` if you could not complete it).
 
 ---
 
-### 4. Review (browser)
+### 5. Review (browser)
 
 Review the result on the dashboard and close or send the issue back.
 
@@ -60,12 +103,14 @@ Review the result on the dashboard and close or send the issue back.
 
 ## Cheat sheet
 
-| Where | Command |
-|---|---|
-| **Outside Claude Code** | `npm install -g git+https://github.com/cse110-sp24-group05/Agent-Issue-Tracker.git` |
-| **Outside Claude Code** | Put `AIT_USER_ID=…` in `~/.ait/.env` |
-| **Inside Claude Code** | `ait` |
-| **Inside Claude Code** | printed `curl` → submit result |
+| Where | Mac / Linux | Windows (PowerShell) |
+|---|---|---|
+| **Outside Claude Code** | `npm install -g git+https://github.com/cse110-sp24-group05/Agent-Issue-Tracker.git` | same |
+| **Outside Claude Code** | `cp "$(npm root -g)/agent-issue-tracker/ait.env.example" .env` | `Copy-Item (Join-Path (npm root -g) "agent-issue-tracker\ait.env.example") ".env"` |
+| **Inside Claude Code** | `ait` | `ait` |
+| **Inside Claude Code** | printed `curl` → submit result | same |
+
+Config load order: shell `export AIT_*` → project `.env` → `~/.ait/.env`
 
 Local API (AIT development only): `ait --url http://localhost:8787`
 
@@ -79,14 +124,14 @@ Clone this repo if you are working on AIT itself:
 git clone https://github.com/cse110-sp24-group05/Agent-Issue-Tracker.git
 cd Agent-Issue-Tracker
 npm install
-npm link          # live symlink while editing runner.js
+npm link
 ```
 
 **UI:** `npm run dev` → http://localhost:8080  
 **API:** `npm run dev:api` → http://localhost:8787  
 **Tests:** `npm test`
 
-Other repo-only tools: `npm run ait-runner`, `npm run sim` (see [`.env.example`](.env.example)).
+See [`.env.example`](.env.example) for Cloudflare and other repo-only settings.
 
 ---
 

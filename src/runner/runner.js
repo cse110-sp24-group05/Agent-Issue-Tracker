@@ -21,17 +21,18 @@
  *
  * Config is loaded from (highest priority first):
  *   1. Shell env vars already set (export AIT_* in ~/.zshrc)
- *   2. ~/.ait/.env   — recommended for global installs
- *   3. .env in the current working directory
+ *   2. .env in the current working directory (your project repo)
+ *   3. ~/.ait/.env   — optional global fallback
  *
  * Global install:
- *   npm link          # dev — symlinks from this repo
- *   mkdir -p ~/.ait && cp .env.example ~/.ait/.env
- *   # Edit ~/.ait/.env: paste AIT_USER_ID=… from the web app settings menu
+ *   npm install -g git+https://github.com/cse110-sp24-group05/Agent-Issue-Tracker.git
+ *
+ * Per-project config (recommended):
+ *   cp ait.env.example .env   # in your project root; .env is gitignored
+ *   # Edit .env: paste AIT_USER_ID=… from the web app settings menu
  *
  * To find your AIT_USER_ID:
  *   Sign in → click the settings icon (top right) → Copy
- *   (paste the full line into ~/.ait/.env)
  *
  * Prerequisites:
  *   - AIT_USER_ID set to your user-XXXXX id from the AIT login
@@ -44,18 +45,18 @@ import { homedir } from 'os';
 import { config as loadDotenv } from 'dotenv';
 
 // --- Config loading ---------------------------------------------------
-// Load global config first, then local — shell env vars always win
-// because dotenv only sets a value when the key is not already in env.
+// Shell env vars always win (dotenv never overwrites existing process.env).
+// Project .env wins over ~/.ait/.env for keys present in both.
 
 const globalConfig = join(homedir(), '.ait', '.env');
 const localConfig  = join(process.cwd(), '.env');
 
-if (existsSync(globalConfig)) {
-  loadDotenv({ path: globalConfig });
-}
-
 if (existsSync(localConfig)) {
   loadDotenv({ path: localConfig });
+}
+
+if (existsSync(globalConfig)) {
+  loadDotenv({ path: globalConfig });
 }
 
 // --- Config -----------------------------------------------------------
@@ -68,7 +69,7 @@ const BASE_URL =
     : process.env.AIT_API_BASE || 'https://agent-issue-tracker.stc021.workers.dev';
 
 // AIT_USER_ID: scopes the runner to your issues (e.g. user-04821).
-// Copy from the web app: settings icon → Copy → paste into ~/.ait/.env
+// Copy from the web app: settings icon (top right) → Copy → paste into project .env
 const USER_ID = process.env.AIT_USER_ID || '';
 
 // Agent identifier recorded in the claim request (which agent picked this up).
@@ -236,8 +237,8 @@ async function runAIT() {
     console.log('  WARNING:  Targeting production Worker');
   }
   if (!USER_ID) {
-    console.log('  WARNING:  AIT_USER_ID not set. Set it in ~/.ait/.env to');
-    console.log('            scope issues to your account. See runner.js header.');
+    console.log('  WARNING:  AIT_USER_ID not set. Add it to .env in this repo');
+    console.log('            (or ~/.ait/.env). See ait.env.example.');
   }
   console.log('===========================================\n');
 
