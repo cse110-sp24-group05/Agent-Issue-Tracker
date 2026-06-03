@@ -241,6 +241,10 @@
         descText.textContent = issue.description;
         descInput.value      = issue.description;
       }
+      // Description is only editable when the issue is open
+      const descEditable = issue.status === 'open';
+      descText.title = descEditable ? 'Click to edit' : '';
+      descText.classList.toggle('readonly', !descEditable);
 
       // Status badge
       const badge = document.getElementById('status-badge');
@@ -395,6 +399,7 @@
     const descText  = document.getElementById('issue-desc');
     const descInput = document.getElementById('issue-desc-input');
     descText.addEventListener('click', () => {
+      if (getIssue(id)?.status !== 'open') return;
       descText.classList.add('hidden');
       descInput.classList.remove('hidden');
       descInput.focus();

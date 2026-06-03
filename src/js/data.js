@@ -211,11 +211,31 @@ export async function updateIssue(id, fields) {
 
 /**
  * @param {string} id
- * @param {string} claimedBy
+ * @param {string} claimedBy - display name to show in the UI (e.g. profile.name)
  * @returns {Promise<UiIssue|null>}
  */
 export async function claimIssue(id, claimedBy) {
-  return updateIssue(id, { status: 'in-progress', assignee: claimedBy });
+  const profile = getProfile();
+  // assigned_to_user is a FK to users.id — must send the DB user ID, not the display name.
+  const assigneeId = profile?.id ?? null;
+
+  const payload = toApiUpdate({ status: 'in-progress', assignee: assigneeId });
+  const data = await request(`/api/issues/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  });
+
+  const issue = toUiIssue(data.issue);
+  // Show the human-readable display name locally rather than the raw DB ID.
+  issue.assignee = claimedBy || profile?.name || assigneeId || 'unassigned';
+
+  const idx = _issues.findIndex(i => i.id === id);
+  if (idx !== -1) {
+    _issues[idx] = { ..._issues[idx], ...issue };
+  }
+
+  notifyChange();
+  return getIssue(id);
 }
 
 /**

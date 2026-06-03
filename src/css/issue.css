@@ -78,6 +78,10 @@
   white-space: pre-wrap;
 }
 .issue-desc-text:hover { color: var(--color-accent); }
+.issue-desc-text.readonly {
+  cursor: default;
+}
+.issue-desc-text.readonly:hover { color: var(--color-text); }
 
 .issue-result-text {
   font-size: var(--text-base);
@@ -152,6 +156,15 @@
   color: var(--color-text-muted);
 }
 
+/* Inline assignee input: match the .sidebar-editable sizing so there's no layout jump */
+#assignee-input {
+  width: 100%;
+  font-size: var(--text-sm);
+  padding: var(--space-1, 4px) var(--space-2, 8px);
+  min-height: 28px;
+  box-sizing: border-box;
+}
+
 /* ─── Sidebar ───────────────────────────────────────────────────── */
 .issue-sidebar {
   background: var(--color-bg-subtle);
@@ -191,9 +204,16 @@
   color: var(--color-text);
   cursor: text;
   display: block;
-  transition: color var(--transition-fast);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 4px);
+  padding: var(--space-1, 4px) var(--space-2, 8px);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  min-height: 28px;
 }
-.sidebar-editable:hover { color: var(--color-accent); }
+.sidebar-editable:hover {
+  border-color: var(--color-accent);
+  background: var(--color-bg);
+}
 
 .sidebar-kv {
   display: flex;
