@@ -18,7 +18,7 @@ Lisa:
 
 Hien:
 
-Jayden:
+Jayden: Used Claude Code (opus 4.6) for coding support. Reviewed and tested before committing.
 
 Zay:
 
