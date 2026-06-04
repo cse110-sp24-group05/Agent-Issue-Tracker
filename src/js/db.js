@@ -154,6 +154,31 @@ export function deleteIssueById(env, id) {
 
 
 /**
+ * Reset all in_progress issues whose claim window has expired back to open so
+ * the server — not the client runner — owns claim-expiry logic. Safe to call
+ * before any read that needs an accurate open-issues view.
+ * @param {object} env - Worker env bindings.
+ * @param {string} now - ISO timestamp written to updated_at on reset rows.
+ * @returns {Promise<object>} The D1 .run() result.
+ */
+export function resetExpiredClaims(env, now) {
+  return env.issues_db.prepare(`
+    UPDATE issues
+    SET
+      issue_status      = 'open',
+      assigned_to_agent = NULL,
+      claim_expires_at  = NULL,
+      updated_at        = ?
+    WHERE issue_status    = 'in_progress'
+      AND claim_expires_at IS NOT NULL
+      AND claim_expires_at < ?
+  `)
+    .bind(now, Date.now())
+    .run();
+}
+
+
+/**
  * Ensure an agent row exists before assigning issues (FK on assigned_to_agent).
  * Inserts with status idle when missing; no-op if the id already exists.
  * @param {object} env - Worker env bindings.

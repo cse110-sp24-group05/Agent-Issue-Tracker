@@ -33,7 +33,8 @@ import {
   selectIssuesByUserId,
   selectUserById,
   selectUserByUsername,
-  insertUser
+  insertUser,
+  resetExpiredClaims
 } from './db.js';
 
 
@@ -162,6 +163,10 @@ export async function getAllIssues(request,env) {
  */
 export async function getReadyIssue(request, env) {
   try {
+    // Expire stale claims server-side before selecting so runners never need
+    // to reset them client-side and stuck in_progress issues self-heal.
+    await resetExpiredClaims(env, new Date().toISOString());
+
     const userId = request.headers.get('X-User-ID');
 
     let issue;
@@ -337,17 +342,29 @@ export async function claimIssue(request, env) {
       return badRequest('Missing agent_id');
     }
 
-    const issue = await selectIssueById(env, id);
+    let issue = await selectIssueById(env, id);
 
     if (!issue) {
       return notFound();
+    }
+
+    // If the existing claim has expired, reset it so this request can succeed
+    // rather than returning a misleading "already in_progress" error.
+    if (
+      issue.issue_status === 'in_progress' &&
+      issue.claim_expires_at !== null &&
+      issue.claim_expires_at < Date.now()
+    ) {
+      await resetExpiredClaims(env, new Date().toISOString());
+      issue = await selectIssueById(env, id);
     }
 
     if (issue.issue_status !== 'open') {
       return badRequest(`Issue cannot be claimed (current status: ${issue.issue_status})`);
     }
 
-    const expiration = Date.now() + 15 * 60 * 1000;
+    const timeoutMinutes = issue.claim_timeout_minutes ?? 30;
+    const expiration = Date.now() + timeoutMinutes * 60 * 1000;
 
     await ensureAgentRow(env, agent_id);
     await claimIssueRow(env, id, agent_id, expiration, new Date().toISOString());
