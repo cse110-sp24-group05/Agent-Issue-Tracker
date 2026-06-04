@@ -1,4 +1,5 @@
 import { getAgentEnvLine } from '../data.js';
+import { saveTheme, useDarkTheme, useLightTheme, useSystemTheme } from '../themes.js';
 
 
 /**
@@ -197,9 +198,7 @@ export class SettingsModal extends HTMLElement {
         break;
             
       case 'system':
-        const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
-        if (prefersDarkMode) {useDarkTheme();}
-        else {useLightTheme();}
+        useSystemTheme();
         break;
       }
     });
