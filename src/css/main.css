@@ -76,15 +76,15 @@
     --color-priority-medium: rgb(199 146 12);
 
 
-    /* Priority badge colors */
-    --priority-p0: #DC2626;
-    --priority-p1: #EA580C;
+    /* Priority badge colors (aligned with --color-priority-high / -medium) */
+    --priority-p0: #C10000;
+    --priority-p1: #C7920C;
     --priority-p2: #2563EB;
     --priority-p3: #6B7280;
 
     /* Priority badge backgrounds (10% opacity tint) */
-    --priority-p0-bg: #FEF2F2;
-    --priority-p1-bg: #FFF7ED;
+    --priority-p0-bg: #FEE2E2;
+    --priority-p1-bg: #FEF3C7;
     --priority-p2-bg: #EFF6FF;
     --priority-p3-bg: #F9FAFB;
 
