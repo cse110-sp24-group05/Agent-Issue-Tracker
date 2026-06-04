@@ -51,8 +51,9 @@ export function insertIssue(env, fields) {
       closed_at,
       display_no
     )
-    SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(MAX(display_no), 0) + 1
-    FROM issues
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+      (SELECT COALESCE(MAX(display_no), 0) + 1 FROM issues WHERE created_by_user = ?)
+    )
     RETURNING display_no
   `)
     .bind(
@@ -69,7 +70,8 @@ export function insertIssue(env, fields) {
       created_by_user || null,
       created_at,
       updated_at,
-      closed_at || null
+      closed_at || null,
+      created_by_user || null // second bind for the subquery
     )
     .first();
 }
