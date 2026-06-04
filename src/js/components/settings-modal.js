@@ -1,4 +1,4 @@
-import { getAgentEnvLine } from '../data.js';
+import { getAgentEnvLine, logout } from '../data.js';
 
 
 /**
@@ -148,6 +148,9 @@ export class SettingsModal extends HTMLElement {
         </div>
 
         <div class="modal-footer settings-footer">
+          <button class="btn btn-danger" type="button" id="settings-logout">
+            Log Out
+          </button>
           <button class="btn btn-primary" type="button" id="settings-save-changes">
             Save Changes
           </button>
@@ -161,7 +164,7 @@ export class SettingsModal extends HTMLElement {
     const saveBtn = document.getElementById('settings-save-changes');
     const themeToggle = document.getElementById('setting-theme');
     const copyIdBtn = document.getElementById('settings-copy-user-id');
-        
+    const logoutBtn = document.getElementById('settings-logout');
 
     // Close modal via X button
     if (closeBtn) {
@@ -203,6 +206,13 @@ export class SettingsModal extends HTMLElement {
         break;
       }
     });
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        logout();
+        location.replace('login.html');
+      });
+    }
 
     // Copy user ID
     copyIdBtn.addEventListener('click', async (e) => {

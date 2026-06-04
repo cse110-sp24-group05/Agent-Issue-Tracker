@@ -847,7 +847,7 @@ select {
 }
 
 .settings-footer {
-  justify-content: flex-end;
+  justify-content: space-between;
   border-top: 1px solid var(--color-border);
   padding: var(--space-4) var(--space-6);
   background-color: var(--color-bg);
