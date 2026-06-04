@@ -5,8 +5,8 @@
 
 /**
  * Insert a new row into the issues table. The display_no is assigned
- * server-side as MAX(display_no)+1 — a stable, globally-sequential, never-reused
- * cosmetic number — computed atomically within the INSERT...SELECT and returned
+ * server-side as MAX(display_no)+1 scoped to the creating user — so each user's
+ * issues are numbered from 1 independently — computed atomically and returned
  * via RETURNING.
  * @param {object} env - Worker env bindings.
  * @param {object} fields - Issue fields. Optional fields fall back to null.
@@ -30,9 +30,8 @@ export function insertIssue(env, fields) {
     closed_at
   } = fields;
 
-  // INSERT...SELECT (not VALUES) so MAX(display_no) is computed over the
-  // existing table within the same statement. An aggregate query returns one
-  // row even when the table is empty, so the first issue gets display_no = 1.
+  // Scalar subquery scopes MAX(display_no) to the inserting user so each user's
+  // issues are numbered from 1 independently. COALESCE handles the empty case.
   return env.issues_db.prepare(`
     INSERT INTO issues (
       id,
