@@ -233,16 +233,7 @@ function renderBoard(issues) {
   updateBoardCounts();
   // Empty state for new users or no issues at all
   // check if ALl columns are empty
-  const allEmpty = [
-    'col-open',
-    'col-progress',
-    'col-review',
-    'col-blocked',
-    'col-closed',
-  ].every(
-    (id) =>
-      document.getElementById(id).querySelectorAll('.board-card').length === 0,
-  );
+  const allEmpty = getIssues().length === 0;
 
   // empty state message
   const emptyMessage = {
