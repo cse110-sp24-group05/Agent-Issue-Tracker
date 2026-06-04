@@ -89,10 +89,10 @@ export function saveTheme() {
 }
 
 /**
- * @returns The theme (light or dark) being used by the page
+ * Get the active theme
+ * @returns The theme (light, dark, or system-adaptive) being used by the page
  */
 export function getActiveTheme() {
-  console.log(activeTheme);
   return activeTheme;
 }
 

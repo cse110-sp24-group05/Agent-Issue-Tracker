@@ -1,5 +1,6 @@
 import {
   fmtRelTime,
+  STA_LABEL,
 } from '../ui.js';
 import { StatusIcon } from './status-icon.js';
 
@@ -30,10 +31,10 @@ export class ActivityIssue extends HTMLElement {
     this.feedEntry.innerHTML += `
         <div class="feed-body">
           <div class="feed-top">
-            <a class="feed-issue-id" href="issue.html?id=${data.id}">${data.display_id || data.id}</a>
-            <span class="feed-action">${data.title}</span>
+            <a class="feed-issue-id" href="issue.html?id=${data.id}">${data.title || data.id}</a>
+            <span class="feed-action">${data.display_id} marked as ${STA_LABEL[data.status]}</span>
           </div>
-          <div class="feed-meta">by <strong>${data.created_by}</strong></div>
+          <!-- <div class="feed-meta">by <strong>${data.created_by}</strong></div> -->
         </div>
         <span class="feed-time">${fmtRelTime(data.updated_at)}</span>
     `;

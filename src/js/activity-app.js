@@ -2,6 +2,7 @@
 import { ActivityIssue } from './components/activity-issue.js';
 import { ActivityStatusButton } from './components/activity-status-button.js';
 import { ActivityTokenBurn } from './components/activity-token-burn.js';
+import { NoIssuesPrompt } from './components/no-issues-prompt.js';
 import {
   initData,
   getIssues,
@@ -23,9 +24,14 @@ export let activeStatusButton = null;
 export function setActiveStatusButton(button) {
   activeStatusButton = button;
 }
+const API_BASE =
+  localStorage.getItem('ait_api_base')
+  || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:8787'
+    : 'https://agent-issue-tracker.stc021.workers.dev');
 
 const feedParent = document.querySelector('.feed-list');
-const completionsParent = document.querySelector('.dash-completions-section');
+// const completionsParent = document.querySelector('.dash-completions-section');
 const tokenBurnParent = document.getElementById('token-burn');
 const statusButtonsParent = document.querySelector('.sprint-pills');
 const statusNames = ['Open', 'In Progress', 'Blocked', 'Pending Review', 'Closed'];
@@ -40,7 +46,7 @@ async function loadActivity() {
   // update for each issue
   loadIssues();
   loadStatusButtons();
-  loadTokenBurn();
+  // loadTokenBurn();
   
 }
 
@@ -51,21 +57,37 @@ async function loadActivity() {
 function loadIssues() {
   tokenCount = 0;
   tokenMax = 0;
-  console.log(issuesList[0]);
-  issuesList.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
-  issuesList.forEach((issueData) => {
-    const issue = new ActivityIssue();
-    issue.data = issueData;
-    issueObjects.push(issue);
-    tokenCount += issueData.tokens_used;
-    tokenMax += issueData.token_budget;
-    if (issueData.status === 'closed') {
-      completionsParent.appendChild(issue);
-    }
-    else {
-      feedParent.appendChild(issue); 
-    }
-  });
+  const dummyEntry = document.querySelector('.feed-entry');
+
+  if (issuesList.length === 0) {
+    const nip = new NoIssuesPrompt();
+    dummyEntry.appendChild(nip);
+  }
+  else {
+    dummyEntry.remove();
+    issuesList.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+    issuesList.forEach(async (issueData) => {
+
+      const historyRes = await fetch(`${API_BASE}/api/issues/${issueData.id}/history`);
+      const historyData = await historyRes.json();
+      const history = historyData.history || [];
+      history.forEach((historyData) => {
+        const tempData = {...issueData};
+        tempData.status = historyData.issue_status;
+        tempData.updated_at = historyData.changed_at;
+        tempData.created_by = historyData.changed_by_user;
+        console.log(tempData);
+        const issue = new ActivityIssue();
+        issue.data = tempData;
+        issueObjects.push(issue);
+      
+        feedParent.appendChild(issue); 
+      
+      });
+    
+    });
+  }
+  
 }
 
 /**
@@ -138,6 +160,7 @@ function loadStatusButtons() {
  */
 export function filterActivityIssues(key, valueToMatch) {
   issueObjects.forEach((issue) => {
+    console.log(issue.issueData);
     if (issue.issueData[key] !== valueToMatch) {
       issue.style.display = 'none';
     }
