@@ -349,7 +349,7 @@ As of the 05/15 meeting:
 
 
 
-# **ADR 006: Consolidate non-code folders under /docs and enforce lowercase naming**
+# **ADR 6: Consolidate non-code folders under /docs and enforce lowercase naming**
 
 **Status:** Accepted
 **Date:** 2026-05-19
@@ -398,7 +398,7 @@ package.json
 ```
 
 
-# ADR 007: Workspace ID for User Isolation
+# ADR 7: Workspace ID for User Isolation
 
 **Status:** Accepted
 **Date:** 2026-05-19
@@ -435,7 +435,7 @@ Chosen option: **Random UUID stored in localStorage**, because it requires three
 - No recovery flow if the ID is lost
 - Not suitable if AIT ever needs real identity verification
 
-# ADR 008: Schema and Database Modification
+# ADR 8: Schema and Database Modification
 
 **Status:** Accepted
 **Date:** 2026-05-28
@@ -461,3 +461,67 @@ The Schema has been modified, and these changes are reflected on our D1 Cloudfla
 ### Bad
 
 - Storage and performance take a small hit from adding an extra table (very minor)
+
+# ADR 9: Global UUID, more Database Changes, and Optimizations for Logged-In Users
+
+**Status:** Accepted
+**Date:** 2026-06-01
+**Decision-makers:** Whole Team
+
+## Context and Problem Statement
+Since we separate and render issues based on the logged-in user, when we create issues while logged-in as a user, we become unable to create issues due to attempting to reuse an already-existing ID.
+
+
+### Global UUID addition 
+Each issue is assigned a globally unique identifier in the DB which will prevent conflicts when creating issues across different users. 
+
+### New DB Fields - `display_no` and `created_by_user`
+To accomodate for the new UUID's (which are long strings), for display, we have a separate field display_no that renders on the page. Increments separately for each logged-in user. We also have a new field to keep track of issues created by a given user.
+
+### Changes to issue_status_history
+`issue_status_history` table now uses the UUID value from `issues` (called `issue_id` in the `issue_status_history` table) that distinguishes different issues from one another. This value stays consistent as an issue continues to get its history updated. An additional unique identifier is assigned to each historical update to an issue (the issue's own unique identifier remains unchanged).
+
+## Decision Outcome:
+We have a clean separation of issues fetched and rendered in for each logged-in user. `display_no` will be updated appropriately for each logged-in user. We can now create issues successfully accross different logged-in users without any problems with ID uniqueness. `issue_status_history` gets improved ID tracking. With the new `created_by_user` field, we can filter and render issues for specific users.
+
+## Consequences
+
+### Good
+
+- This supports our team-decision in making this a solo-dev tool due to time constraints
+- Bugs like issue ID conflicts when creating issues, were fixed from making a unique global UUID. 
+- Overall functionality improved, including better history tracking, and clean separations made for users logged into separate accounts.
+
+### Bad
+
+- Many changes need to be made across multiple areas, including the schema for the DB, backend logic, frontend logic, and other files 
+
+# ADR 10: Issue Assignment Changes
+
+**Status:** Accepted
+**Date:** 2026-06-03
+**Decision-makers:** Whole Team
+
+## Context and Problem Statement
+
+Due to time constraints, we are configuring our project to be a tool for solo developers, instead of team development. So there is no longer any need for assigning to other users. Issues should only be assigned to yourself or the agent. 
+
+### DB fields have their typing changed
+The field `assigned_to_user` and `assigned_to_agent` will be changed to boolean types, where TRUE indicates claimed. Both fields cannot be TRUE at the same time. If both fields are FALSE then the issue has not been claimed.
+
+### Checkbox for assigned_to_agent Instead of text field
+If checkbox is checked, the issue is claimable by an agent, otherwise human can go in manually to claim or leave it open. If a human claims an issue, then `assigned_to_user` field is updated to TRUE, and manually force `assigned_to_agent` to be FALSE
+
+## Decision Outcome:
+The Schema has been modified, and these changes are reflected on our D1 Cloudflare database as well. Issues are only filtered by `created_by_user` for display. The Claim Issue button should allow the user to claim the issue, which force-stops the agent from working on that issue (i.e. overridden by user). The `assigned_to_user` and `assigned_to_agent` fields are appropriately updated
+
+## Consequences
+
+### Good
+
+- Increases simplicity and makes it more reasonable to complete, given the tight time constraints.
+
+### Bad
+
+- Due to time-constraints, we sacrifice the team dev aspect, making this a solo dev tool (only you as the user as well as your agent), for simplicity.
+- DB may require large changes, which impacts both frontend and backend

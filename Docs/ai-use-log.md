@@ -2,7 +2,7 @@
 
 Ava: Used Claude Code (Sonnet 4.6) for coding support. Reviewed and tested before committing.
 
-Patrick:
+Patrick: Used Claude LLM for coding support and design decisions. Reviewed, debugged, and tested code with AI assistance. 
 
 Hanwen:
 
