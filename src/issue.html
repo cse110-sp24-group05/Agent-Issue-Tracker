@@ -476,7 +476,7 @@ The New Issue modal stays open when the user presses Escape. It should close and
               <div class="audit-body">
                 <span class="audit-action">${esc(entry.issue_status.replace('_', ' '))}</span>
                 <span class="audit-meta">
-                  by ${esc(entry.changed_by_user || entry.changed_by_user || 'agent')}
+                  by ${esc(entry.changed_by_user || entry.changed_by_agent || 'agent')}
                   &middot; ${fmtDateTime(entry.changed_at)}
                 </span>   
               </div>      
