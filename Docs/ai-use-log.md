@@ -6,7 +6,7 @@ Patrick: Used Claude LLM for coding support and design decisions. Reviewed, debu
 
 Hanwen:
 
-Jaylen:
+Jaylen: Used Claude for assistance with debugging, and coding support. ChatGPT was used for idea organization. All code was personally reviewed and tested before committing.
 
 Pranav:
 
