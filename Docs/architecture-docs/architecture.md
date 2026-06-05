@@ -31,7 +31,7 @@ the work.
                 │        Cloudflare Worker          │
                 │     REST · JSON · endpoints       │
                 └────────────────┬──────────────────┘
-                                v
+                                 v
                 ┌───────────────────────────────────┐
                 │       Cloudflare D1 (SQLite)      │
                 │  issues · users · agents · history│
