@@ -124,13 +124,16 @@
               <option value="P3">P3</option>
             </select>
 
-            <input
-              class="form-input filter-input"
-              type="text"
+            <select
+              class="form-select filter-select"
               id="filter-assignee"
-              placeholder="Assignee…"
               aria-label="Filter by assignee"
-            />
+            >
+              <option value="">All assignees</option>
+              <option value="human-only">Human-only</option>
+              <option value="open-to-all">Open-to-all</option>
+              <option value="ai-only">AI-only</option>
+            </select>
 
             <input
               class="form-input filter-search"

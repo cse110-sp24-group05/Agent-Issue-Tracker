@@ -55,10 +55,7 @@ function updateSummary() {
 function getFiltered() {
   const status = document.getElementById('filter-status').value;
   const priority = document.getElementById('filter-priority').value;
-  const assignee = document
-    .getElementById('filter-assignee')
-    .value.trim()
-    .toLowerCase();
+  const assignee = document.getElementById('filter-assignee').value;
   const search = document.getElementById('filter-search').value.toLowerCase();
   return filterIssues(getIssues(), status, priority, assignee, search);
 }
@@ -107,7 +104,7 @@ function renderList(issues) {
               <a class="issue-title-link" href="issue.html?id=${esc(i.id)}" title="${esc(i.title)}">${esc(i.title)}</a>
             </td>
             <td><span class="badge ${staBadge(i.status)}">${staLabel(i.status)}</span></td>
-            <td class="${i.assignee === 'unassigned' ? 'text-muted' : ''}">${esc(i.assignee)}</td>
+            <td class="${i.assignee_kind === 'open-to-all' ? 'text-muted' : ''}">${esc(i.assignee)}</td>
             <td class="token-cell">
             <div class="token-wrap">
               <div class="token-text mono text-muted">${i.tokens_used.toLocaleString()} / ${i.token_budget.toLocaleString()}</div>
@@ -172,7 +169,7 @@ function makeCard(issue) {
           </div>
           <div class="board-card-meta">
             <span class="badge ${priBadge(issue.priority)}">${issue.priority}</span>
-            <span class="board-card-assignee${issue.assignee === 'unassigned' ? ' text-muted' : ''}">
+            <span class="board-card-assignee${issue.assignee_kind === 'open-to-all' ? ' text-muted' : ''}">
               ${esc(issue.assignee)}
             </span>
             <span class="board-card-budget mono">${issue.token_budget.toLocaleString()} tok</span>
@@ -448,7 +445,7 @@ document
         description: document.getElementById('new-description').value.trim(),
         priority: document.getElementById('new-priority').value,
         assignee:
-          document.getElementById('new-assignee').value.trim() || 'unassigned',
+          document.getElementById('new-assignee').value || 'open-to-all',
         token_budget:
           parseInt(document.getElementById('new-budget').value, 10) || 2000,
         time_estimate:

@@ -47,42 +47,48 @@ const mockIssues = [
     title: 'Fix login bug',
     status: 'open',
     priority: 'P0',
-    assignee: 'Winter',
+    assignee: 'Human-only',
+    assignee_kind: 'human-only',
   },
   {
     id: 'issue-002',
     title: 'Update navbar',
     status: 'in-progress',
     priority: 'P3',
-    assignee: 'unassigned',
+    assignee: 'Open-to-all',
+    assignee_kind: 'open-to-all',
   },
   {
     id: 'issue-003',
     title: 'Fix kanban colors',
     status: 'blocked',
     priority: 'P2',
-    assignee: 'Spring',
+    assignee: 'AI-only',
+    assignee_kind: 'ai-only',
   },
   {
     id: 'issue-004',
     title: 'Write tests',
     status: 'pending-review',
     priority: 'P2',
-    assignee: 'unassigned',
+    assignee: 'Open-to-all',
+    assignee_kind: 'open-to-all',
   },
   {
     id: 'issue-005',
     title: 'Deploy to cloudflare',
     status: 'closed',
     priority: 'P1',
-    assignee: 'Summer',
+    assignee: 'Human-only',
+    assignee_kind: 'human-only',
   },
   {
     id: 'issue-006',
     title: 'Fix deployment',
     status: 'closed',
     priority: 'P1',
-    assignee: 'Fall',
+    assignee: 'AI-only',
+    assignee_kind: 'ai-only',
   },
 ];
 
@@ -102,11 +108,18 @@ describe('filterIssues', () => {
     expect(result[1].id).toBe('issue-004');
   });
 
-  test('filters by assignee correctly for issue-002 and issue-004', () => {
-    const result = filterIssues(mockIssues, '', '', 'unassigned', '');
+  test('filters by assignee (open-to-all) correctly for issue-002 and issue-004', () => {
+    const result = filterIssues(mockIssues, '', '', 'open-to-all', '');
     expect(result.length).toBe(2);
     expect(result[0].id).toBe('issue-002');
     expect(result[1].id).toBe('issue-004');
+  });
+
+  test('filters by assignee (ai-only) correctly for issue-003 and issue-006', () => {
+    const result = filterIssues(mockIssues, '', '', 'ai-only', '');
+    expect(result.length).toBe(2);
+    expect(result[0].id).toBe('issue-003');
+    expect(result[1].id).toBe('issue-006');
   });
 
   test('filters by search correctly for issue-005', () => {
@@ -119,8 +132,8 @@ describe('filterIssues', () => {
   test('filters by status and priority correctly for issue-005 and issue-006', () => {
     const result = filterIssues(mockIssues, 'closed', 'P1', '', '');
     expect(result.length).toBe(2);
-    expect(result[0].assignee).toBe('Summer');
-    expect(result[1].assignee).toBe('Fall');
+    expect(result[0].assignee).toBe('Human-only');
+    expect(result[1].assignee).toBe('AI-only');
   });
 
   // No filters - returns everything

@@ -118,8 +118,11 @@
 
           <div class="sidebar-field">
             <div class="sidebar-label">Assignee</div>
-            <span class="sidebar-editable" id="assignee-display" title="Click to edit">patrick</span>
-            <input class="form-input hidden" id="assignee-input" type="text" value="patrick">
+            <select class="form-select sidebar-select" id="assignee-select">
+              <option value="human-only">Human-only</option>
+              <option value="open-to-all">Open-to-all</option>
+              <option value="ai-only">AI-only</option>
+            </select>
           </div>
 
           <div class="sidebar-field">
@@ -201,7 +204,7 @@
   </div>
 
   <script type="module">
-    import { initData, getIssue, claimIssue, postResult, closeIssue, updateIssue, getSettings, patchIssueLocal } from './js/data.js';
+    import { initData, getIssue, claimIssue, postResult, closeIssue, updateIssue, getSettings } from './js/data.js';
     import { esc, staBadge, staLabel, createdByIcon, fmtRelTime, fmtDateTime } from './js/ui.js';
 
     try {
@@ -262,13 +265,8 @@
       // Priority
       document.getElementById('priority-select').value = issue.priority;
 
-      // Assignee (skip if in edit mode)
-      const assigneeDisplay = document.getElementById('assignee-display');
-      const assigneeInput   = document.getElementById('assignee-input');
-      if (assigneeInput.classList.contains('hidden')) {
-        assigneeDisplay.textContent = issue.assignee;
-        assigneeInput.value         = issue.assignee;
-      }
+      // Assignee
+      document.getElementById('assignee-select').value = issue.assignee_kind;
 
       // Token bar
       const pct  = issue.token_budget > 0
@@ -423,26 +421,10 @@
       if (e.key === 'Escape') { descInput.value = getIssue(id)?.description || ''; descInput.blur(); }
     });
 
-    // ── Inline edit: assignee ──────────────────────────────────
-    const assigneeDisplay = document.getElementById('assignee-display');
-    const assigneeInput   = document.getElementById('assignee-input');
-    assigneeDisplay.addEventListener('click', () => {
-      assigneeDisplay.classList.add('hidden');
-      assigneeInput.classList.remove('hidden');
-      assigneeInput.focus(); assigneeInput.select();
-    });
-    assigneeInput.addEventListener('blur', () => {
-      const val = assigneeInput.value.trim();
-      // Free-text assignee is display-only — assigned_to_user is a DB FK that
-      // only accepts registered user IDs, so we update the local cache only.
-      if (val) patchIssueLocal(id, { assignee: val });
-      assigneeInput.classList.add('hidden');
-      assigneeDisplay.classList.remove('hidden');
+    // ── Assignee select ────────────────────────────────────────
+    document.getElementById('assignee-select').addEventListener('change', async e => {
+      await updateIssue(id, { assignee: e.target.value });
       render();
-    });
-    assigneeInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter')  { e.preventDefault(); assigneeInput.blur(); }
-      if (e.key === 'Escape') { assigneeInput.value = getIssue(id)?.assignee || ''; assigneeInput.blur(); }
     });
 
     // ── Priority select ────────────────────────────────────────

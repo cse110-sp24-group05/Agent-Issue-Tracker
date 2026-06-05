@@ -100,9 +100,10 @@ export function validatePriority(value) {
 
 /**
  * Enforce the user/agent assignment mutex: an issue cannot be assigned to
- * both a user and an agent at the same time.
- * @param {string|null|undefined} user - assigned_to_user value.
- * @param {string|null|undefined} agent - assigned_to_agent value.
+ * both a user and an agent at the same time. Both values are booleans (0/1);
+ * the DB also enforces this via a CHECK constraint (migration 0006).
+ * @param {number|boolean|null|undefined} user - assigned_to_user value.
+ * @param {number|boolean|null|undefined} agent - assigned_to_agent value.
  * @returns {string|null} Error message, or null if valid.
  */
 export function validateAssignmentMutex(user, agent) {

@@ -429,10 +429,11 @@ async function runRunner() {
     return;
   }
 
-  // filter to only open issues assigned to this agent
-  // a human must explicitly assign an issue to Claude before the runner will work on it
+  // filter to only open issues assigned to an agent (assigned_to_agent is a
+  // boolean now); a human must explicitly assign an issue to AI before the
+  // runner will work on it
   const openIssues = allIssues.filter(
-    (i) => i.issue_status === 'open' && i.assigned_to_agent === AGENT_ID
+    (i) => i.issue_status === 'open' && i.assigned_to_agent === 1
   );
 
   if (openIssues.length === 0) {

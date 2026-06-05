@@ -195,15 +195,6 @@ export async function createIssue(fields) {
     at: now
   }];
 
-  // If a free-text assignee display name was provided, apply it locally only.
-  // assigned_to_user is a DB FK and can only hold a registered user's UUID.
-  const freeTextAssignee = fields.assignee && fields.assignee !== 'unassigned'
-    ? fields.assignee
-    : null;
-  if (freeTextAssignee) {
-    issue.assignee = freeTextAssignee;
-  }
-
   _issues.push(issue);
   notifyChange();
   return issue;
@@ -241,16 +232,13 @@ export async function updateIssue(id, fields) {
  */
 export async function claimIssue(id) {
   const profile = getProfile();
-  // assigned_to_user is a FK to users.id — must send the DB user ID, not the display name.
-  const assigneeId = profile?.id ?? null;
-
-  const payload = toApiUpdate({ status: 'in-progress', assignee: assigneeId });
+  // Claiming assigns the issue to the user (assigned_to_user = 1).
+  const payload = toApiUpdate({ status: 'in-progress', assignee: 'human-only' });
   const data = await request(`/api/issues/${encodeURIComponent(id)}`, {
     method: 'PUT',
     body: JSON.stringify(payload)
   });
 
-  // toUiIssue resolves assigned_to_user → profile.name when IDs match
   const issue = toUiIssue(data.issue, profile);
 
   const idx = _issues.findIndex(i => i.id === id);

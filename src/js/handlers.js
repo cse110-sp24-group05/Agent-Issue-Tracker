@@ -363,11 +363,17 @@ export async function claimIssue(request, env) {
       return badRequest(`Issue cannot be claimed (current status: ${issue.issue_status})`);
     }
 
+    // Agents may not claim issues reserved for a human (human-only). Open-to-all
+    // and ai-only issues both have assigned_to_user = 0 and remain claimable.
+    if (issue.assigned_to_user) {
+      return badRequest('Issue is reserved for a human (human-only) and cannot be claimed by an agent');
+    }
+
     const timeoutMinutes = issue.claim_timeout_minutes ?? 30;
     const expiration = Date.now() + timeoutMinutes * 60 * 1000;
 
     await ensureAgentRow(env, agent_id);
-    await claimIssueRow(env, id, agent_id, expiration, new Date().toISOString());
+    await claimIssueRow(env, id, expiration, new Date().toISOString());
 
     const updatedIssue = await selectIssueById(env, id);
 

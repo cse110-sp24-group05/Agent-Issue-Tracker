@@ -19,8 +19,8 @@ Field names in API responses match the `schema.sql` columns exactly.
 | issue_description | TEXT | Issue details |
 | issue_status | TEXT NOT NULL | `open` · `in_progress` · `review` · `blocked` · `closed` |
 | issue_priority | TEXT NOT NULL | `low` · `medium` · `high` · `critical` |
-| assigned_to_user | TEXT | FK → users.id. Null if unassigned or agent-assigned |
-| assigned_to_agent | TEXT | FK → agents.id. Null if unassigned or user-assigned |
+| assigned_to_user | INTEGER NOT NULL | Boolean `0`/`1`. `1` = assigned to the user. Default `0` |
+| assigned_to_agent | INTEGER NOT NULL | Boolean `0`/`1`. `1` = assigned to an agent. Default `0` |
 | claim_expires_at | INTEGER | Unix timestamp when claim expires |
 | retry_count | INTEGER NOT NULL | Default `0` |
 | claim_timeout_minutes | INTEGER NOT NULL | Default `30` |
@@ -28,7 +28,10 @@ Field names in API responses match the `schema.sql` columns exactly.
 | updated_at | TEXT NOT NULL | ISO 8601 |
 | closed_at | TEXT | ISO 8601, null until closed |
 
-Only one of `assigned_to_user` or `assigned_to_agent` can be set. The other must be null.
+`assigned_to_user` and `assigned_to_agent` are mutually-exclusive booleans: at most
+one may be `1` (enforced by a DB CHECK and by the API). Both `0` means open-to-all. The
+UI assignee dropdown maps `human-only` → `assigned_to_user = 1`, `ai-only` →
+`assigned_to_agent = 1`, and `open-to-all` → both `0`.
 
 **users**
 
@@ -77,8 +80,8 @@ Returns all issues as an array. The frontend uses this for board and list views.
     "issue_description": "Split auth.js into login and session modules.",
     "issue_status": "open",
     "issue_priority": "high",
-    "assigned_to_user": null,
-    "assigned_to_agent": null,
+    "assigned_to_user": 0,
+    "assigned_to_agent": 0,
     "claim_expires_at": null,
     "retry_count": 0,
     "claim_timeout_minutes": 30,
@@ -108,8 +111,8 @@ Returns a single issue by ID.
     "issue_description": "Split auth.js into login and session modules.",
     "issue_status": "open",
     "issue_priority": "high",
-    "assigned_to_user": null,
-    "assigned_to_agent": null,
+    "assigned_to_user": 0,
+    "assigned_to_agent": 0,
     "claim_expires_at": null,
     "retry_count": 0,
     "claim_timeout_minutes": 30,
@@ -144,8 +147,8 @@ Create a new issue.
   "issue_description": "Cover createIssue, updateIssue, and deleteIssue with Vitest.",
   "issue_status": "open",
   "issue_priority": "high",
-  "assigned_to_user": null,
-  "assigned_to_agent": null,
+  "assigned_to_user": 0,
+  "assigned_to_agent": 0,
   "claim_expires_at": null,
   "retry_count": 0,
   "claim_timeout_minutes": 30,
@@ -162,8 +165,8 @@ Create a new issue.
 | issue_description | string | no | Defaults to null |
 | issue_status | string | yes | Must be `open`, `in_progress`, `review`, `blocked`, or `closed` |
 | issue_priority | string | yes | Must be `low`, `medium`, `high`, or `critical` |
-| assigned_to_user | string | no | Cannot set both this and assigned_to_agent |
-| assigned_to_agent | string | no | Cannot set both this and assigned_to_user |
+| assigned_to_user | integer | no | Boolean `0`/`1`. Cannot be `1` together with assigned_to_agent |
+| assigned_to_agent | integer | no | Boolean `0`/`1`. Cannot be `1` together with assigned_to_user |
 | claim_expires_at | integer | no | Unix timestamp |
 | retry_count | integer | yes | Default `0` |
 | claim_timeout_minutes | integer | yes | Default `30` |

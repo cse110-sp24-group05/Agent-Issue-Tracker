@@ -61,8 +61,8 @@ export function insertIssue(env, fields) {
       issue_description || null,
       issue_status,
       issue_priority,
-      assigned_to_user || null,
-      assigned_to_agent || null,
+      assigned_to_user ? 1 : 0,
+      assigned_to_agent ? 1 : 0,
       claim_expires_at || null,
       retry_count,
       claim_timeout_minutes,
@@ -87,16 +87,16 @@ export function insertIssue(env, fields) {
 //}
 
 /**
- * Fetch all issues visible to a user: issues they created or are assigned to.
- * Requires migration 0003 (created_by_user column).
+ * Fetch all issues a user created. Since assignment is now a boolean (not a user
+ * id), creator is the only per-user scope. Requires migration 0003.
  * @param {object} env - Worker env bindings.
  * @param {string} userId - The logged-in user's id.
  * @returns {Promise<object>} The D1 .all() result ({ results, ... }).
  */
 export function selectIssuesByUserId(env, userId) {
   return env.issues_db
-    .prepare('SELECT * FROM issues WHERE assigned_to_user = ? OR created_by_user = ?')
-    .bind(userId, userId)
+    .prepare('SELECT * FROM issues WHERE created_by_user = ?')
+    .bind(userId)
     .all();
 }
 
@@ -166,7 +166,7 @@ export function resetExpiredClaims(env, now) {
     UPDATE issues
     SET
       issue_status      = 'open',
-      assigned_to_agent = NULL,
+      assigned_to_agent = 0,
       claim_expires_at  = NULL,
       updated_at        = ?
     WHERE issue_status    = 'in_progress'
@@ -198,27 +198,27 @@ export function ensureAgentRow(env, id, agentName = null) {
 
 
 /**
- * Mark an issue as claimed by an agent: sets assigned_to_agent,
- * claim_expires_at, status → in_progress, and updated_at.
+ * Mark an issue as claimed by an agent: flags assigned_to_agent (clearing
+ * assigned_to_user to satisfy the mutex), sets claim_expires_at, status →
+ * in_progress, and updated_at.
  * @param {object} env - Worker env bindings.
  * @param {string} id - Issue id.
- * @param {string} agentId - Claiming agent id.
  * @param {number} expiration - Unix ms timestamp for claim expiration.
  * @param {string} updatedAt - ISO timestamp for updated_at.
  * @returns {Promise<object>} The D1 .run() result.
  */
-export function claimIssueRow(env, id, agentId, expiration, updatedAt) {
+export function claimIssueRow(env, id, expiration, updatedAt) {
   return env.issues_db.prepare(`
     UPDATE issues
     SET
-      assigned_to_agent = ?,
+      assigned_to_agent = 1,
+      assigned_to_user = 0,
       claim_expires_at = ?,
       issue_status = ?,
       updated_at = ?
     WHERE id = ?
   `)
     .bind(
-      agentId,
       expiration,
       'in_progress',
       updatedAt,
@@ -254,8 +254,10 @@ export function updateIssueStatus(env, id, newStatus, updatedAt) {
 
 
 /**
- * Return the single highest-priority open unclaimed issue, ordered by
- * priority rank then creation time. Returns null when none exist.
+ * Return the single highest-priority open issue an agent may work on, ordered by
+ * priority rank then creation time. Excludes human-only issues
+ * (assigned_to_user = 1); open-to-all and ai-only issues are both eligible.
+ * Returns null when none exist.
  * @param {object} env - Worker env bindings.
  * @returns {Promise<object|null>} The row, or null.
  */
@@ -264,7 +266,7 @@ export function selectReadyIssue(env) {
     .prepare(`
       SELECT * FROM issues
       WHERE issue_status = 'open'
-        AND (assigned_to_agent IS NULL OR assigned_to_agent = '')
+        AND assigned_to_user = 0
       ORDER BY
         CASE issue_priority
           WHEN 'critical' THEN 0
@@ -281,8 +283,10 @@ export function selectReadyIssue(env) {
 
 
 /**
- * Return the single highest-priority open unclaimed issue belonging to a
+ * Return the single highest-priority open issue an agent may work on for a
  * specific user (by created_by_user), ordered by priority then creation time.
+ * Excludes human-only issues (assigned_to_user = 1); open-to-all and ai-only
+ * are both eligible.
  * @param {object} env - Worker env bindings.
  * @param {string} userId - The user's DB id (e.g. "user-12345").
  * @returns {Promise<object|null>} The row, or null.
@@ -292,7 +296,7 @@ export function selectReadyIssueByUserId(env, userId) {
     .prepare(`
       SELECT * FROM issues
       WHERE issue_status = 'open'
-        AND (assigned_to_agent IS NULL OR assigned_to_agent = '')
+        AND assigned_to_user = 0
         AND created_by_user = ?
       ORDER BY
         CASE issue_priority
