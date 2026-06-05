@@ -293,32 +293,7 @@
   font-weight: var(--weight-semibold);
 }
 
-/* ─── Empty state ───────────────────────────────────────────────── */
-.empty-row {
-  text-align: center;
-  color: var(--color-text-theme);
-  padding: var(--space-10) var(--space-4) !important;
-  font-size: var(--text-sm);
-}
 
-.empty-row .empty-state-icon {
-  font-size: var(--text-2xl);
-  line-height: 2;
-}
-
-.empty-row .empty-state-title {
-  font-size: var(--text-base);
-  font-weight: var(--weight-semibold);
-  color: var(--color-text-theme);
-  font-style: normal;
-}
-
-.empty-row .empty-state-desc {
-  font-size: var(--text-sm);
-  font-style: normal;
-  color: var(--color-text-theme);
-  line-height: 3;
-}
 
 /* ─── Kanban Board Empty State for No Issues ──────────────────────────────────────────────── */
 

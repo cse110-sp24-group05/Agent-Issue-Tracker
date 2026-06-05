@@ -1,4 +1,4 @@
-import { activeStatusButton, clearActivityIssueFilter, filterActivityIssues, setActiveStatusButton } from '../activity-app.js';
+import { STA_LABEL } from '../ui.js';
 
 import { StatusIcon } from './status-icon.js';
 
@@ -29,20 +29,22 @@ export class ActivityStatusButton extends HTMLElement {
     this.button.appendChild(statusIcon);
     this.button.innerHTML += `
         <span class="pill-count" id="pc-open">${data.count}</span>
-        <span class="pill-label">${data.status}</span>
+        <span class="pill-label">${STA_LABEL[data.status]}</span>
     `;
     this.button.addEventListener('click', () => {
-      if (activeStatusButton !== null) {
-        activeStatusButton.classList.remove('active');
-        clearActivityIssueFilter();
-        if (activeStatusButton === this.button) {
-          setActiveStatusButton(null);
-          return;
-        }
-      }
-      setActiveStatusButton(this.button);
-      this.button.classList.add('active');
-      filterActivityIssues('status', data.status);
+      // if (activeStatusButton !== null) {
+      //   activeStatusButton.classList.remove('active');
+      //   clearActivityIssueFilter();
+      //   if (activeStatusButton === this.button) {
+      //     setActiveStatusButton(null);
+      //     return;
+      //   }
+      // }
+      // setActiveStatusButton(this.button);
+      // this.button.classList.add('active');
+      // filterActivityIssues('status', data.status);
+      const newUrl = window.location.pathname.replace('activity.html', `index.html?status=${data.status}`);
+      window.location.assign(newUrl);
     });
   }
   

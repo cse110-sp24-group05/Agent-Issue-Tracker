@@ -37,6 +37,7 @@ const lightColorNames = [
 const themes = {
   LIGHT: 'light',
   DARK: 'dark',
+  SYSTEM: 'system',
 };
 let activeTheme = themes.LIGHT;
 
@@ -61,6 +62,17 @@ export function useLightTheme() {
 }
 
 /**
+ * Applies the system default theme to the entire website
+ */
+export function useSystemTheme() {
+  const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (prefersDarkMode) {useDarkTheme();}
+  else {useLightTheme();}
+  activeTheme = themes.SYSTEM;
+
+}
+
+/**
  * Save the currently-selected theme in local storage
  */
 export function saveTheme() {
@@ -70,13 +82,17 @@ export function saveTheme() {
   else if (activeTheme === themes.LIGHT) {
     localStorage.setItem('theme', 'light-theme');
   }
+  else if (activeTheme === themes.SYSTEM) {
+    localStorage.setItem('theme', 'system-theme');
+  }
+  
 }
 
 /**
- * @returns The theme (light or dark) being used by the page
+ * Get the active theme
+ * @returns The theme (light, dark, or system-adaptive) being used by the page
  */
 export function getActiveTheme() {
-  console.log(activeTheme);
   return activeTheme;
 }
 
@@ -87,6 +103,7 @@ function init() {
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme === 'dark-theme') {useDarkTheme();}
   else if (savedTheme === 'light-theme') {useLightTheme();}
+  else if (savedTheme === 'system-theme') {useSystemTheme();}
 }
 
 init();

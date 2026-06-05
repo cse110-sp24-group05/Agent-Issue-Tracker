@@ -17,10 +17,13 @@ const STA_BADGE = {
   'blocked':        'badge-blocked',
   'closed':         'badge-closed'
 };
-const STA_LABEL = {
+export const STA_LABEL = {
   'open':           'Open',
   'in-progress':    'In Progress',
+  'in_progress':    'In Progress',
   'pending-review': 'Pending Review',
+  'pending':        'Pending Review',
+  'review':         'Pending Review',
   'blocked':        'Blocked',
   'closed':         'Closed'
 };
