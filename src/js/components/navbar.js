@@ -29,7 +29,9 @@ class Navbar extends HTMLElement {
 
     this.innerHTML = `
       <nav class='nav'>
-        <a class='nav-logo' href='index.html'>A<span>I</span>T</a>
+        <a class='nav-logo' href='index.html'>
+          <img src="./assets/svg/ait-logo.svg">
+        </a>
         <div class='nav-tabs'>
           ${tabsHTML}
         </div>

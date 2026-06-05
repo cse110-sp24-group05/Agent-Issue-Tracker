@@ -103,7 +103,7 @@ function init() {
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme === 'dark-theme') {useDarkTheme();}
   else if (savedTheme === 'light-theme') {useLightTheme();}
-  else if (savedTheme === 'system-theme') {useSystemTheme();}
+  else {useSystemTheme();}
 }
 
 init();

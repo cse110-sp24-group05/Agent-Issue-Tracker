@@ -30,7 +30,7 @@
     --color-hover-theme: var(--color-hover-light);
 
     /* Colors — surface */
-    --color-nav:       #0F1117;
+    --color-nav:       #0c0f14;
     --color-nav-text:  #E5E7EB;
     --color-border:    #E5E7EB;
     --color-border-strong: #D1D5DB;
@@ -263,7 +263,7 @@ select {
     left: 0;
     right: 0;
     height: var(--nav-height);
-    background: var(--color-nav-bar);
+    background: var(--color-nav);
     display: flex;
     align-items: center;
     padding: 0 var(--space-6);
@@ -273,15 +273,27 @@ select {
 }
 
 .nav-logo {
-    font-size: var(--text-md);
-    font-weight: var(--weight-bold);
-    color: var(--color-text-light);
-    letter-spacing: -0.3px;
-    font-family: 'HeadingFont', ui-monospace, "Cascadia Code", "Fira Code", monospace;
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-light);
+  letter-spacing: -0.3px;
+  font-family: 'HeadingFont', ui-monospace, "Cascadia Code", "Fira Code", monospace;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.nav-logo span {
-    color: var(--color-accent);
+.nav-logo img {
+  width: 32px;
+  height: 32px;
+  transition: 0.1s;
+}
+
+.nav-logo img:hover {
+  width: 38px;
+  height: 38px;
 }
 
 
@@ -319,11 +331,12 @@ select {
 .nav-icon-btn img {
   width: 32px;
   height: 32px;
+  transition: 0.1s;
 }
 
-.nav-icon-btn:hover {
-  color: var(--color-background-theme);
-  background: rgba(255, 255, 255, 0.08);
+.nav-icon-btn img:hover {
+  width: 38px;
+  height: 38px;
 }
 
 .nav-actions {
