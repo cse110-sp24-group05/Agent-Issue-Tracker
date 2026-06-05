@@ -104,7 +104,7 @@ describe('Issues API Tests', () => {
                 issue_priority: 'high',
                 retry_count: 0,
                 claim_timeout_minutes: 30,
-                assigned_to_user: 'user-00001',
+                assigned_to_user: 1,
                 created_by_user: null
               },
               {
@@ -114,7 +114,7 @@ describe('Issues API Tests', () => {
                 issue_priority: 'low',
                 retry_count: 1,
                 claim_timeout_minutes: 30,
-                assigned_to_user: null,
+                assigned_to_user: 0,
                 created_by_user: 'user-00001'
               }
             ]
@@ -133,7 +133,7 @@ describe('Issues API Tests', () => {
       expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*');
       expect(data.length).toBe(2);
       expect(data[0].issue_status).toBe('open');
-      expect(data[0].assigned_to_user).toBe('user-00001');
+      expect(data[0].assigned_to_user).toBe(1);
       expect(data[1].issue_status).toBe('in_progress');
       expect(data[1].created_by_user).toBe('user-00001');
     });
@@ -174,8 +174,8 @@ describe('Issues API Tests', () => {
         title: 'Another Issue',
         issue_status: 'open',
         issue_priority: 'low',
-        assigned_to_user: null,
-        assigned_to_agent: null,
+        assigned_to_user: 0,
+        assigned_to_agent: 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       },'first');
@@ -343,13 +343,13 @@ describe('Issues API Tests', () => {
       mockD1Sequence([
         { response: { id: '5', title: 'Claimable Issue', issue_status: 'open', 
           issue_priority: 'medium', retry_count: 0, claim_timeout_minutes: 30, 
-          assigned_to_user: null, assigned_to_agent: null, created_at: new Date().toISOString(), 
+          assigned_to_user: 0, assigned_to_agent: 0, created_at: new Date().toISOString(),
           updated_at: new Date().toISOString() }, method: 'first' }, // selectIssueById (first call)
         { response: { meta: { changes: 1 } }, method: 'run' },      // ensureAgentRow
         { response: { meta: { changes: 1 } }, method: 'run' },      // claimIssueRow
-        { response: { id: '5', title: 'Claimable Issue', issue_status: 'in_progress', 
-          issue_priority: 'medium', retry_count: 0, claim_timeout_minutes: 30, 
-          assigned_to_user: null, assigned_to_agent: 'agent-123', created_at: new Date().toISOString(), 
+        { response: { id: '5', title: 'Claimable Issue', issue_status: 'in_progress',
+          issue_priority: 'medium', retry_count: 0, claim_timeout_minutes: 30,
+          assigned_to_user: 0, assigned_to_agent: 1, created_at: new Date().toISOString(),
           updated_at: new Date().toISOString() }, method: 'first' } // selectIssueById (re-fetch)
       ]);
 
@@ -374,7 +374,7 @@ describe('Issues API Tests', () => {
       expect(data.issue.title).toBe('Claimable Issue');
 
       expect(data.issue.issue_status).toBe('in_progress');
-      expect(data.issue.assigned_to_agent).toBe('agent-123');
+      expect(data.issue.assigned_to_agent).toBe(1);
     });
 
     // failure case 1 for claimIssue (issue not claimable)
@@ -396,6 +396,26 @@ describe('Issues API Tests', () => {
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
       expect(data.error).toContain('in_progress');
+    });
+
+    // failure case: agents cannot claim a human-only issue (assigned_to_user = 1)
+    test('returns 400 when an agent tries to claim a human-only issue', async () => {
+      mockD1Response(
+        { id: '6', issue_status: 'open', assigned_to_user: 1, assigned_to_agent: 0, claim_expires_at: null },
+        'first'
+      );
+      const request = new Request('http://localhost/api/issues/6/claim', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agent_id: 'agent-123' })
+      });
+
+      const response = await worker.fetch(request, env);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.success).toBe(false);
+      expect(data.error).toContain('human');
     });
 
     // failure case 2 (issue not found)
@@ -421,7 +441,7 @@ describe('Issues API Tests', () => {
     test('updates allowed fields and returns the updated issue', async () => {
       const existing = {
         id: '1', title: 'Old Title', issue_status: 'open', issue_priority: 'low',
-        assigned_to_user: null, assigned_to_agent: null,
+        assigned_to_user: 0, assigned_to_agent: 0,
         retry_count: 0, claim_timeout_minutes: 30,
         created_at: new Date().toISOString(), updated_at: new Date().toISOString()
       };
@@ -470,7 +490,7 @@ describe('Issues API Tests', () => {
     // failure case 2: no updatable fields, exits after first DB call
     test('returns 400 when body contains no updatable fields', async () => {
       mockD1Response(
-        { id: '1', issue_status: 'open', assigned_to_user: null, assigned_to_agent: null },
+        { id: '1', issue_status: 'open', assigned_to_user: 0, assigned_to_agent: 0 },
         'first'
       );
 
@@ -491,7 +511,7 @@ describe('Issues API Tests', () => {
     // failure case 3: invalid issue_status, exits after first DB call
     test('returns 400 for an invalid issue_status value', async () => {
       mockD1Response(
-        { id: '1', issue_status: 'open', assigned_to_user: null, assigned_to_agent: null },
+        { id: '1', issue_status: 'open', assigned_to_user: 0, assigned_to_agent: 0 },
         'first'
       );
 
@@ -514,14 +534,14 @@ describe('Issues API Tests', () => {
     // exit with error 400
     test('returns 400 when update would assign both a user and an agent', async () => {
       mockD1Response(
-        { id: '1', issue_status: 'open', assigned_to_user: 'user-1', assigned_to_agent: null },
+        { id: '1', issue_status: 'open', assigned_to_user: 1, assigned_to_agent: 0 },
         'first'
       );
 
       const request = new Request('http://localhost/api/issues/1', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assigned_to_agent: 'agent-1' }) // conflicts with existing user
+        body: JSON.stringify({ assigned_to_agent: 1 }) // conflicts with existing user
       });
 
       const response = await worker.fetch(request, env);

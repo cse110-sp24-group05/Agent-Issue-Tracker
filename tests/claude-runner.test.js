@@ -171,18 +171,18 @@ describe('runRunner workflow', () => {
     expect(mockFetch.mock.calls[0][0]).toContain('/api/issues');
   });
 
-  // Scenario 2: Issues exist but none assigned to agent-claude
-  // The runner should not claim anything because no work is for it.
-  test('exits cleanly when issues exist but none assigned to claude', async () => {
+  // Scenario 2: Issues exist but they're reserved for a human (human-only).
+  // The runner claims any non-human issue (assigned_to_user === 0), so a
+  // human-only issue (assigned_to_user === 1) must be skipped.
+  test('exits cleanly when the only open issue is human-only', async () => {
     mockFetch.mockResolvedValueOnce(mockResponse([
       {
         id: 'issue-1',
         title: 'Some issue',
         issue_description: 'Description',
         issue_status: 'open',
-        issue_priority: 'high',
-        assigned_to_agent: 'agent-different', // not agent-claude
-        assigned_to_user: null,
+        assigned_to_user: 1, // human-only — not available to the agent
+        assigned_to_agent: 0,
       },
     ]));
 
@@ -204,8 +204,8 @@ describe('runRunner workflow', () => {
           issue_description: '', // empty — fails quality check
           issue_status: 'open',
           issue_priority: 'medium',
-          assigned_to_agent: 'agent-claude',
-          assigned_to_user: null,
+          assigned_to_agent: 1,
+          assigned_to_user: 0,
           agent_response: null,
         },
       ]))
@@ -234,8 +234,8 @@ describe('runRunner workflow', () => {
           issue_description: 'fix bug', // too short — under 15 chars
           issue_status: 'open',
           issue_priority: 'medium',
-          assigned_to_agent: 'agent-claude',
-          assigned_to_user: null,
+          assigned_to_agent: 1,
+          assigned_to_user: 0,
           agent_response: null,
         },
       ]))
@@ -262,8 +262,8 @@ describe('runRunner workflow', () => {
           issue_description: 'A reasonable description that passes quality checks',
           issue_status: 'open',
           issue_priority: 'low',
-          assigned_to_agent: 'agent-claude',
-          assigned_to_user: null,
+          assigned_to_agent: 1,
+          assigned_to_user: 0,
           agent_response: 'Claude already gave a solution here.', // existing response
         },
       ]))
@@ -287,8 +287,8 @@ describe('runRunner workflow', () => {
           issue_description: 'The login form needs validation for username and password fields.',
           issue_status: 'open',
           issue_priority: 'medium',
-          assigned_to_agent: 'agent-claude',
-          assigned_to_user: null,
+          assigned_to_agent: 1,
+          assigned_to_user: 0,
           agent_response: null,
         },
       ]))
@@ -317,8 +317,8 @@ describe('runRunner workflow', () => {
           issue_description: 'The login form needs validation for username and password.',
           issue_status: 'open',
           issue_priority: 'high',
-          assigned_to_agent: 'agent-claude',
-          assigned_to_user: null,
+          assigned_to_agent: 1,
+          assigned_to_user: 0,
           agent_response: null,
         },
       ]))
@@ -348,8 +348,8 @@ describe('runRunner workflow', () => {
           issue_description: 'There is a bug somewhere in the app, please fix it.',
           issue_status: 'open',
           issue_priority: 'medium',
-          assigned_to_agent: 'agent-claude',
-          assigned_to_user: null,
+          assigned_to_agent: 1,
+          assigned_to_user: 0,
           agent_response: null,
         },
       ]))
@@ -379,8 +379,8 @@ describe('runRunner workflow', () => {
           issue_description: 'A reasonable description for the feature request.',
           issue_status: 'open',
           issue_priority: 'low',
-          assigned_to_agent: 'agent-claude',
-          assigned_to_user: null,
+          assigned_to_agent: 1,
+          assigned_to_user: 0,
           agent_response: null,
         },
       ]))
@@ -408,8 +408,8 @@ describe('runRunner workflow', () => {
           issue_description: 'A reasonable low-priority description.',
           issue_status: 'open',
           issue_priority: 'low',
-          assigned_to_agent: 'agent-claude',
-          assigned_to_user: null,
+          assigned_to_agent: 1,
+          assigned_to_user: 0,
           agent_response: null,
           created_at: '2026-01-01T00:00:00Z',
         },
@@ -419,8 +419,8 @@ describe('runRunner workflow', () => {
           issue_description: 'A reasonable critical-priority description.',
           issue_status: 'open',
           issue_priority: 'critical',
-          assigned_to_agent: 'agent-claude',
-          assigned_to_user: null,
+          assigned_to_agent: 1,
+          assigned_to_user: 0,
           agent_response: null,
           created_at: '2026-01-02T00:00:00Z',
         },

@@ -77,22 +77,22 @@ describe('validatePriority', () => {
 
 describe('validateAssignmentMutex', () => {
   test('returns null when only a user is assigned', () => {
-    expect(validateAssignmentMutex('user-1', null)).toBeNull();
-    expect(validateAssignmentMutex('user-1', undefined)).toBeNull();
+    expect(validateAssignmentMutex(1, 0)).toBeNull();
+    expect(validateAssignmentMutex(1, null)).toBeNull();
   });
 
   test('returns null when only an agent is assigned', () => {
-    expect(validateAssignmentMutex(null, 'agent-1')).toBeNull();
-    expect(validateAssignmentMutex(undefined, 'agent-1')).toBeNull();
+    expect(validateAssignmentMutex(0, 1)).toBeNull();
+    expect(validateAssignmentMutex(null, 1)).toBeNull();
   });
 
   test('returns null when neither is assigned', () => {
-    expect(validateAssignmentMutex(null, null)).toBeNull();
+    expect(validateAssignmentMutex(0, 0)).toBeNull();
     expect(validateAssignmentMutex(undefined, undefined)).toBeNull();
   });
 
   test('returns an error when both are assigned', () => {
-    expect(validateAssignmentMutex('user-1', 'agent-1')).toMatch(/cannot be assigned to both/);
+    expect(validateAssignmentMutex(1, 1)).toMatch(/cannot be assigned to both/);
   });
 });
 

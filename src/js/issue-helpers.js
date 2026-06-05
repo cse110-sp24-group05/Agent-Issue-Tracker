@@ -25,7 +25,7 @@ export function tokenLevel(used, budget) {
  * @param {Array} issues - list of all issues
  * @param {string} status - status filter value
  * @param {string} priority - priority filter value
- * @param {string} assignee - assignee filter value
+ * @param {string} assignee - assignee kind ('human-only'|'open-to-all'|'ai-only'); '' = all
  * @param {string} search - search filter value
  * @returns {Array} - Filtered list of issue objects
  */
@@ -34,7 +34,7 @@ export function filterIssues(issues, status, priority, assignee, search) {
     (i) =>
       (!status || i.status === status) &&
       (!priority || i.priority === priority) &&
-      (!assignee || (i.assignee || '').toLowerCase().includes(assignee)) &&
+      (!assignee || i.assignee_kind === assignee) &&
       (!search || i.title.toLowerCase().includes(search)),
   );
 }

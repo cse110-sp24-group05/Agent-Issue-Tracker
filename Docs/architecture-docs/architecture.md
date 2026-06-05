@@ -87,8 +87,8 @@ All requests and responses are JSON.
 | issue_description    | TEXT    | Issue details                                            |
 | issue_status         | TEXT    | `open` · `in_progress` · `review` · `blocked` · `closed` |
 | issue_priority       | TEXT    | `low` · `medium` · `high` · `critical`                   |
-| assigned_to_user     | TEXT    | Assigned person (exclusive with agent)                   |
-| assigned_to_agent    | TEXT    | Assigned agent (exclusive with user)                     |
+| assigned_to_user     | INTEGER | Boolean `0`/`1` — assigned to user (exclusive with agent)|
+| assigned_to_agent    | INTEGER | Boolean `0`/`1` — assigned to agent (exclusive with user)|
 | claim_expires_at     | INTEGER | When an agent's claim lapses                             |
 | retry_count          | INTEGER | Number of failed claim attempts                          |
 | claim_timeout_minutes| INTEGER | Claim duration                                           |

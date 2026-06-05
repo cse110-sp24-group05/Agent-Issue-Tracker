@@ -147,18 +147,11 @@ The New Issue modal stays open when the user presses Escape. It should close and
 
             <div class="sidebar-field">
               <div class="sidebar-label">Assignee</div>
-              <span
-                class="sidebar-editable"
-                id="assignee-display"
-                title="Click to edit"
-                >patrick</span
-              >
-              <input
-                class="form-input hidden"
-                id="assignee-input"
-                type="text"
-                value="patrick"
-              />
+              <select class="form-select sidebar-select" id="assignee-select">
+                <option value="human-only">Human-only</option>
+                <option value="open-to-all">Open-to-all</option>
+                <option value="ai-only">AI-only</option>
+              </select>
             </div>
 
             <div class="sidebar-field">
@@ -295,7 +288,7 @@ The New Issue modal stays open when the user presses Escape. It should close and
         localStorage.getItem('ait_api_base') ||
         (location.hostname === 'localhost' || location.hostname === '127.0.0.1'
           ? 'http://localhost:8787'
-          : 'https://agent-tracker.stc021.workers.dev');
+          : 'https://agent-issue-tracker.stc021.workers.dev');
 
       try {
         await initData();
@@ -369,13 +362,8 @@ The New Issue modal stays open when the user presses Escape. It should close and
         // Priority
         document.getElementById('priority-select').value = issue.priority;
 
-        // Assignee (skip if in edit mode)
-        const assigneeDisplay = document.getElementById('assignee-display');
-        const assigneeInput = document.getElementById('assignee-input');
-        if (assigneeInput.classList.contains('hidden')) {
-          assigneeDisplay.textContent = issue.assignee;
-          assigneeInput.value = issue.assignee;
-        }
+        // Assignee
+        document.getElementById('assignee-select').value = issue.assignee_kind;
 
         // Token bar
         const pct =
@@ -463,50 +451,26 @@ The New Issue modal stays open when the user presses Escape. It should close and
           banner.classList.add('hidden');
         }
 
-        // Fetch status history from API and render each entry as a timeline row
-        const historyRes = await fetch(`${API_BASE}/api/issues/${id}/history`);
-        const historyData = await historyRes.json();
-        const history = historyData.history || [];
-
-        document.getElementById('audit-log').innerHTML = history
-          .slice()
-          .map(
-            (entry) => `
-            <div class="audit-entry">
-              <div class="audit-dot ${statusDotClass(entry.issue_status)}"></div>
-              <div class="audit-body">
-                <span class="audit-action">${esc(entry.issue_status.replace('_', ' '))}</span>
-                <span class="audit-meta">
-                  by ${esc(entry.changed_by_user || entry.changed_by_agent || 'agent')}
-                  &middot; ${fmtDateTime(entry.changed_at)}
-                </span>   
-              </div>      
-            </div>
-            `,
-          )
-          .join('');
-
-        // Action buttons
+        // Action buttons — rendered before the async history fetch so that a
+        // network failure never leaves the buttons in a stale/wrong state.
         const primary = document.getElementById('action-btn');
         const secondary = document.getElementById('action-secondary-btn');
         secondary.classList.add('hidden');
         primary.classList.remove('hidden');
+        primary.disabled = false;
 
         switch (issue.status) {
           case 'open':
             primary.textContent = 'Claim Issue';
             primary.className = 'btn btn-primary action-btn';
-            primary.disabled = false;
             break;
           case 'in-progress':
             primary.textContent = 'Post Result';
             primary.className = 'btn btn-primary action-btn';
-            primary.disabled = false;
             break;
           case 'pending-review':
             primary.textContent = 'Approve & Close';
             primary.className = 'btn btn-primary btn-success action-btn';
-            primary.disabled = false;
             secondary.classList.remove('hidden');
             secondary.textContent = 'Send Back';
             secondary.className = 'btn btn-secondary action-btn';
@@ -514,14 +478,41 @@ The New Issue modal stays open when the user presses Escape. It should close and
           case 'blocked':
             primary.textContent = 'Unblock';
             primary.className = 'btn btn-primary action-btn';
-            primary.disabled = false;
             break;
           case 'closed':
-            primary.classList.add('hidden');
+            primary.textContent = 'Reopen';
+            primary.className = 'btn btn-secondary action-btn';
             break;
           default:
             primary.textContent = 'Closed';
             primary.disabled = true;
+        }
+
+        // Fetch status history from API and render each entry as a timeline row
+        try {
+          const historyRes = await fetch(`${API_BASE}/api/issues/${id}/history`);
+          const historyData = await historyRes.json();
+          const history = historyData.history || [];
+
+          document.getElementById('audit-log').innerHTML = history
+            .slice()
+            .map(
+              (entry) => `
+              <div class="audit-entry">
+                <div class="audit-dot ${statusDotClass(entry.issue_status)}"></div>
+                <div class="audit-body">
+                  <span class="audit-action">${esc(entry.issue_status.replace('_', ' '))}</span>
+                  <span class="audit-meta">
+                    by ${esc(entry.changed_by_user || entry.changed_by_agent || 'agent')}
+                    &middot; ${fmtDateTime(entry.changed_at)}
+                  </span>
+                </div>
+              </div>
+              `,
+            )
+            .join('');
+        } catch (err) {
+          console.warn('[issue] Failed to load history:', err.message);
         }
       }
 
@@ -576,34 +567,13 @@ The New Issue modal stays open when the user presses Escape. It should close and
         }
       });
 
-      // ── Inline edit: assignee ──────────────────────────────────
-      const assigneeDisplay = document.getElementById('assignee-display');
-      const assigneeInput = document.getElementById('assignee-input');
-      assigneeDisplay.addEventListener('click', () => {
-        assigneeDisplay.classList.add('hidden');
-        assigneeInput.classList.remove('hidden');
-        assigneeInput.focus();
-        assigneeInput.select();
-      });
-      assigneeInput.addEventListener('blur', () => {
-        const val = assigneeInput.value.trim();
-        // Free-text assignee is display-only — assigned_to_user is a DB FK that
-        // only accepts registered user IDs, so we update the local cache only.
-        if (val) patchIssueLocal(id, { assignee: val });
-        assigneeInput.classList.add('hidden');
-        assigneeDisplay.classList.remove('hidden');
-        render();
-      });
-      assigneeInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          assigneeInput.blur();
-        }
-        if (e.key === 'Escape') {
-          assigneeInput.value = getIssue(id)?.assignee || '';
-          assigneeInput.blur();
-        }
-      });
+      // ── Assignee select ────────────────────────────────────────
+      document
+        .getElementById('assignee-select')
+        .addEventListener('change', async (e) => {
+          await updateIssue(id, { assignee: e.target.value });
+          render();
+        });
 
       // ── Priority select ────────────────────────────────────────
       document
@@ -633,17 +603,20 @@ The New Issue modal stays open when the user presses Escape. It should close and
           } else if (issue.status === 'blocked') {
             await updateIssue(id, { status: 'open', updatedBy: currentUser });
             render();
+          } else if (issue.status === 'closed') {
+            await updateIssue(id, { status: 'open', updatedBy: currentUser });
+            render();
           }
         });
 
-      // Send-back: from pending-review → in-progress (re-open for the agent to address).
+      // Send-back: from pending-review → open so an agent can pick it up again.
       document
         .getElementById('action-secondary-btn')
         .addEventListener('click', async () => {
           const issue = getIssue(id);
           if (issue.status === 'pending-review') {
             await updateIssue(id, {
-              status: 'in-progress',
+              status: 'open',
               updatedBy: currentUser,
             });
             render();

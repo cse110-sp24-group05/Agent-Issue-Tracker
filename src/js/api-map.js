@@ -32,22 +32,48 @@ const API_PRIORITY_TO_UI = {
   low: 'P3'
 };
 
+// Assignment is modelled as two mutually-exclusive booleans on the issue row.
+// The UI exposes a single dropdown over these three tokens:
+//   human-only  → assigned_to_user  = 1
+//   ai-only     → assigned_to_agent = 1
+//   open-to-all → both 0 (anyone/no one yet)
+const ASSIGNEE_LABEL = {
+  'human-only': 'Human-only',
+  'ai-only': 'AI-only',
+  'open-to-all': 'Open-to-all'
+};
+
+/**
+ * Derive the assignee token ('human-only' | 'ai-only' | 'open-to-all') from a
+ * D1 / API issue row's boolean assignment columns.
+ * @param {object} row - D1 / API issue row
+ * @returns {string}
+ */
+function assigneeKind(row) {
+  if (row.assigned_to_agent) { return 'ai-only'; }
+  if (row.assigned_to_user) { return 'human-only'; }
+  return 'open-to-all';
+}
+
+/**
+ * Translate an assignee token into the two boolean assignment columns.
+ * @param {string|null|undefined} kind - 'human-only' | 'ai-only' | 'open-to-all'
+ * @returns {{ assigned_to_user: number, assigned_to_agent: number }}
+ */
+function assigneeToBooleans(kind) {
+  return {
+    assigned_to_user: kind === 'human-only' ? 1 : 0,
+    assigned_to_agent: kind === 'ai-only' ? 1 : 0
+  };
+}
+
 /**
  * @param {object} row - D1 / API issue row
- * @param {{ id: string, name: string }|null} [profile] - logged-in user profile for display-name resolution
+ * @param {{ id: string, name: string }|null} [profile] - logged-in user profile (unused; kept for call-site compatibility)
  * @returns {object}
  */
 export function toUiIssue(row, profile = null) {
-  let assignee;
-  if (row.assigned_to_agent) {
-    assignee = 'Agent';
-  } else if (row.assigned_to_user) {
-    assignee = (profile && profile.id === row.assigned_to_user)
-      ? profile.name
-      : row.assigned_to_user;
-  } else {
-    assignee = 'unassigned';
-  }
+  const kind = assigneeKind(row);
 
   return {
     id: row.id,
@@ -56,14 +82,15 @@ export function toUiIssue(row, profile = null) {
     description: row.issue_description || '',
     status: API_STATUS_TO_UI[row.issue_status] || row.issue_status,
     priority: API_PRIORITY_TO_UI[row.issue_priority] || 'P2',
-    assignee,
+    assignee: ASSIGNEE_LABEL[kind],
+    assignee_kind: kind,
     created_at: row.created_at,
     updated_at: row.updated_at,
     token_budget: 2000,
     tokens_used: 0,
     time_estimate: 60,
     time_spent: 0,
-    claimed_by: row.assigned_to_agent || null,
+    claimed_by: row.assigned_to_agent ? 'Agent' : null,
     claimed_at: null,
     completed_at: row.closed_at || null,
     blocked_reason: null,
@@ -80,22 +107,12 @@ export function toUiIssue(row, profile = null) {
  * @returns {object} POST /api/issues body
  */
 export function toApiCreate(fields, now, createdByUserId = null) {
-  // assigned_to_user is a FK to users.id — only set it when we have a valid
-  // DB user ID to send (i.e. the logged-in user is assigning to themselves).
-  // Free-text display names from the form are stored locally only via
-  // patchIssueLocal after creation.
-  const assignedToUser =
-    (fields.assigneeUserId && fields.assigneeUserId !== 'unassigned')
-      ? fields.assigneeUserId
-      : null;
-
   return {
     title: fields.title || '',
     issue_description: fields.description || null,
     issue_status: 'open',
     issue_priority: UI_PRIORITY_TO_API[fields.priority] || 'medium',
-    assigned_to_user: assignedToUser,
-    assigned_to_agent: null,
+    ...assigneeToBooleans(fields.assignee),
     claim_expires_at: null,
     retry_count: 0,
     claim_timeout_minutes: 30,
@@ -123,11 +140,9 @@ export function toApiUpdate(fields) {
     body.issue_priority = UI_PRIORITY_TO_API[fields.priority] || fields.priority;
   }
   if (fields.assignee !== undefined) {
-    const assignee = fields.assignee && fields.assignee !== 'unassigned'
-      ? fields.assignee
-      : null;
-    body.assigned_to_user = assignee;
-    body.assigned_to_agent = null;
+    const { assigned_to_user, assigned_to_agent } = assigneeToBooleans(fields.assignee);
+    body.assigned_to_user = assigned_to_user;
+    body.assigned_to_agent = assigned_to_agent;
   }
 
   return body;

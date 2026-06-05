@@ -1,6 +1,6 @@
 # AIT — Agent Issue Tracker
 
-Humans create and review issues in the web app. AI agents claim and complete them with the `ait` CLI inside Claude Code (run as **`!ait`** in shell mode — not as a chat message).
+Humans create and review issues in the web app. AI agents claim and complete them with the `ait` CLI inside Claude Code.
 
 | | URL |
 |---|---|
@@ -83,19 +83,37 @@ Edit the file and paste your `AIT_USER_ID` line from the web app.
 
 ### 4. Claim and work (inside Claude Code)
 
-Open your project repo in Claude Code, then run **`!ait`** in the Claude Code prompt ([shell mode](https://code.claude.com/docs/en/interactive-mode#shell-mode-with--prefix) — the `!` prefix runs a real shell command and adds the output to the session).
+Open your project repo in Claude Code. There are two ways to trigger the runner:
+
+---
+
+#### Option A — Plain English (recommended)
+
+Type this as a normal chat message:
+
+```
+run ait and complete the assigned task
+```
+
+Claude runs `ait`, claims the next open issue, reads the task output, and immediately starts working on it. When finished it submits the result automatically via the `curl` printed by `ait`.
+
+---
+
+#### Option B — Shell mode (manual)
+
+Run `ait` directly using [shell mode](https://code.claude.com/docs/en/interactive-mode#shell-mode-with--prefix) (the `!` prefix executes a real shell command):
 
 ```
 !ait
 ```
 
-Do **not** type `ait` as a normal chat message; Claude will reply in prose instead of running the CLI.
+`ait` claims the issue and prints the task. Claude will display the output but **will not start working automatically**. Follow up in the next message:
 
-Alternatives that also work: the VS Code **Terminal** panel (`ait`), or ask Claude to run `ait` in bash.
+```
+work on the issue above
+```
 
-`ait` reads `.env` from the repo root, claims the next open issue for your account, and prints the task plus a `curl` to submit your result.
-
-Do the work with Claude Code's normal tools, then run the printed `curl` when finished — use shell mode again (e.g. `!curl ...`) or the Terminal panel (use `"new_status":"blocked"` if you could not complete it).
+Then, once Claude finishes, run the `curl` command it printed to submit the result (use shell mode again: `!curl ...`, or paste into the Terminal panel). Use `"new_status":"blocked"` if the work could not be completed.
 
 ---
 
@@ -111,8 +129,9 @@ Review the result on the dashboard and close or send the issue back.
 |---|---|---|
 | **Outside Claude Code** | `npm install -g git+https://github.com/cse110-sp24-group05/Agent-Issue-Tracker.git` | same |
 | **Outside Claude Code** | `cp "$(npm root -g)/agent-issue-tracker/config/ait.env.example" .env` | `Copy-Item (Join-Path (npm root -g) "agent-issue-tracker\config\ait.env.example") ".env"` |
-| **Inside Claude Code** | `!ait` (shell mode; not plain chat) | same |
-| **Inside Claude Code** | printed `!curl ...` or Terminal `curl` → submit result | same |
+| **Inside Claude Code (recommended)** | chat: `run ait and complete the assigned task` | same |
+| **Inside Claude Code (manual)** | `!ait` → then chat: `work on the issue above` | same |
+| **Inside Claude Code (manual)** | printed `!curl ...` or Terminal `curl` → submit result | same |
 
 Config load order: shell `export AIT_*` → project `.env` → `~/.ait/.env`
 

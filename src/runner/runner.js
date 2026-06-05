@@ -72,8 +72,9 @@ const BASE_URL =
 // Copy from the web app: settings icon (top right) → Copy → paste into project .env
 const USER_ID = process.env.AIT_USER_ID || '';
 
-// Agent identifier recorded in the claim request (which agent picked this up).
-// Must satisfy issues.assigned_to_agent → agents(id) FK (API auto-registers unknown ids).
+// Agent identifier sent in the claim request (which agent picked this up). The
+// API registers unknown ids in the agents table; assigned_to_agent is now a
+// boolean flag on the issue, not a FK to this id.
 const AGENT_ID = process.env.AIT_AGENT_ID || 'ait-agent-cc';
 
 const MIN_DELAY_MS = 300;
@@ -130,48 +131,47 @@ function printTask(issue) {
 ║               AIT — Task Assigned                    ║
 ╚══════════════════════════════════════════════════════╝
 
+⚡ YOU HAVE BEEN ASSIGNED A TASK. START WORKING ON IT NOW.
+   Do NOT summarise this output. Do NOT ask for clarification.
+   Use your tools to complete the work described below, then
+   submit the result with the curl command at the bottom.
+
+──────────────────────────────────────────────────────
+TASK
+──────────────────────────────────────────────────────
+Title    : ${issue.title}
+Priority : ${issue.issue_priority}
+
+${description}
+
+──────────────────────────────────────────────────────
+METADATA (for curl commands only — do not search code for these)
+──────────────────────────────────────────────────────
 AIT Issue ID : ${issue.id}
-Title        : ${issue.title}
-Priority     : ${issue.issue_priority}
-Status       : in_progress (just claimed by this runner)
 AIT User ID  : ${infoUserId}
 AIT Agent ID : ${AGENT_ID}
 AIT API Base : ${BASE_URL}
 
-Description:
-${description}
-
 ──────────────────────────────────────────────────────
-INSTRUCTIONS FOR CLAUDE CODE
+WHEN FINISHED (or blocked), run EXACTLY this curl
 ──────────────────────────────────────────────────────
-Work on the task described above using your available
-tools (file edits, bash commands, etc.).
-
-▸ ID DISAMBIGUATION (read carefully)
-  The AIT Issue ID "${issue.id}" is a tracker label
-  used ONLY in the curl commands below.
-  It is NOT a filename, function, variable, git hash,
-  or any symbol inside the repository you are editing.
-  Do not search the codebase for "${issue.id}".
-
-▸ IF YOU NEED TO RE-READ THE ISSUE VIA API
-  Single-issue lookup — no user_id query param needed:
-
-  curl "${issueUrl}" \\
-${curlUserHeader ? curlUserHeader + '\n' : ''}${curlAgentHeader}
-
-▸ WHEN FINISHED (or blocked), run EXACTLY this curl
-  to report your result to AIT. Fill in your summary
-  and the actual token count. Use "blocked" instead of
-  "review" only if you could not complete the work:
+Fill in your summary and the actual token count.
+Use "blocked" instead of "review" only if you could not
+complete the work. Do NOT skip this — it is the only way
+AIT marks the issue as reviewed and updates the dashboard.
 
   curl -X PUT "${resultUrl}" \\
     -H "Content-Type: application/json" \\
 ${curlUserHeader ? curlUserHeader + '\n' : ''}${curlAgentHeader}
     -d '{"new_status":"review","result_text":"<your summary here>","tokens_used":<number>}'
 
-  Do NOT skip this step — it is the only way AIT
-  marks the issue as reviewed and updates the dashboard.
+If you need to re-read the issue mid-task:
+
+  curl "${issueUrl}" \\
+${curlUserHeader ? curlUserHeader + '\n' : ''}${curlAgentHeader}
+
+──────────────────────────────────────────────────────
+⚡ BEGIN NOW — implement the task above using your tools.
 ──────────────────────────────────────────────────────
 `);
 }
@@ -208,10 +208,18 @@ async function reclaimExpiredClaims() {
     );
 
     for (const issue of expired) {
+      // Fully reset the claim back to an open, unassigned state (mirrors the
+      // server-side resetExpiredClaims): clear status, both assignment flags,
+      // and the expiry timestamp. updated_at is stamped by the API.
       const resetRes = await fetch(`${BASE_URL}/api/issues/${encodeURIComponent(issue.id)}`, {
         method: 'PUT',
         headers,
-        body: JSON.stringify({ issue_status: 'open', assigned_to_agent: null })
+        body: JSON.stringify({
+          issue_status: 'open',
+          assigned_to_agent: 0,
+          assigned_to_user: 0,
+          claim_expires_at: null
+        })
       });
       if (!resetRes.ok) {
         log('WARN', `Could not reset expired claim on ${issue.id} (${resetRes.status})`);
@@ -276,6 +284,14 @@ async function runAIT() {
   }
 
   log('FETCH', `Found: "${issue.title}" (AIT Issue ID: ${issue.id}) — priority: ${issue.issue_priority}`);
+
+  // Guard: only claim issues that are open-to-all (assigned_to_agent=0, assigned_to_user=0)
+  // or explicitly designated for an agent (assigned_to_agent=1). Human-only issues
+  // (assigned_to_user=1) must never be touched by the runner.
+  if (issue.assigned_to_user) {
+    log('SKIP', 'Issue is reserved for a human (assigned_to_user=1). Nothing to do.');
+    return;
+  }
 
   await sleep(MIN_DELAY_MS);
 
