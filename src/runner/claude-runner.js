@@ -430,10 +430,9 @@ async function runRunner() {
   }
 
   // filter to only open issues assigned to an agent (assigned_to_agent is a
-  // boolean now); a human must explicitly assign an issue to AI before the
-  // runner will work on it
+  // boolean now); an agent is able to claim an issue if it's not assigned to a user
   const openIssues = allIssues.filter(
-    (i) => i.issue_status === 'open' && i.assigned_to_agent === 1
+    (i) => i.issue_status === 'open' && i.assigned_to_user === 0
   );
 
   if (openIssues.length === 0) {
