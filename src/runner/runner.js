@@ -72,8 +72,9 @@ const BASE_URL =
 // Copy from the web app: settings icon (top right) → Copy → paste into project .env
 const USER_ID = process.env.AIT_USER_ID || '';
 
-// Agent identifier recorded in the claim request (which agent picked this up).
-// Must satisfy issues.assigned_to_agent → agents(id) FK (API auto-registers unknown ids).
+// Agent identifier sent in the claim request (which agent picked this up). The
+// API registers unknown ids in the agents table; assigned_to_agent is now a
+// boolean flag on the issue, not a FK to this id.
 const AGENT_ID = process.env.AIT_AGENT_ID || 'ait-agent-cc';
 
 const MIN_DELAY_MS = 300;
@@ -208,10 +209,18 @@ async function reclaimExpiredClaims() {
     );
 
     for (const issue of expired) {
+      // Fully reset the claim back to an open, unassigned state (mirrors the
+      // server-side resetExpiredClaims): clear status, both assignment flags,
+      // and the expiry timestamp. updated_at is stamped by the API.
       const resetRes = await fetch(`${BASE_URL}/api/issues/${encodeURIComponent(issue.id)}`, {
         method: 'PUT',
         headers,
-        body: JSON.stringify({ issue_status: 'open', assigned_to_agent: null })
+        body: JSON.stringify({
+          issue_status: 'open',
+          assigned_to_agent: 0,
+          assigned_to_user: 0,
+          claim_expires_at: null
+        })
       });
       if (!resetRes.ok) {
         log('WARN', `Could not reset expired claim on ${issue.id} (${resetRes.status})`);

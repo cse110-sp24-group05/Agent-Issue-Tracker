@@ -82,8 +82,8 @@ function openIssue(overrides = {}) {
     issue_status: 'open',
     issue_priority: 'high',
     issue_description: 'Something needs fixing.',
-    assigned_to_agent: null,
-    assigned_to_user: null,
+    assigned_to_agent: 0,
+    assigned_to_user: 0,
     retry_count: 0,
     claim_timeout_minutes: 30,
     created_at: new Date().toISOString(),
@@ -95,7 +95,7 @@ function openIssue(overrides = {}) {
 function inProgressIssue(overrides = {}) {
   return openIssue({
     issue_status: 'in_progress',
-    assigned_to_agent: 'ait-agent-cc-01',
+    assigned_to_agent: 1,
     ...overrides
   });
 }
