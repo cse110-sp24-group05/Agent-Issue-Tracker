@@ -286,6 +286,14 @@ async function runAIT() {
 
   log('FETCH', `Found: "${issue.title}" (AIT Issue ID: ${issue.id}) — priority: ${issue.issue_priority}`);
 
+  // Guard: only claim issues that are open-to-all (assigned_to_agent=0, assigned_to_user=0)
+  // or explicitly designated for an agent (assigned_to_agent=1). Human-only issues
+  // (assigned_to_user=1) must never be touched by the runner.
+  if (issue.assigned_to_user) {
+    log('SKIP', 'Issue is reserved for a human (assigned_to_user=1). Nothing to do.');
+    return;
+  }
+
   await sleep(MIN_DELAY_MS);
 
   // STEP 2 — Claim the issue ------------------------------------------
