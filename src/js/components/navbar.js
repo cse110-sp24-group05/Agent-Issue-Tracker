@@ -49,40 +49,21 @@ class Navbar extends HTMLElement {
       this.appendChild(settingsModalParent);
       const settingsModal = document.getElementById('modal-settings');
       
-      // Open modal
+      // Open modal button
       settingsBtn.addEventListener('click', () => {
+        // Add the spin class
+        settingsBtn.classList.add('is-spinning');
+        
+        // Remove it after 500ms
+        setTimeout(() => {
+          settingsBtn.classList.remove('is-spinning');
+        }, 500);
+
+        // Open the modal
         settingsModal.classList.remove('hidden');
-        console.log(settingsModal);
       });
 
       if (settingsModal && settingsBtn) {
-        // ─── NEW TAB SWITCHING LOGIC ───
-        const tabs = settingsModal.querySelectorAll('.settings-tab');
-        const tabContents = settingsModal.querySelectorAll('.settings-tab-content');
-
-        tabs.forEach(tab => {
-          tab.addEventListener('click', (event) => {
-            // 1. Remove 'active' from all sidebar tabs
-            tabs.forEach(t => t.classList.remove('active'));
-            
-            // 2. Add 'active' to the specific tab that was clicked
-            const clickedTab = event.target;
-            clickedTab.classList.add('active');
-            
-            // 3. Find out which content ID this tab corresponds to
-            const targetId = clickedTab.getAttribute('data-target');
-            
-            // 4. Loop through all content sections, show the match, hide the rest
-            tabContents.forEach(content => {
-              if (content.id === targetId) {
-                content.classList.remove('hidden');
-              } else {
-                content.classList.add('hidden');
-              }
-            });
-          });
-        });
-
         // ─── SHOW/HIDE PASSWORD LOGIC ───
         const tokenInput = document.getElementById('setting-git-token');
         const toggleBtn = document.getElementById('toggle-git-token');
