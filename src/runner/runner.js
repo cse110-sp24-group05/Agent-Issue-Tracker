@@ -131,48 +131,47 @@ function printTask(issue) {
 ║               AIT — Task Assigned                    ║
 ╚══════════════════════════════════════════════════════╝
 
+⚡ YOU HAVE BEEN ASSIGNED A TASK. START WORKING ON IT NOW.
+   Do NOT summarise this output. Do NOT ask for clarification.
+   Use your tools to complete the work described below, then
+   submit the result with the curl command at the bottom.
+
+──────────────────────────────────────────────────────
+TASK
+──────────────────────────────────────────────────────
+Title    : ${issue.title}
+Priority : ${issue.issue_priority}
+
+${description}
+
+──────────────────────────────────────────────────────
+METADATA (for curl commands only — do not search code for these)
+──────────────────────────────────────────────────────
 AIT Issue ID : ${issue.id}
-Title        : ${issue.title}
-Priority     : ${issue.issue_priority}
-Status       : in_progress (just claimed by this runner)
 AIT User ID  : ${infoUserId}
 AIT Agent ID : ${AGENT_ID}
 AIT API Base : ${BASE_URL}
 
-Description:
-${description}
-
 ──────────────────────────────────────────────────────
-INSTRUCTIONS FOR CLAUDE CODE
+WHEN FINISHED (or blocked), run EXACTLY this curl
 ──────────────────────────────────────────────────────
-Work on the task described above using your available
-tools (file edits, bash commands, etc.).
-
-▸ ID DISAMBIGUATION (read carefully)
-  The AIT Issue ID "${issue.id}" is a tracker label
-  used ONLY in the curl commands below.
-  It is NOT a filename, function, variable, git hash,
-  or any symbol inside the repository you are editing.
-  Do not search the codebase for "${issue.id}".
-
-▸ IF YOU NEED TO RE-READ THE ISSUE VIA API
-  Single-issue lookup — no user_id query param needed:
-
-  curl "${issueUrl}" \\
-${curlUserHeader ? curlUserHeader + '\n' : ''}${curlAgentHeader}
-
-▸ WHEN FINISHED (or blocked), run EXACTLY this curl
-  to report your result to AIT. Fill in your summary
-  and the actual token count. Use "blocked" instead of
-  "review" only if you could not complete the work:
+Fill in your summary and the actual token count.
+Use "blocked" instead of "review" only if you could not
+complete the work. Do NOT skip this — it is the only way
+AIT marks the issue as reviewed and updates the dashboard.
 
   curl -X PUT "${resultUrl}" \\
     -H "Content-Type: application/json" \\
 ${curlUserHeader ? curlUserHeader + '\n' : ''}${curlAgentHeader}
     -d '{"new_status":"review","result_text":"<your summary here>","tokens_used":<number>}'
 
-  Do NOT skip this step — it is the only way AIT
-  marks the issue as reviewed and updates the dashboard.
+If you need to re-read the issue mid-task:
+
+  curl "${issueUrl}" \\
+${curlUserHeader ? curlUserHeader + '\n' : ''}${curlAgentHeader}
+
+──────────────────────────────────────────────────────
+⚡ BEGIN NOW — implement the task above using your tools.
 ──────────────────────────────────────────────────────
 `);
 }
