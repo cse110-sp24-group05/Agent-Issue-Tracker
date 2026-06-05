@@ -12,7 +12,7 @@ Pranav:
 
 Nick: I did not use AI to write code. Chat-GPT 5 Mini was used inside Duck-Duck-Go browser's AI search assist to help with research.
 
-Nikolas:
+Nikolas: I used Claude Code Sonnet 4.6 for advice and guidance while developing. All code was reviewed and tested manually before comitting.
 
 Lisa:
 
