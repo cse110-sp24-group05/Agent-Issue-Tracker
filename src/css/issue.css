@@ -9,7 +9,9 @@
   transition: color var(--transition-fast);
   text-decoration: none;
 }
-.issue-back:hover { color: var(--color-text-theme); }
+.issue-back:hover {
+  color: var(--color-text-theme);
+}
 
 /* ─── Issue Header ──────────────────────────────────────────────── */
 .issue-header {
@@ -32,7 +34,9 @@
   cursor: text;
   transition: color var(--transition-fast);
 }
-.issue-title-text:hover { color: var(--color-accent); }
+.issue-title-text:hover {
+  color: var(--color-accent);
+}
 
 .issue-title-input {
   font-size: var(--text-xl);
@@ -85,7 +89,10 @@
   color: var(--color-text-theme);
   line-height: 1.65;
   cursor: text;
-  transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast);
   white-space: pre-wrap;
   min-height: 2.5rem;
   padding: 0.375rem 0.5rem;
@@ -94,7 +101,7 @@
 }
 .issue-desc-text:not(.readonly):hover {
   border-color: var(--color-accent);
-  background: var(--color-bg-hover, rgba(255,255,255,0.04));
+  background: var(--color-bg-hover, rgba(255, 255, 255, 0.04));
 }
 .issue-desc-text:not(.readonly):empty::before,
 .issue-desc-text:not(.readonly)[data-empty]::before {
@@ -180,6 +187,28 @@
   color: var(--color-text-gray-theme);
 }
 
+/* Specific status dot colors for the audit log timeline */
+.audit-dot.audit-dot-open {
+  background: var(--status-open-bg);
+  border-color: var(--status-open);
+}
+.audit-dot.audit-dot-in-progress {
+  background: var(--status-in-progress-bg);
+  border-color: var(--status-in-progress);
+}
+.audit-dot.audit-dot-review {
+  background: var(--status-pending-review-bg);
+  border-color: var(--status-pending-review);
+}
+.audit-dot.audit-dot-blocked {
+  background: var(--status-blocked-bg);
+  border-color: var(--status-blocked);
+}
+.audit-dot.audit-dot-closed {
+  background: var(--status-closed-bg);
+  border-color: var(--status-closed);
+}
+
 /* Inline assignee input: match the .sidebar-editable sizing so there's no layout jump */
 #assignee-input {
   width: 100%;
@@ -231,7 +260,9 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md, 4px);
   padding: var(--space-1, 4px) var(--space-2, 8px);
-  transition: border-color var(--transition-fast), background var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
   min-height: 28px;
 }
 .sidebar-editable:hover {
@@ -247,7 +278,7 @@
 }
 
 /* ─── Token Progress Bar ────────────────────────────────────────── */
-.token-bar{
+.token-bar {
   width: 110px;
   height: 5px;
   background: var(--color-border);
@@ -256,7 +287,7 @@
   margin: 0;
 }
 
-.token-fill{
+.token-fill {
   height: 100%;
   border-radius: 999px;
   transition: width 280ms ease;
@@ -272,7 +303,7 @@
   text-align: right;
 }
 
-.token-cell{
+.token-cell {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -289,20 +320,20 @@
   gap: 4px;
 }
 
-.token-text{
+.token-text {
   font-size: var(--text-xs);
   margin-bottom: 4px;
 }
 
-.token-fill.token-ok{
+.token-fill.token-ok {
   background: var(--status-open);
 }
 
-.token-fill.token-warn{
+.token-fill.token-warn {
   background: var(--status-in-progress);
 }
 
-.token-fill.token-over{
+.token-fill.token-over {
   background: var(--status-blocked);
 }
 
@@ -343,11 +374,11 @@
 .btn-success {
   background: var(--status-open) !important;
   border-color: var(--status-open) !important;
-  color: #FFFFFF !important;
+  color: #ffffff !important;
 }
 .btn-success:hover {
-  background: #15803D !important;
-  border-color: #15803D !important;
+  background: #15803d !important;
+  border-color: #15803d !important;
 }
 
 /* Created-by sidebar field */

@@ -16,6 +16,7 @@ import {
 } from './ui.js';
 
 import { tokenLevel, filterIssues, countByStatus } from './issue-helpers.js';
+import { NoIssuesPrompt } from './components/no-issues-prompt.js';
 
 // Remembers if user prefers list or board view
 const VIEW_KEY = 'ait_view_pref';
@@ -73,17 +74,12 @@ function renderList(issues) {
     const allIssues = getIssues();
     if (allIssues.length === 0) {
       // no issues at all
-      tbody.innerHTML = `
-            <tr><td colspan="7">
-              <div class="empty-row">
-                <div class="empty-state-icon">📋</div>
-                <div class="empty-state-title">No issues yet!</div>
-                <div class="empty-state-desc">Create your first issue to get started</div>
-                <button class="btn btn-primary" id="list-empty-new-btn">
-                  + New Issue
-                </button>
-              </div>
-            </td></tr>`;
+      const nip = new NoIssuesPrompt();
+      tbody.appendChild(nip);
+      const colgroup = document.querySelector('.issue-table colgroup');
+      colgroup.remove();
+      const thead = document.querySelector('.issue-table thead');
+      thead.remove();
       document
         .getElementById('list-empty-new-btn')
         ?.addEventListener('click', () => {
@@ -237,16 +233,7 @@ function renderBoard(issues) {
   updateBoardCounts();
   // Empty state for new users or no issues at all
   // check if ALl columns are empty
-  const allEmpty = [
-    'col-open',
-    'col-progress',
-    'col-review',
-    'col-blocked',
-    'col-closed',
-  ].every(
-    (id) =>
-      document.getElementById(id).querySelectorAll('.board-card').length === 0,
-  );
+  const allEmpty = getIssues().length === 0;
 
   // empty state message
   const emptyMessage = {
@@ -265,15 +252,8 @@ function renderBoard(issues) {
 
     if (colId === 'col-blocked' && allEmpty) {
       // only show CTA button when ALL columns are empty
-      col.innerHTML = `
-              <div class="board-empty-state board-empty-cta">
-                <div class="empty-state-icon">📋</div>
-                <p class="empty-state-title">No issues yet!</p>
-                <p class="empty-state-desc">Create your first issue to get started</p>
-                <button class="btn btn-primary btn-sm" id="empty-new-issue-btn">
-                  + New Issue
-                </button>
-              </div>`;
+      const nip = new NoIssuesPrompt();
+      col.appendChild(nip);
       document
         .getElementById('empty-new-issue-btn')
         ?.addEventListener('click', () => {
