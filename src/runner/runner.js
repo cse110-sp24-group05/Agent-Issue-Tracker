@@ -209,10 +209,18 @@ async function reclaimExpiredClaims() {
     );
 
     for (const issue of expired) {
+      // Fully reset the claim back to an open, unassigned state (mirrors the
+      // server-side resetExpiredClaims): clear status, both assignment flags,
+      // and the expiry timestamp. updated_at is stamped by the API.
       const resetRes = await fetch(`${BASE_URL}/api/issues/${encodeURIComponent(issue.id)}`, {
         method: 'PUT',
         headers,
-        body: JSON.stringify({ issue_status: 'open', assigned_to_agent: 0 })
+        body: JSON.stringify({
+          issue_status: 'open',
+          assigned_to_agent: 0,
+          assigned_to_user: 0,
+          claim_expires_at: null
+        })
       });
       if (!resetRes.ok) {
         log('WARN', `Could not reset expired claim on ${issue.id} (${resetRes.status})`);

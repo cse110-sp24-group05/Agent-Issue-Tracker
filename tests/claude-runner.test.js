@@ -171,18 +171,18 @@ describe('runRunner workflow', () => {
     expect(mockFetch.mock.calls[0][0]).toContain('/api/issues');
   });
 
-  // Scenario 2: Issues exist but none assigned to an agent
-  // The runner should not claim anything because no work is for it.
-  test('exits cleanly when issues exist but none assigned to claude', async () => {
+  // Scenario 2: Issues exist but they're reserved for a human (human-only).
+  // The runner claims any non-human issue (assigned_to_user === 0), so a
+  // human-only issue (assigned_to_user === 1) must be skipped.
+  test('exits cleanly when the only open issue is human-only', async () => {
     mockFetch.mockResolvedValueOnce(mockResponse([
       {
         id: 'issue-1',
         title: 'Some issue',
         issue_description: 'Description',
         issue_status: 'open',
-        issue_priority: 'high',
-        assigned_to_agent: 0, // not assigned to an agent
-        assigned_to_user: 0,
+        assigned_to_user: 1, // human-only — not available to the agent
+        assigned_to_agent: 0,
       },
     ]));
 
