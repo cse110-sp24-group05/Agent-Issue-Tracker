@@ -4,9 +4,9 @@ Ava: Used Claude Code (Sonnet 4.6) for coding support. Reviewed and tested befor
 
 Patrick: Used Claude LLM for coding support and design decisions. Reviewed, debugged, and tested code with AI assistance. 
 
-Hanwen:
+Hanwen: Used Chatgpt for coding support. Reviewed and tested before committing.
 
-Jaylen:
+Jaylen: Used Claude for assistance with debugging, and coding support. ChatGPT was used for idea organization. All code was personally reviewed and tested before committing.
 
 Pranav:
 
