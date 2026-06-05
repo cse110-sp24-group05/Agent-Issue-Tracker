@@ -15,7 +15,15 @@
 //   migrations converge to (issues/history shapes from 0007, canonical agents
 //   from 0009, the per-user display_no index from 0006).
 
-import { DatabaseSync } from 'node:sqlite';
+// Resolve node:sqlite through Node's real require, not jest's resolver. jest's
+// module resolver intermittently strips the `node:` prefix off prefix-only
+// builtins like node:sqlite and then fails looking for a package named
+// "sqlite" (the failure depends on its haste-map/cache order, so it surfaces
+// only in some runs). createRequire bypasses jest-resolve entirely; node:module
+// always resolves cleanly because its unprefixed name is a known builtin.
+import { createRequire } from 'node:module';
+
+const { DatabaseSync } = createRequire(import.meta.url)('node:sqlite');
 
 // Final schema: the cumulative end state of migrations 0001–0009.
 const SCHEMA = `
