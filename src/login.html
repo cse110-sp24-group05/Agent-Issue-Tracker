@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AIT — Sign In</title>
+  <link rel="icon" type="image/x-icon" href="./assets/svg/ait-logo.svg">
   <link rel="stylesheet" href="css/main.css" />
   <style>
     body {
@@ -11,12 +12,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--color-bg-subtle);
+      background: var(--color-background-theme);
       margin: 0;
     }
 
     .login-card {
-      background: var(--color-bg);
+      background: color-mix(in oklab, var(--color-fill-theme) 50%, var(--color-background-theme) 50%) ;
       border: 1px solid var(--color-border);
       border-radius: 12px;
       padding: 2.5rem 2rem;
@@ -29,17 +30,20 @@
       font-size: 1.75rem;
       font-weight: 800;
       letter-spacing: -0.03em;
-      color: var(--color-text);
       text-align: center;
       margin-bottom: 0.25rem;
     }
 
-    .login-logo span { color: var(--color-accent); }
+    .login-logo img { 
+      width: 128px;
+      height: 100%;
+      filter: drop-shadow(0px 4px 2px rgb(0 0 0 / 0.4)); 
+    }
 
     .login-sub {
       text-align: center;
-      color: var(--color-text-muted);
-      font-size: 0.875rem;
+      color: var(--color-text-theme);
+      font-size: 1.875rem;
       margin-bottom: 2rem;
     }
 
@@ -74,8 +78,11 @@
   </style>
 </head>
 <body>
+  <script src="./js/themes.js" type="module"></script>
   <div class="login-card">
-    <div class="login-logo">A<span>I</span>T</div>
+    <div class="login-logo">
+      <img src="./assets/svg/ait-logo.svg">
+    </div>
     <p class="login-sub">Agent Issue Tracker</p>
 
     <form class="login-form" id="login-form" novalidate>

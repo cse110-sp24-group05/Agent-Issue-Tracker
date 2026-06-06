@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AIT — issue-001</title>
+    <link rel="icon" type="image/x-icon" href="./assets/svg/ait-logo.svg" />
     <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/issue.css" />
     <script>
@@ -70,7 +71,7 @@
               <div class="section-label">
                 Description
                 <span class="edit-hint" id="desc-edit-hint" aria-hidden="true"
-                  >click to edit</span
+                  >Edit</span
                 >
               </div>
               <p class="issue-desc-text" id="issue-desc" title="Click to edit">
@@ -350,8 +351,15 @@ The New Issue modal stays open when the user presses Escape. It should close and
           descText.removeAttribute('data-empty');
         }
         const descEditHint = document.getElementById('desc-edit-hint');
-        if (descEditHint)
+        if (descEditHint) {
           descEditHint.classList.toggle('hidden', !descEditable);
+          descEditHint.addEventListener('click', () => {
+            if (getIssue(id)?.status !== 'open') return;
+            descText.classList.add('hidden');
+            descInput.classList.remove('hidden');
+            descInput.focus();
+          });
+        }
 
         // Status badge
         const badge = document.getElementById('status-badge');
@@ -489,7 +497,9 @@ The New Issue modal stays open when the user presses Escape. It should close and
 
         // Fetch status history from API and render each entry as a timeline row
         try {
-          const historyRes = await fetch(`${API_BASE}/api/issues/${id}/history`);
+          const historyRes = await fetch(
+            `${API_BASE}/api/issues/${id}/history`,
+          );
           const historyData = await historyRes.json();
           const history = historyData.history || [];
 
