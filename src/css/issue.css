@@ -401,8 +401,7 @@
 }
 
 .state-banner-icon {
-  font-size: 22px;
-  line-height: 1;
+  display: flex;
 }
 
 .state-banner-title {
