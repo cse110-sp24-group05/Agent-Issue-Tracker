@@ -58,8 +58,8 @@ const PRIORITY_RANK = {
 };
 
 
-// prints a message with the current time and a label.
 /**
+ * Print a message with the current time and a label.
  * @param {string} label - Short tag like "FETCH" or "CLAIM"
  * @param {string} message - What happened
  */
@@ -68,19 +68,19 @@ function log(label, message) {
   console.log(`[${time}] [${label}] ${message}`);
 }
 
-// pauses the script for a given number of milliseconds.
 /**
+ * Pause the script for a given number of milliseconds.
  * @param {number} ms - How long to wait in milliseconds
- * @returns {Promise} - Resolves when the wait is over
+ * @returns {Promise<void>} Resolves when the wait is over
  */
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// return a random item from an array.
 /**
+ * Return a random item from an array.
  * @param {Array} arr - The array to pick from
- * @returns {*} - One random element
+ * @returns {*} One random element
  */
 function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];

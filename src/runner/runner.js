@@ -83,8 +83,8 @@ const MIN_DELAY_MS = 300;
 
 /**
  * Simple logger with timestamps and labels.
- * @param {string} label
- * @param {string} message
+ * @param {string} label - Short tag like FETCH or CLAIM
+ * @param {string} message - Log message body
  */
 function log(label, message) {
   const time = new Date().toISOString().slice(11, 19);
@@ -92,7 +92,9 @@ function log(label, message) {
 }
 
 /**
- * @param {number} ms
+ * Pause execution for the given number of milliseconds.
+ * @param {number} ms - Delay in milliseconds
+ * @returns {Promise<void>} Resolves when the delay elapses
  */
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -232,6 +234,9 @@ async function reclaimExpiredClaims() {
 
 // --- Main workflow ----------------------------------------------------
 
+/**
+ * Main runner workflow: reclaim expired claims, fetch a ready issue, claim it, and print the task.
+ */
 async function runAIT() {
   await reclaimExpiredClaims();
 

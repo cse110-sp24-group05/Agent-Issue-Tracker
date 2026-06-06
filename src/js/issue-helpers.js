@@ -40,6 +40,7 @@ export function filterIssues(issues, status, priority, assignee, search) {
 }
 
 /**
+ * Count issues grouped by status for dashboard summary widgets.
  * @param {Array} issues - list of all issues
  * @returns {object} - count of issues per status
  */

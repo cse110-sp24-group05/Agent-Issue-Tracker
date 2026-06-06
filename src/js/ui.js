@@ -37,7 +37,8 @@ export const staLabel = s => STA_LABEL[s] || s;
  *   human-manual → ✍️
  *   llm-assist   → ✨
  *   any other (treated as agent name) → 🤖
- * @param createdBy
+ * @param {string} createdBy - Issue creator identifier
+ * @returns {string} Emoji representing the creator type
  */
 export function createdByIcon(createdBy) {
   if (createdBy === 'human-manual') {return '✍️';}
@@ -49,7 +50,8 @@ export function createdByIcon(createdBy) {
 /**
  * Relative time string: "just now", "32s ago", "5m ago", "3h ago", "2d ago".
  * Single source of truth — pages must import this rather than re-implementing.
- * @param iso
+ * @param {string} iso - ISO 8601 timestamp
+ * @returns {string} Human-readable relative time
  */
 export function fmtRelTime(iso) {
   if (!iso) {return '—';}
@@ -67,7 +69,8 @@ export function fmtRelTime(iso) {
 
 /**
  * Short calendar date, e.g. "May 7".
- * @param iso
+ * @param {string} iso - ISO 8601 timestamp
+ * @returns {string} Formatted short date or em dash if missing
  */
 export function fmtShortDate(iso) {
   if (!iso) {return '—';}
@@ -76,7 +79,8 @@ export function fmtShortDate(iso) {
 
 /**
  * Date + time, e.g. "May 7, 2026, 8:30 AM".
- * @param iso
+ * @param {string} iso - ISO 8601 timestamp
+ * @returns {string} Formatted date and time or em dash if missing
  */
 export function fmtDateTime(iso) {
   if (!iso) {return '—';}
@@ -112,9 +116,9 @@ const FLASH_KIND = {
 const ALL_FLASH_CLASSES = Object.values(FLASH_KIND).map(c => c.cls);
 
 /**
- *
- * @param id
- * @param kind
+ * Apply a short-lived highlight animation to every element matching an issue id.
+ * @param {string} id - Issue id used in data-id attributes
+ * @param {string} [kind] - Flash style: create, claim, complete, close, block, or update
  */
 export function flashEntity(id, kind = 'update') {
   if (!id) {return;}

@@ -1,7 +1,6 @@
 // Imports
 import { ActivityIssue } from './components/activity-issue.js';
 import { ActivityStatusButton } from './components/activity-status-button.js';
-import { ActivityTokenBurn } from './components/activity-token-burn.js';
 import { NoIssuesPrompt } from './components/no-issues-prompt.js';
 import {
   initData,
@@ -12,14 +11,12 @@ import {
 await initData();
 const issuesList = await getIssues();
 const issueObjects = [];
-let tokenCount = 0;
-let tokenMax = 0;
 export let activeStatusButton = null;
 /**
  * Sets which status button was clicke most recently
  * That way, clicking a status button can update the state
  * of the previous status button from active to inactive
- * @param button The status button which was just clicked
+ * @param {HTMLElement} button - The status button which was just clicked
  */
 export function setActiveStatusButton(button) {
   activeStatusButton = button;
@@ -32,7 +29,6 @@ const API_BASE =
 
 const feedParent = document.querySelector('.feed-list');
 // const completionsParent = document.querySelector('.dash-completions-section');
-const tokenBurnParent = document.getElementById('token-burn');
 const statusButtonsParent = document.querySelector('.sprint-pills');
 const statusNames = ['Open', 'In Progress', 'Blocked', 'Pending Review', 'Closed'];
 const statusNamesRaw = ['open', 'in-progress', 'blocked', 'pending-review', 'closed'];
@@ -55,8 +51,6 @@ async function loadActivity() {
  * Also sets the data fields used for other parts of the activity 
  */
 function loadIssues() {
-  tokenCount = 0;
-  tokenMax = 0;
   const dummyEntry = document.querySelector('.feed-entry');
 
   if (issuesList.length === 0) {
@@ -92,7 +86,7 @@ function loadIssues() {
 
 /**
  * Helper function which converts various status names into integer values
- * @param status Status string to be converted
+ * @param {string} status - Status string to be converted
  * @returns Index 0-4 for open, inprogress, blocked, pending, and closed statuses
  */
 function getStatusIndex(status) {
@@ -121,18 +115,6 @@ function getStatusIndex(status) {
 }
 
 /**
- * Loads the token burn graphic on the right side of the activity page
- */
-function loadTokenBurn() {
-  const tb = new ActivityTokenBurn();
-  tb.data = {
-    tokenCount: tokenCount,
-    tokenMax: tokenMax,
-  };
-  tokenBurnParent.appendChild(tb);
-}
-
-/**
  * Loads the five status buttons at the top of the activity page
  */
 function loadStatusButtons() {
@@ -155,8 +137,8 @@ function loadStatusButtons() {
 /**
  * Hides issues on the activity that don't match a certain value
  * Currently, only one filter can be active at one time
- * @param key Look for this key in every issue
- * @param valueToMatch If the value at that key isn't equal to this value, hide the issue
+ * @param {string} key - Look for this key in every issue
+ * @param {string} valueToMatch - If the value at that key isn't equal to this value, hide the issue
  */
 export function filterActivityIssues(key, valueToMatch) {
   issueObjects.forEach((issue) => {

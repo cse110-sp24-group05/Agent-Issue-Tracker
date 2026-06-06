@@ -127,13 +127,17 @@ END;
  * try/catch sees real D1 failures.
  */
 class MemoryStatement {
-  /** @param {import('node:sqlite').StatementSync} stmt */
+  /**
+   * Wrap a prepared SQLite statement for D1-compatible async access.
+   * @param {import('node:sqlite').StatementSync} stmt - Underlying prepared statement
+   */
   constructor(stmt) {
     this.stmt = stmt;
     this.params = [];
   }
 
   /**
+   * Bind positional values to the statement's `?` placeholders.
    * @param {...unknown} params - Positional values for the `?` placeholders.
    * @returns {MemoryStatement} this, for chaining.
    */
@@ -143,6 +147,7 @@ class MemoryStatement {
   }
 
   /**
+   * Return the first row (or a single column from it) from the query result.
    * @param {string} [column] - If given, return just that column's value.
    * @returns {Promise<object|unknown|null>} First row (or column), or null.
    */
@@ -153,6 +158,7 @@ class MemoryStatement {
   }
 
   /**
+   * Return all rows matching the prepared query.
    * @returns {Promise<{ results: object[], success: true, meta: object }>}
    */
   async all() {
@@ -161,6 +167,7 @@ class MemoryStatement {
   }
 
   /**
+   * Execute a write query and return D1-style change metadata.
    * @returns {Promise<{ success: true, meta: { changes: number, last_row_id: number } }>}
    */
   async run() {
@@ -179,12 +186,16 @@ class MemoryStatement {
  * A D1Database stand-in backed by an in-memory SQLite connection.
  */
 class MemoryD1 {
-  /** @param {DatabaseSync} db */
+  /**
+   * Wrap an in-memory SQLite database as a D1Database stand-in.
+   * @param {DatabaseSync} db - Open in-memory SQLite connection
+   */
   constructor(db) {
     this.db = db;
   }
 
   /**
+   * Prepare a SQL statement for binding and execution.
    * @param {string} sql - SQL with `?` placeholders.
    * @returns {MemoryStatement}
    */

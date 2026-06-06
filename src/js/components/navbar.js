@@ -1,4 +1,3 @@
-import { saveTheme, useDarkTheme, useLightTheme } from '../themes.js';
 import { SettingsModal } from './settings-modal.js';
 
 /**

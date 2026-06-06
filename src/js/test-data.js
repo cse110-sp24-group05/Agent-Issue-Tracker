@@ -1,5 +1,6 @@
 /**
- *
+ * Parse the embedded test JSON fixture.
+ * @returns {object[]} Parsed issue objects
  */
 function _read() {
   return JSON.parse(testJson);

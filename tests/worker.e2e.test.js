@@ -43,12 +43,21 @@ async function call(method, path, body = null, headers = {}) {
   return { status: res.status, data };
 }
 
-/** Read a single issue row straight from the DB (proves what was persisted). */
+/**
+ * Read a single issue row straight from the DB (proves what was persisted).
+ * @param {string} id - Issue id to look up
+ * @returns {object|undefined} Raw SQLite row for the issue
+ */
 function issueRow(id) {
   return db.prepare('SELECT * FROM issues WHERE id = ?').get(id);
 }
 
-/** Register/login a user and return their profile (creates the users row). */
+/**
+ * Register/login a user and return their profile (creates the users row).
+ * @param {string} [name] - Display name for the test user
+ * @param {string} [email] - Email for the test user
+ * @returns {Promise<object>} Created or returned user profile
+ */
 async function makeUser(name = 'steven', email = 'steven@ucsd.edu') {
   const { status, data } = await call('POST', '/api/login', { name, email });
   expect(status).toBe(201);
@@ -366,8 +375,9 @@ describe('PUT /api/issues/:id/block (end-to-end)', () => {
 
 // helper kept at the bottom: build a create body for an arbitrary owner.
 /**
- * @param {string} userId - value for created_by_user.
- * @returns {object} a complete POST /api/issues body.
+ * Build a complete POST /api/issues body for an arbitrary owner.
+ * @param {string} userId - Value for created_by_user
+ * @returns {Promise<object>} Complete POST /api/issues body
  */
 async function buildIssueBody(userId) {
   const now = new Date().toISOString();

@@ -35,7 +35,8 @@ export function getProfile() {
 }
 
 /**
- * @param {UserProfile} profile
+ * Persist the user profile to localStorage and sync the legacy ait_user key.
+ * @param {UserProfile} profile - Logged-in user profile to store
  */
 function saveProfile(profile) {
   localStorage.setItem('ait_profile', JSON.stringify(profile));
@@ -81,9 +82,10 @@ export function logout() {
 // ── Request helper ─────────────────────────────────────────────────────────
 
 /**
- * @param {string} path
- * @param {RequestInit} [options]
- * @returns {Promise<unknown>}
+ * Authenticated fetch wrapper that attaches X-User-ID and parses JSON responses.
+ * @param {string} path - API path (e.g. `/api/issues`)
+ * @param {RequestInit} [options] - Fetch options merged with default headers
+ * @returns {Promise<unknown>} Parsed JSON response body
  */
 async function request(path, options = {}) {
   const profile = getProfile();
@@ -115,6 +117,9 @@ async function request(path, options = {}) {
 
 // ── Data change notification ───────────────────────────────────────────────
 
+/**
+ * Broadcast an `ait:data-changed` event so UI pages can re-render.
+ */
 function notifyChange() {
   document.dispatchEvent(new CustomEvent('ait:data-changed'));
 }
@@ -125,8 +130,8 @@ function notifyChange() {
  * Update the in-memory issue cache without making an API call.
  * Use for display-only fields (e.g. free-text assignee) that can't be written
  * to the DB directly due to schema constraints.
- * @param {string} id
- * @param {object} fields
+ * @param {string} id - Issue id to update in the cache
+ * @param {object} fields - Partial fields to merge into the cached issue
  */
 export function patchIssueLocal(id, fields) {
   const idx = _issues.findIndex(i => i.id === id);
@@ -152,6 +157,7 @@ export async function initData() {
 }
 
 /**
+ * Return the in-memory issue cache populated by initData().
  * @returns {UiIssue[]}
  */
 export function getIssues() {
@@ -159,7 +165,8 @@ export function getIssues() {
 }
 
 /**
- * @param {string} id
+ * Look up a single issue from the in-memory cache by id.
+ * @param {string} id - Issue id
  * @returns {UiIssue|null}
  */
 export function getIssue(id) {
@@ -169,9 +176,10 @@ export function getIssue(id) {
 // ── Issue writes ───────────────────────────────────────────────────────────
 
 /**
+ * Create a new issue via POST /api/issues and add it to the local cache.
  * @param {{ title: string, description?: string, priority?: string,
  *           assignee?: string, token_budget?: number, time_estimate?: number,
- *           creator?: string, created_by?: string }} fields
+ *           creator?: string, created_by?: string }} fields - Issue fields from the UI
  * @returns {Promise<UiIssue>}
  */
 export async function createIssue(fields) {
@@ -201,8 +209,9 @@ export async function createIssue(fields) {
 }
 
 /**
- * @param {string} id
- * @param {object} fields
+ * Update an issue via PUT /api/issues/:id and refresh the local cache.
+ * @param {string} id - Issue id
+ * @param {object} fields - Partial UI fields to persist
  * @returns {Promise<UiIssue|null>}
  */
 export async function updateIssue(id, fields) {
@@ -227,7 +236,8 @@ export async function updateIssue(id, fields) {
 }
 
 /**
- * @param {string} id
+ * Claim an issue for the logged-in user (status → in-progress, human-only).
+ * @param {string} id - Issue id
  * @returns {Promise<UiIssue|null>}
  */
 export async function claimIssue(id) {
@@ -251,10 +261,11 @@ export async function claimIssue(id) {
 }
 
 /**
- * @param {string} id
- * @param {string} result
- * @param {number} tokensUsed
- * @param {number} timeSpent
+ * Submit an agent result and move the issue to pending review.
+ * @param {string} id - Issue id
+ * @param {string} result - Agent summary text
+ * @param {number} tokensUsed - Tokens consumed while working
+ * @param {number} timeSpent - Minutes spent on the task
  * @returns {Promise<UiIssue|null>}
  */
 export async function postResult(id, result, tokensUsed, timeSpent) {
@@ -280,7 +291,8 @@ export async function postResult(id, result, tokensUsed, timeSpent) {
 }
 
 /**
- * @param {string} id
+ * Close an issue via PUT /api/issues/:id/close.
+ * @param {string} id - Issue id
  * @returns {Promise<UiIssue|null>}
  */
 export async function closeIssue(id) {
@@ -304,8 +316,9 @@ export async function closeIssue(id) {
 }
 
 /**
- * @param {string} id
- * @param {string} reason
+ * Block an issue and record the reason in the local cache.
+ * @param {string} id - Issue id
+ * @param {string} reason - Why the issue is blocked
  * @returns {Promise<UiIssue|null>}
  */
 export async function blockIssue(id, reason) {
@@ -341,7 +354,8 @@ export function getAgentEnvLine() {
 }
 
 /**
- * @param {{ ait_user?: string }} settings
+ * Persist display-name settings to localStorage.
+ * @param {{ ait_user?: string }} settings - Settings fields to save
  */
 export function saveSettings(settings) {
   if (settings.ait_user !== undefined) {

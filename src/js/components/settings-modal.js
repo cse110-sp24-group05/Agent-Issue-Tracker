@@ -132,7 +132,7 @@ export class SettingsModal extends HTMLElement {
       }
     });
 
-// Close modal via Save button and write data
+    // Close modal via Save button and write data
     if (saveBtn) {
       saveBtn.addEventListener('click', () => {
         // Save the Name
@@ -152,7 +152,7 @@ export class SettingsModal extends HTMLElement {
     }
 
     // Theme toggle 
-    themeToggle.addEventListener('change', (e) => {
+    themeToggle.addEventListener('change', () => {
       switch (themeToggle.value) {
       case 'light':
         useLightTheme();

@@ -3,37 +3,6 @@
  * Currently only dark and light themes are supported.
  */
 
-/**
- * These color names are not actually used in the script,
- * but they're good to have as a reference
- */
-const themeColorNames = [
-  '--color-text-theme',
-  '--color-text-gray-theme',
-  '--color-background-theme',
-  '--color-fill-theme',
-  '--color-priority-low-theme',
-  '--color-hover-theme',
-];
-
-const darkColorNames = [
-  '--color-text-light', // with dark theme, the text is going to be light
-  '--color-text-gray-light', 
-  '--color-background-dark',
-  '--color-fill-dark',
-  '--color-priority-low-dark',
-  '--color-hover-dark',
-];
-
-const lightColorNames = [
-  '--color-text-dark', // with light theme, the text is going to be dark
-  '--color-text-gray-dark', 
-  '--color-background-light',
-  '--color-fill-light',
-  '--color-priority-low',
-  '--color-hover-light',
-];
-
 const themes = {
   LIGHT: 'light',
   DARK: 'dark',

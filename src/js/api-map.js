@@ -68,11 +68,11 @@ function assigneeToBooleans(kind) {
 }
 
 /**
+ * Map a D1 / API issue row to the UI issue shape used by list, kanban, and detail pages.
  * @param {object} row - D1 / API issue row
- * @param {{ id: string, name: string }|null} [profile] - logged-in user profile (unused; kept for call-site compatibility)
- * @returns {object}
+ * @returns {object} UI issue object
  */
-export function toUiIssue(row, profile = null) {
+export function toUiIssue(row) {
   const kind = assigneeKind(row);
 
   return {
@@ -101,8 +101,9 @@ export function toUiIssue(row, profile = null) {
 }
 
 /**
+ * Map UI create-issue fields to the POST /api/issues request body.
  * @param {object} fields - createIssue() input from the UI
- * @param {string} now
+ * @param {string} now - ISO timestamp for created_at and updated_at
  * @param {string|null} [createdByUserId] - DB user id of the logged-in user
  * @returns {object} POST /api/issues body
  */
@@ -124,6 +125,7 @@ export function toApiCreate(fields, now, createdByUserId = null) {
 }
 
 /**
+ * Map UI update-issue fields to the PUT /api/issues/:id request body.
  * @param {object} fields - updateIssue() input from the UI
  * @returns {object} PUT /api/issues/:id body
  */

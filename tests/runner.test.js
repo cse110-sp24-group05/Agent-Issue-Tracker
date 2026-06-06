@@ -36,8 +36,9 @@ const env = {
  * Sets up a D1 mock chain and wires the requested method to return `response`.
  * Uses mockReturnValue — every call to prepare() gets this chain.
  *
- * @param {any} response
- * @param {'first'|'all'|'run'} method
+ * @param {any} response - Value the mocked D1 method should resolve to
+ * @param {'first'|'all'|'run'} method - Which chained method receives the response
+ * @returns {object} The mocked D1 statement chain
  */
 function mockD1Response(response, method = 'first') {
   const chain = {
@@ -55,7 +56,7 @@ function mockD1Response(response, method = 'first') {
  * Queue multiple D1 responses in order for handlers that call prepare() more
  * than once. Matches the signature used in tests/worker.test.js (main's impl).
  *
- * @param {Array<{ response: any, method: 'first'|'all'|'run' }>} calls
+ * @param {Array<{ response: any, method: 'first'|'all'|'run' }>} calls - Ordered mock responses
  */
 function mockD1Sequence(calls) {
   let callIndex = 0;
@@ -75,6 +76,11 @@ function mockD1Sequence(calls) {
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
+/**
+ * Build a minimal open-issue row for runner endpoint tests.
+ * @param {object} [overrides] - Fields to override on the default row
+ * @returns {object} Open issue row shaped like a D1 record
+ */
 function openIssue(overrides = {}) {
   return {
     id: 'issue-001',
@@ -92,6 +98,11 @@ function openIssue(overrides = {}) {
   };
 }
 
+/**
+ * Build a minimal in-progress issue row for runner endpoint tests.
+ * @param {object} [overrides] - Fields to override on the default row
+ * @returns {object} In-progress issue row shaped like a D1 record
+ */
 function inProgressIssue(overrides = {}) {
   return openIssue({
     issue_status: 'in_progress',

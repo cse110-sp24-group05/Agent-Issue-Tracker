@@ -1,7 +1,3 @@
-import { STA_LABEL } from '../ui.js';
-
-import { StatusIcon } from './status-icon.js';
-
 /**
  * Component that appears in the dashboard/activity pages when there's no issues
  * Prompts the user to create a new issue
