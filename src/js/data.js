@@ -271,7 +271,7 @@ export async function claimIssue(id) {
 export async function postResult(id, result, tokensUsed, timeSpent) {
   await request(`/api/issues/${encodeURIComponent(id)}/result`, {
     method: 'PUT',
-    body: JSON.stringify({ new_status: 'review' })
+    body: JSON.stringify({ new_status: 'review', result_text: result })
   });
 
   const idx = _issues.findIndex(i => i.id === id);

@@ -94,7 +94,7 @@ export function toUiIssue(row) {
     claimed_at: null,
     completed_at: row.closed_at || null,
     blocked_reason: null,
-    result: null,
+    result_text: row.result_text,
     created_by: 'human-manual',
     audit_log: []
   };
@@ -120,7 +120,8 @@ export function toApiCreate(fields, now, createdByUserId = null) {
     created_by_user: createdByUserId,
     created_at: now,
     updated_at: now,
-    closed_at: null
+    closed_at: null,
+    result_text: null,
   };
 }
 
@@ -146,7 +147,6 @@ export function toApiUpdate(fields) {
     body.assigned_to_user = assigned_to_user;
     body.assigned_to_agent = assigned_to_agent;
   }
-
   return body;
 }
 

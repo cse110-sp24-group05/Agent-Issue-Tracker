@@ -85,8 +85,8 @@ export default {
       return closeIssue(id, env);
     }
 
-    // PUT /api/issues/:id/result
-    const isResult = url.pathname.startsWith('/api/issues/') && url.pathname.endsWith('/result');
+    // PUT /api/issues/:id/result_text
+    const isResult = url.pathname.startsWith('/api/issues/') && url.pathname.endsWith('/result_text');
     if (isResult && method === 'PUT') {
       const id = url.pathname.split('/')[3];
       return putResult(id, request, env);
@@ -100,7 +100,7 @@ export default {
     // PUT /api/issues/:id
     const isPlainIssuePath = url.pathname.startsWith('/api/issues/')
       && !url.pathname.endsWith('/claim')
-      && !url.pathname.endsWith('/result')
+      && !url.pathname.endsWith('/result_text')
       && !url.pathname.endsWith('/close')
       && !url.pathname.endsWith('/block');
     if (isPlainIssuePath && method === 'PUT') {
