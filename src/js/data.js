@@ -161,7 +161,7 @@ export async function initData() {
  * @returns {UiIssue[]}
  */
 export function getIssues() {
-  return _issues;
+  return [];
 }
 
 /**

@@ -18,7 +18,7 @@ const API_STATUS_TO_UI = {
   closed: 'closed'
 };
 
-const UI_PRIORITY_TO_API = {
+export const UI_PRIORITY_TO_API = {
   P0: 'critical',
   P1: 'high',
   P2: 'medium',

@@ -179,14 +179,15 @@
 
 /* ─── Issue Table ───────────────────────────────────────────────── */
 .issue-table-wrapper {
-  overflow-x: hidden;
+  overflow-x: scroll;
 }
 
 .issue-table {
-  width: 100%;
-  table-layout: fixed;
+  table-layout: auto;
   border-collapse: collapse;
   font-size: var(--text-sm);
+  min-width: 800px;
+  width: 100%;
 }
 
 .issue-table thead tr {
@@ -281,22 +282,21 @@
 }
 
 /* ─── Column Widths ─────────────────────────────────────────────── */
+
 .col-pri {
-  width: 5%;
+  width: 15%;
+
 }
 .col-id {
   width: 5%;
 }
 .col-title {
-  width: 35%;
+  width: 45%;
 }
 .col-status {
   width: 15%;
 }
 .col-assign {
-  width: 20%;
-}
-.col-budget {
   width: 10%;
 }
 .col-date {
@@ -361,12 +361,6 @@
   color: var(--color-text-theme);
 }
 
-/* ─── Modal Row (two columns inside modal body) ─────────────────── */
-.modal-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
-}
 
 /* ─── Multi-screen modal screens ────────────────────────────────── */
 .screen.hidden {

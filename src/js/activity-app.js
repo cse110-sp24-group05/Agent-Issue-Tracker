@@ -1,6 +1,7 @@
 // Imports
 import { ActivityIssue } from './components/activity-issue.js';
 import { ActivityStatusButton } from './components/activity-status-button.js';
+import { CreateIssueModal } from './components/create-issue-modal.js';
 import { NoIssuesPrompt } from './components/no-issues-prompt.js';
 import {
   initData,
@@ -44,6 +45,11 @@ async function loadActivity() {
   loadStatusButtons();
   // loadTokenBurn();
   
+  /**
+   * Load the create issue modal
+   */
+  const createIssueModal = new CreateIssueModal();
+  document.body.appendChild(createIssueModal); 
 }
 
 /**
@@ -51,6 +57,7 @@ async function loadActivity() {
  * Also sets the data fields used for other parts of the activity 
  */
 function loadIssues() {
+
   const dummyEntry = document.querySelector('.feed-entry');
 
   if (issuesList.length === 0) {

@@ -17,15 +17,28 @@ export class NoIssuesPrompt extends HTMLElement {
    */
   connectedCallback() {
     this.innerHTML = `
-            <tr><td colspan="7">
-              <div class="empty-row">
-                <div class="empty-state-title">No issues yet!</div>
-                <div class="empty-state-desc">Create your first issue to get started</div>
-                <button class="btn btn-primary" id="list-empty-new-btn">
-                  + New Issue
-                </button>
-              </div>
-            </td></tr>`;
+      <tr><td colspan="7">
+        <div class="empty-row">
+          <div class="empty-state-title">No issues yet!</div>
+          <div class="empty-state-desc">Create your first issue to get started</div>
+          
+        </div>
+      </td></tr>`;
+
+    // there's a weird bug with the button in the Kanban board having no click event
+    // making the button from scratch with JS fixes this issue
+    const button = document.createElement('button');
+    button.id = 'list-empty-new-btn';
+    button.classList.add('btn');
+    button.classList.add('btn-primary');
+    button.textContent = '+ New Issue';
+    button.addEventListener('click', () => {
+      const modal = document.getElementById('modal-new-issue');
+      modal.classList.remove('hidden');
+    });
+    const emptyRow = this.querySelector('.empty-row');
+    emptyRow.appendChild(button);
+    console.log(button);
 
   }
   
