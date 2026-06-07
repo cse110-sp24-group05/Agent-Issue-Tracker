@@ -14,7 +14,7 @@ Nick: I did not use AI to write code. Chat-GPT 5 Mini was used inside Duck-Duck-
 
 Nikolas: I used Claude Code Sonnet 4.6 for advice and guidance while developing. All code was reviewed and tested manually before comitting.
 
-Lisa:
+Lisa: I used Claude Code Sonnet 4.6 for coding support and guidance. All code was manually reviewed and tested before committing.
 
 Hien:
 
