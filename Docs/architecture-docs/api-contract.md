@@ -79,6 +79,7 @@ Populated automatically by triggers on every status change.
 | Method | Path | Purpose |
 |---|---|---|
 | POST | /api/login | Login or auto-register a user |
+| PUT | /api/users/:id | Change a user's display name |
 | GET | /api/issues?user_id=:id | List issues for one user |
 | GET | /api/issues/ready | Get next ready issue for the calling user |
 | GET | /api/issues/:id | Get a single issue |
@@ -87,7 +88,7 @@ Populated automatically by triggers on every status change.
 | PUT | /api/issues/:id | Update fields on an existing issue |
 | DELETE | /api/issues/:id | Delete an issue |
 | PUT | /api/issues/:id/claim | Agent claims an issue |
-| PUT | /api/issues/:id/result_text | Agent posts work result |
+| PUT | /api/issues/:id/result | Agent posts work result |
 | PUT | /api/issues/:id/block | Block an issue (failure path) |
 | PUT | /api/issues/:id/close | Close a reviewed issue |
 
@@ -118,6 +119,47 @@ Login or auto-register by name and email.
 ```json
 { "success": false, "error": "Missing required fields: name and email" }
 { "success": false, "error": "Email does not match the name provided" }
+```
+
+---
+
+## 1b. PUT /api/users/:id
+
+Change a user's display name (username), identified by their id. The `id` and `email` are immutable here. Returns the updated profile in the same shape as `/api/login` so the frontend can refresh its stored profile directly.
+
+In the frontend, the `updateName` helper in `data.js` wraps this endpoint to rename the current user.
+
+### Request
+
+```json
+{ "name": "Steven Chen" }
+```
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| name | string | yes | New display name; trimmed, cannot be empty |
+
+### Response — 200 OK
+
+```json
+{
+  "success": true,
+  "message": "Username updated successfully",
+  "profile": { "id": "user-73660", "name": "Steven Chen", "email": "steven@example.com" }
+}
+```
+
+### Response — 400 Bad Request
+
+```json
+{ "success": false, "error": "Missing required field: name" }
+{ "success": false, "error": "name cannot be empty" }
+```
+
+### Response — 404 Not Found
+
+```json
+{ "success": false, "error": "User not found" }
 ```
 
 ---
@@ -354,9 +396,9 @@ Issue must have `issue_status = 'open'`.
 
 ---
 
-## 10. PUT /api/issues/:id/result_text
+## 10. PUT /api/issues/:id/result
 
-Agent posts the outcome of its work: work summary, new status. Transitions from `in_progress` to either `review` or `blocked`.
+Agent posts the outcome of its work: work summary and new status. Transitions from `in_progress` to either `review` or `blocked`.
 
 ### Request
 
