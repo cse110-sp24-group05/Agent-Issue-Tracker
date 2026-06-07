@@ -423,3 +423,16 @@ export async function insertUser(env, id, username, email) {
     'INSERT INTO users (id, username, email) VALUES (?, ?, ?)'
   ).bind(id, username, email).run();
 }
+
+/**
+ * Update a user's username by id.
+ * @param {object} env - Worker env bindings.
+ * @param {string} id - the user id.
+ * @param {string} username - the new username.
+ * @returns {Promise<object>} The D1 .run() result (check meta.changes).
+ */
+export async function updateUsername(env, id, username) {
+  return env.issues_db.prepare(
+    'UPDATE users SET username = ? WHERE id = ?'
+  ).bind(username, id).run();
+}

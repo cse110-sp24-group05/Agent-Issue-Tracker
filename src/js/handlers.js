@@ -34,6 +34,7 @@ import {
   selectUserById,
   selectUserByUsername,
   insertUser,
+  updateUsername,
   resetExpiredClaims
 } from './db.js';
 
@@ -587,6 +588,52 @@ export async function loginOrRegister(request, env) {
     await insertUser(env, id, trimmedName, trimmedEmail);
 
     return ok({ success: true, profile: { id, name: trimmedName, email: trimmedEmail } }, 201);
+  } catch (error) {
+    return serverError(error.message);
+  }
+}
+
+/**
+ * updateUser changes the username (display name) of an existing user,
+ * identified by their id. The email and id are immutable here. Returns the
+ * updated profile in the same shape as loginOrRegister so the frontend can
+ * refresh its stored profile directly.
+ *
+ * @param {string} id - The unique identifier of the user to update.
+ * @param {Request} request - Contains the new name in the body.
+ * @param {object} env - Environment bindings containing the database connection.
+ * @returns {Response} A JSON response containing the updated profile or an error.
+ */
+export async function updateUser(id, request, env) {
+  try {
+    const body = await request.json();
+    const { name } = body;
+
+    if (!name) {
+      return badRequest('Missing required field: name');
+    }
+
+    if (typeof name !== 'string') {
+      return badRequest('name must be a string');
+    }
+
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      return badRequest('name cannot be empty');
+    }
+
+    const user = await selectUserById(env, id);
+    if (!user) {
+      return notFound('User not found');
+    }
+
+    await updateUsername(env, id, trimmedName);
+
+    return ok({
+      success: true,
+      message: 'Username updated successfully',
+      profile: { id: user.id, name: trimmedName, email: user.email }
+    });
   } catch (error) {
     return serverError(error.message);
   }
