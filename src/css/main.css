@@ -78,7 +78,7 @@
 
     /* Priority badge colors (aligned with --color-priority-high / -medium) */
     --priority-p0: #C10000;
-    --priority-p1: #C7920C;
+    --priority-p1: #9d7308;
     --priority-p2: #2563EB;
     --priority-p3: #6B7280;
 
@@ -654,6 +654,12 @@ select {
     gap: var(--space-3);
     padding: var(--space-4) var(--space-6);
     border-top: 1px solid var(--color-border);
+  }
+
+  .modal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
   }
   
   /* ─── Monospace ─────────────────────────────────────────────────── */

@@ -269,16 +269,16 @@ export async function claimIssue(id) {
  * @returns {Promise<UiIssue|null>}
  */
 export async function postResult(id, result, tokensUsed, timeSpent) {
-  await request(`/api/issues/${encodeURIComponent(id)}/result`, {
+  await request(`/api/issues/${encodeURIComponent(id)}/result_text`, {
     method: 'PUT',
-    body: JSON.stringify({ new_status: 'review' })
+    body: JSON.stringify({ issue_status: 'review', result_text: result })
   });
 
   const idx = _issues.findIndex(i => i.id === id);
   if (idx !== -1) {
     _issues[idx] = {
       ..._issues[idx],
-      result,
+      result_text: result,
       tokens_used: Number(tokensUsed) || 0,
       time_spent: Number(timeSpent) || _issues[idx].time_spent,
       status: 'pending-review',

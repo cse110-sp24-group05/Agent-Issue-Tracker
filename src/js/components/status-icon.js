@@ -22,6 +22,7 @@ export class StatusIcon extends HTMLElement {
    * These can be open, in-progress, blocked, pending, or closed
    */
   set status(status) {
+    console.log(status);
     let fileName;
     switch (status) {
     case 'open':

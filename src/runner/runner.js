@@ -119,7 +119,7 @@ function sleep(ms) {
 function printTask(issue) {
   const description = issue.issue_description?.trim() || '(no description provided)';
   const issueUrl    = `${BASE_URL}/api/issues/${issue.id}`;
-  const resultUrl   = `${BASE_URL}/api/issues/${issue.id}/result`;
+  const resultUrl   = `${BASE_URL}/api/issues/${issue.id}/result_text`;
 
   // Build the header lines for curl commands so Claude has them pre-filled.
   const curlUserHeader  = USER_ID  ? `    -H "X-User-ID: ${USER_ID}" \\` : '';

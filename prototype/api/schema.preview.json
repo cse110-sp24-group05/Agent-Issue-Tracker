@@ -77,7 +77,7 @@
     "result": {
       "oneOf": [
         { "type": "null" },
-        { "$ref": "#/$defs/Result" }
+        { "$ref": "#/$defs/result_text" }
       ],
       "description": "Required to be non-null when status is 'pending-review' or 'closed'. Server rejects status transitions that don't satisfy this."
     },

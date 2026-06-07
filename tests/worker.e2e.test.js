@@ -279,7 +279,7 @@ describe('claim → result → history → close workflow (end-to-end)', () => {
     expect(db.prepare('SELECT * FROM agents WHERE id = ?').get('agent-007')).toBeTruthy();
 
     // 2. The agent posts a result, moving it to review.
-    const result = await call('PUT', `/api/issues/${issue.id}/result`, {
+    const result = await call('PUT', `/api/issues/${issue.id}/result_text`, {
       new_status: 'review', result_text: 'done', tokens_used: 123
     });
     expect(result.status).toBe(200);
@@ -322,7 +322,7 @@ describe('claim → result → history → close workflow (end-to-end)', () => {
     const user = await makeUser();
     const issue = await makeIssue(user.id); // still 'open'
 
-    const { status } = await call('PUT', `/api/issues/${issue.id}/result`, { new_status: 'review' });
+    const { status } = await call('PUT', `/api/issues/${issue.id}/result_text`, { new_status: 'review' });
 
     expect(status).toBe(400);
     expect(issueRow(issue.id).issue_status).toBe('open');

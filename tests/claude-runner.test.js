@@ -218,7 +218,7 @@ describe('runRunner workflow', () => {
     // verify the block endpoint was called (not the result endpoint)
     const urls = mockFetch.mock.calls.map((c) => c[0]);
     expect(urls.some((u) => u.endsWith('/block'))).toBe(true);
-    expect(urls.some((u) => u.endsWith('/result'))).toBe(false);
+    expect(urls.some((u) => u.endsWith('/result_text'))).toBe(false);
 
     // verify Claude was NOT called (no claude.com URL in calls)
     expect(urls.some((u) => u.includes('anthropic.com'))).toBe(false);
@@ -303,7 +303,7 @@ describe('runRunner workflow', () => {
     // the block endpoint should be hit
     expect(urls.some((u) => u.endsWith('/block'))).toBe(true);
     // result endpoint should NOT be hit (it's an API failure, not a Claude refusal)
-    expect(urls.some((u) => u.endsWith('/result'))).toBe(false);
+    expect(urls.some((u) => u.endsWith('/result_text'))).toBe(false);
   });
 
   // Scenario 7: Claude returns a successful solution
@@ -332,7 +332,7 @@ describe('runRunner workflow', () => {
 
     const urls = mockFetch.mock.calls.map((c) => c[0]);
     // result endpoint should be hit (Claude succeeded)
-    expect(urls.some((u) => u.endsWith('/result'))).toBe(true);
+    expect(urls.some((u) => u.endsWith('/result_text'))).toBe(true);
     // block endpoint should NOT be hit
     expect(urls.some((u) => u.endsWith('/block'))).toBe(false);
   });
@@ -365,7 +365,7 @@ describe('runRunner workflow', () => {
 
     const urls = mockFetch.mock.calls.map((c) => c[0]);
     expect(urls.some((u) => u.endsWith('/block'))).toBe(true);
-    expect(urls.some((u) => u.endsWith('/result'))).toBe(false);
+    expect(urls.some((u) => u.endsWith('/result_text'))).toBe(false);
   });
 
   // Scenario 9: Claude returns an empty response (rare but possible)

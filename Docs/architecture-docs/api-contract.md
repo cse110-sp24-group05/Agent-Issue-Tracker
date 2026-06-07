@@ -87,7 +87,7 @@ Populated automatically by triggers on every status change.
 | PUT | /api/issues/:id | Update fields on an existing issue |
 | DELETE | /api/issues/:id | Delete an issue |
 | PUT | /api/issues/:id/claim | Agent claims an issue |
-| PUT | /api/issues/:id/result | Agent posts work result |
+| PUT | /api/issues/:id/result_text | Agent posts work result |
 | PUT | /api/issues/:id/block | Block an issue (failure path) |
 | PUT | /api/issues/:id/close | Close a reviewed issue |
 
@@ -354,7 +354,7 @@ Issue must have `issue_status = 'open'`.
 
 ---
 
-## 10. PUT /api/issues/:id/result
+## 10. PUT /api/issues/:id/result_text
 
 Agent posts the outcome of its work: work summary, new status. Transitions from `in_progress` to either `review` or `blocked`.
 

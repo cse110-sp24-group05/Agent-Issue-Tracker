@@ -178,7 +178,7 @@
                 <col class="col-title" />
                 <col class="col-status" />
                 <col class="col-assign" />
-                <col class="col-budget" />
+                <!-- <col class="col-budget" /> -->
                 <col class="col-date" />
               </colgroup>
               <thead>
@@ -188,9 +188,9 @@
                   <th>Title</th>
                   <th>Status</th>
                   <th>Assignee</th>
-                  <th class="align-center">Tokens</th>
+                  <!-- <th class="align-center">Tokens</th> -->
                   <th class="align-center">Updated</th>
-                  <th aria-label="Actions"></th>
+                  <!-- <th aria-label="Actions"></th> -->
                 </tr>
               </thead>
               <tbody>
@@ -256,92 +256,7 @@
         </div>
       </div>
     </main>
-    <div
-      class="modal-overlay hidden"
-      id="modal-new-issue"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
-    >
-      <div class="modal">
-        <div class="modal-header">
-          <h2 class="modal-title" id="modal-title">Create New Issue</h2>
-          <button class="modal-close" id="modal-close" aria-label="Close">
-            &#10005;
-          </button>
-        </div>
-
-        <form class="modal-body" id="form-new-manual">
-          <div class="form-group">
-            <label class="form-label" for="new-title">Title<span class="required">*</span></label>
-            <input
-              class="form-input"
-              type="text"
-              id="new-title"
-              placeholder="Short description of the issue"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="new-description">Description</label>
-            <textarea
-              class="form-textarea"
-              id="new-description"
-              placeholder="What needs to be done and why?"
-              rows="3"
-            ></textarea>
-          </div>
-          <div class="modal-row">
-            <div class="form-group">
-              <label class="form-label" for="new-priority">Priority</label>
-              <select class="form-select" id="new-priority">
-                <option value="P0">P0</option>
-                <option value="P1">P1</option>
-                <option value="P2" selected>P2</option>
-                <option value="P3">P3</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="new-assignee">Assignee</label>
-              <select class="form-select" id="new-assignee">
-                <option value="human-only">Human-only</option>
-                <option value="open-to-all" selected>Open-to-all</option>
-                <option value="ai-only">AI-only</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="new-budget ">Token Budget</label>
-              <input
-                class="form-input"
-                type="number"
-                id="new-budget"
-                placeholder="2000"
-                min="0"
-                max="100000"
-              />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="new-estimate">Time Estimate (min)</label>
-              <input
-                class="form-input"
-                type="number"
-                id="new-estimate"
-                placeholder="60"
-                min="0"
-              />
-            </div>
-          </div>
-        </form>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" id="manual-cancel">
-            Cancel
-          </button>
-          <button class="btn btn-primary" type="submit" form="form-new-manual">
-            Create Issue
-          </button>
-        </div>
-      </div>
-    </div>
+    
     
     <script type="module" src="js/list-app.js"></script>
     </body>

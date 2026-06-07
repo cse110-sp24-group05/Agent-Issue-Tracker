@@ -211,14 +211,14 @@ async function runSimulator() {
   await sleep(MIN_DELAY_BETWEEN_CALLS_MS);
 
   // STEP 5: Post the result back to the API
-  // calls PUT /api/issues/:id/result
+  // calls PUT /api/issues/:id/result_text
   // sends { new_status } — the agent decides if work is done ("review") or stuck ("blocked")
   // we always send "review" since our fake work always "succeeds"
   log('RESULT', `Posting result for ${target.id}...`);
 
   try {
     // send a PUT request with the new status
-    const resultResponse = await fetch(`${BASE_URL}/api/issues/${target.id}/result`, {
+    const resultResponse = await fetch(`${BASE_URL}/api/issues/${target.id}/result_text`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -235,7 +235,7 @@ async function runSimulator() {
 
       // 404 means the route doesn't exist yet or issue not found
       if (resultResponse.status === 404) {
-        log('HINT', 'Issue not found or /api/issues/:id/result route not deployed yet.');
+        log('HINT', 'Issue not found or /api/issues/:id/result_text route not deployed yet.');
       }
 
       // 400 means the issue isn't in the right status

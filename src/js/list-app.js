@@ -1,7 +1,6 @@
 import {
   initData,
   getIssues,
-  createIssue,
   updateIssue,
   getSettings,
 } from './data.js';
@@ -17,6 +16,8 @@ import {
 
 import { tokenLevel, filterIssues, countByStatus } from './issue-helpers.js';
 import { NoIssuesPrompt } from './components/no-issues-prompt.js';
+import { UI_PRIORITY_TO_API } from './api-map.js';
+import { CreateIssueModal } from './components/create-issue-modal.js';
 
 // Remembers if user prefers list or board view
 const VIEW_KEY = 'ait_view_pref';
@@ -31,6 +32,13 @@ try {
 } catch (err) {
   console.error('[data.js] Failed to load issues:', err.message);
 }
+
+/**
+ * Load the create issue modal
+ */
+const createIssueModal = new CreateIssueModal();
+document.body.appendChild(createIssueModal);
+
 /**
  * Updates the summary bar counts for each issue status column
  */
@@ -77,11 +85,6 @@ function renderList(issues) {
       colgroup.remove();
       const thead = document.querySelector('.issue-table thead');
       thead.remove();
-      document
-        .getElementById('list-empty-new-btn')
-        ?.addEventListener('click', () => {
-          document.getElementById('btn-new-issue').click();
-        });
     } else {
       tbody.innerHTML =
         '<tr><td colspan="7" class="empty-row">No issues match the current filters.</td></tr>';
@@ -95,13 +98,13 @@ function renderList(issues) {
               data-status="${i.status}" data-priority="${i.priority}"
               data-assignee="${esc(i.assignee)}">
             <td><a class="issue-id mono" href="issue.html?id=${esc(i.id)}">${esc((i.display_id || '').replace('issue-', ''))}</a></td>
-            <td><span class="badge ${priBadge(i.priority)}">${i.priority}</span></td>
+            <td><span class="badge ${priBadge(i.priority)}">${i.priority} - ${UI_PRIORITY_TO_API[i.priority]}</span></td>
             <td>
               <a class="issue-title-link" href="issue.html?id=${esc(i.id)}" title="${esc(i.title)}">${esc(i.title)}</a>
             </td>
             <td><span class="badge ${staBadge(i.status)}">${staLabel(i.status)}</span></td>
             <td class="${i.assignee_kind === 'open-to-all' ? 'text-muted' : ''}">${esc(i.assignee)}</td>
-            <td class="token-cell">
+            <!-- <td class="token-cell">
             <div class="token-wrap">
               <div class="token-text mono text-muted">${i.tokens_used.toLocaleString()} / ${i.token_budget.toLocaleString()}</div>
               <div class="token-bar">
@@ -109,7 +112,7 @@ function renderList(issues) {
                     style="width: ${Math.max(0, Math.round((1 - i.tokens_used / i.token_budget) * 100))}%"></div>
               </div>
               </div>
-            </td>
+            </td> -->
             <td class="align-right text-muted">${fmtRelTime(i.updated_at)}</td>
             
           </tr>`,
@@ -251,11 +254,7 @@ function renderBoard(issues) {
       // only show CTA button when ALL columns are empty
       const nip = new NoIssuesPrompt();
       col.appendChild(nip);
-      document
-        .getElementById('empty-new-issue-btn')
-        ?.addEventListener('click', () => {
-          document.getElementById('btn-new-issue').click();
-        });
+      
     } else {
       // regular empty state — just a message, no button
       col.innerHTML = `
@@ -378,66 +377,11 @@ if (initStatusFilter) {
 setView(currentView);
 applyFilters();
 
+document.getElementById('btn-new-issue').addEventListener('click', () => {
+  const modal = document.getElementById('modal-new-issue');
+  modal.classList.remove('hidden');
+});
+
 // ── Agent sim re-render hook ─────────────────────────────────────
 document.addEventListener('ait:data-changed', applyFilters);
 
-// ── Modal ────────────────────────────────────────────────────────
-const overlay = document.getElementById('modal-new-issue');
-
-/**
- * Opens the new issue modal and focuses the title input
- */
-function openModal() {
-  overlay.classList.remove('hidden');
-  document.getElementById('new-title').focus();
-}
-
-/**
- * Closes the new issue modal and resets the form
- */
-function closeModal() {
-  overlay.classList.add('hidden');
-  document.getElementById('form-new-manual').reset();
-}
-
-document.getElementById('btn-new-issue').addEventListener('click', openModal);
-document.getElementById('modal-close').addEventListener('click', closeModal);
-document.getElementById('manual-cancel').addEventListener('click', closeModal);
-overlay.addEventListener('click', (e) => {
-  if (e.target === overlay) {
-    closeModal();
-  }
-});
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && !overlay.classList.contains('hidden')) {
-    closeModal();
-  }
-});
-
-// manual form submit
-document
-  .getElementById('form-new-manual')
-  .addEventListener('submit', async (e) => {
-    e.preventDefault();
-    try {
-      const issue = await createIssue({
-        title: document.getElementById('new-title').value.trim(),
-        description: document.getElementById('new-description').value.trim(),
-        priority: document.getElementById('new-priority').value,
-        assignee:
-          document.getElementById('new-assignee').value || 'open-to-all',
-        token_budget:
-          parseInt(document.getElementById('new-budget').value, 10) || 2000,
-        time_estimate:
-          parseInt(document.getElementById('new-estimate').value, 10) || 60,
-        creator: getSettings().ait_user || 'unknown',
-        created_by: 'human-manual',
-      });
-      applyFilters();
-      closeModal();
-      requestAnimationFrame(() => flashEntity(issue.id, 'create'));
-    } catch (err) {
-      console.error('[data.js] createIssue failed:', err.message);
-      alert(`Could not create issue: ${err.message}`);
-    }
-  });
