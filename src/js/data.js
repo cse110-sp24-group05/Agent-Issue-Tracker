@@ -72,6 +72,28 @@ export async function login(name, email) {
 }
 
 /**
+ * PUT /api/users/:id — change the logged-in user's display name.
+ * On success, updates the stored profile in localStorage and returns it.
+ * @param {string} name - The new display name / username.
+ * @returns {Promise<UserProfile>}
+ */
+export async function updateName(name) {
+  const profile = getProfile();
+  if (!profile) {
+    throw new Error('Not logged in');
+  }
+
+  const data = await request(`/api/users/${encodeURIComponent(profile.id)}`, {
+    method: 'PUT',
+    body: JSON.stringify({ name })
+  });
+
+  const updated = data.profile;
+  saveProfile(updated);
+  return updated;
+}
+
+/**
  * Clear the stored profile (log out). Callers should redirect to login.html.
  */
 export function logout() {

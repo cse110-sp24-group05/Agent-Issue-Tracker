@@ -17,7 +17,8 @@ import {
   closeIssue,
   blockIssue,
   getIssueHistory,
-  loginOrRegister
+  loginOrRegister,
+  updateUser
 } from './handlers.js';
 
 import { CORS_HEADERS } from './helpers.js';
@@ -95,6 +96,12 @@ export default {
     // POST /api/login
     if (url.pathname === '/api/login' && method === 'POST') {
       return loginOrRegister(request, env);
+    }
+
+    // PUT /api/users/:id — change a user's display name
+    if (url.pathname.startsWith('/api/users/') && method === 'PUT') {
+      const id = url.pathname.split('/')[3];
+      return updateUser(id, request, env);
     }
 
     // PUT /api/issues/:id

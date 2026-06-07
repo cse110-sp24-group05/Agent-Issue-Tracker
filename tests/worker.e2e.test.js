@@ -146,6 +146,68 @@ describe('POST /api/login (end-to-end)', () => {
   });
 });
 
+// ── update username ──────────────────────────────────────────────────────────
+
+describe('PUT /api/users/:id (end-to-end)', () => {
+  test('changes the username and persists it in the users row', async () => {
+    const user = await makeUser('eve', 'eve@ucsd.edu');
+
+    const { status, data } = await call('PUT', `/api/users/${user.id}`, { name: 'eve-renamed' });
+
+    expect(status).toBe(200);
+    expect(data.success).toBe(true);
+    expect(data.profile.id).toBe(user.id);
+    expect(data.profile.name).toBe('eve-renamed');
+    expect(data.profile.email).toBe('eve@ucsd.edu'); // email unchanged
+
+    // It is actually written to the DB.
+    const row = db.prepare('SELECT * FROM users WHERE id = ?').get(user.id);
+    expect(row.username).toBe('eve-renamed');
+    expect(row.email).toBe('eve@ucsd.edu');
+  });
+
+  test('trims surrounding whitespace from the new name', async () => {
+    const user = await makeUser('frank', 'frank@ucsd.edu');
+
+    const { status, data } = await call('PUT', `/api/users/${user.id}`, { name: '  spaced  ' });
+
+    expect(status).toBe(200);
+    expect(data.profile.name).toBe('spaced');
+    expect(db.prepare('SELECT username FROM users WHERE id = ?').get(user.id).username).toBe('spaced');
+  });
+
+  test('the renamed user can still log in with the new name + same email', async () => {
+    const user = await makeUser('grace', 'grace@ucsd.edu');
+    await call('PUT', `/api/users/${user.id}`, { name: 'grace2' });
+
+    const { status, data } = await call('POST', '/api/login', {
+      name: 'grace2', email: 'grace@ucsd.edu'
+    });
+
+    expect(status).toBe(200); // existing user, logged back in
+    expect(data.profile.id).toBe(user.id);
+    expect(data.profile.name).toBe('grace2');
+  });
+
+  test('returns 404 for an unknown user and writes nothing', async () => {
+    const { status, data } = await call('PUT', '/api/users/user-00000', { name: 'nobody' });
+
+    expect(status).toBe(404);
+    expect(data.success).toBe(false);
+    expect(db.prepare('SELECT COUNT(*) AS n FROM users').get().n).toBe(0);
+  });
+
+  test('returns 400 when name is missing and leaves the row unchanged', async () => {
+    const user = await makeUser('heidi', 'heidi@ucsd.edu');
+
+    const { status, data } = await call('PUT', `/api/users/${user.id}`, {});
+
+    expect(status).toBe(400);
+    expect(data.success).toBe(false);
+    expect(db.prepare('SELECT username FROM users WHERE id = ?').get(user.id).username).toBe('heidi');
+  });
+});
+
 // ── create + read ────────────────────────────────────────────────────────────
 
 describe('POST /api/issues (end-to-end)', () => {

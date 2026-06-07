@@ -763,4 +763,80 @@ describe('Issues API Tests', () => {
       expect(data.error).toContain('already closed');
     });
   });
+
+  // Test PUT /api/users/:id (updateUser)
+  describe('PUT /api/users/:id', () => {
+    // success case: involves 2 DB calls (selectUserById, then updateUsername)
+    test('updates the username and returns the new profile', async () => {
+      mockD1Sequence([
+        { response: { id: 'user-00001', username: 'old-name', email: 'steven@ucsd.edu' }, method: 'first' }, // selectUserById
+        { response: { meta: { changes: 1 } }, method: 'run' } // updateUsername
+      ]);
+
+      const request = new Request('http://localhost/api/users/user-00001', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: 'new-name' })
+      });
+
+      const response = await worker.fetch(request, env);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*');
+      expect(data.success).toBe(true);
+      expect(data.profile.id).toBe('user-00001');
+      expect(data.profile.name).toBe('new-name');
+      // email is immutable here and echoed back from the existing row
+      expect(data.profile.email).toBe('steven@ucsd.edu');
+    });
+
+    // failure case 1: missing name
+    test('returns 400 when name is missing', async () => {
+      const request = new Request('http://localhost/api/users/user-00001', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+
+      const response = await worker.fetch(request, env);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.success).toBe(false);
+    });
+
+    // failure case 2: blank name (only whitespace)
+    test('returns 400 when name is only whitespace', async () => {
+      const request = new Request('http://localhost/api/users/user-00001', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: '   ' })
+      });
+
+      const response = await worker.fetch(request, env);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.success).toBe(false);
+      expect(data.error).toContain('empty');
+    });
+
+    // failure case 3: user does not exist
+    test('returns 404 when the user does not exist', async () => {
+      mockD1Response(null, 'first'); // selectUserById finds nothing
+
+      const request = new Request('http://localhost/api/users/user-99999', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: 'ghost' })
+      });
+
+      const response = await worker.fetch(request, env);
+      const data = await response.json();
+
+      expect(response.status).toBe(404);
+      expect(data.success).toBe(false);
+    });
+  });
 });
