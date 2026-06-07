@@ -629,7 +629,7 @@ async function runRunner() {
     await saveAgentResponse(target.id, result);
 
     try {
-      const resultResponse = await fetchWithTimeout(`${BASE_URL}/api/issues/${target.id}/result`, {
+      const resultResponse = await fetchWithTimeout(`${BASE_URL}/api/issues/${target.id}/result_text`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ new_status: 'review' }),

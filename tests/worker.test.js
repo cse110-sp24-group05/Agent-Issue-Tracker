@@ -620,8 +620,8 @@ describe('Issues API Tests', () => {
     });
   });
 
-  // Test PUT /api/issues/:id/result (putResult)
-  describe('PUT /api/issues/:id/result', () => {
+  // Test PUT /api/issues/:id/result_text (putResult)
+  describe('PUT /api/issues/:id/result_text', () => {
     // success case (involves multiple DB calls so we use mockD1Sequence)
     // we first suppose that the DB has an in_progress issue
     test('sucessful', async() => {
@@ -630,7 +630,7 @@ describe('Issues API Tests', () => {
         {response: {meta: {changes: 1}}, method: 'run'} // updateIssueStatus
       ]);
 
-      const request = new Request('http://localhost/api/issues/80/result', {
+      const request = new Request('http://localhost/api/issues/80/result_text', {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({new_status: 'review'})
@@ -645,7 +645,7 @@ describe('Issues API Tests', () => {
 
     // failure case 1: (invalid new_status)
     test('invalid new_status, returns 400', async() => {
-      const request = new Request('http://localhost/api/issues/80/result', {
+      const request = new Request('http://localhost/api/issues/80/result_text', {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({new_status: 'closed'})
@@ -661,7 +661,7 @@ describe('Issues API Tests', () => {
     test('issue does not exist, return 404', async () => {
       mockD1Response(null, 'first');
 
-      const request = new Request('http://localhost/api/issues/999/result', {
+      const request = new Request('http://localhost/api/issues/999/result_text', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ new_status: 'review' })
@@ -678,7 +678,7 @@ describe('Issues API Tests', () => {
     test('fails prereq: issue is not already in_progress, return 400', async () => {
       mockD1Response({ id: '80', issue_status: 'open' }, 'first');
 
-      const request = new Request('http://localhost/api/issues/80/result', {
+      const request = new Request('http://localhost/api/issues/80/result_text', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ new_status: 'review' })

@@ -108,7 +108,7 @@ Full contract in `Docs/archtiecture-docs/api-contract.md`.
 | PUT    | `/api/issues/:id`                | Update an issue                        |
 | DELETE | `/api/issues/:id`                | Delete an issue                        |
 | PUT    | `/api/issues/:id/claim`          | Claim an issue (lock to an agent)      |
-| PUT    | `/api/issues/:id/result`         | Submit work result                     |
+| PUT    | `/api/issues/:id/result_text`         | Submit work result                     |
 | PUT    | `/api/issues/:id/block`          | Block an issue (failure path)          |
 | PUT    | `/api/issues/:id/close`          | Approve and close an issue             |
 
@@ -190,7 +190,7 @@ resets any `in_progress` issues whose `claim_expires_at` has passed back to
 3. Claim the issue                           →  PUT /api/issues/:id/claim
 4. Print task and curl command to stdout     →  (Claude Code reads it)
 5. Claude Code does the work locally
-6. Claude Code runs the printed curl         →  PUT /api/issues/:id/result
+6. Claude Code runs the printed curl         →  PUT /api/issues/:id/result_text
                                                 body: { new_status, result_text }
 7. Human reviews the result in the UI
 8. Human approves                            →  PUT /api/issues/:id/close

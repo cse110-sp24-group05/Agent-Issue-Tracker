@@ -4,7 +4,7 @@
  * Covers the three API interactions that runner.js makes:
  *   GET  /api/issues/ready        — new endpoint, returns highest-priority open issue
  *   PUT  /api/issues/:id/claim    — existing endpoint (existing tests in src/tests)
- *   PUT  /api/issues/:id/result   — updated to accept result_text + tokens_used
+ *   PUT  /api/issues/:id/result_text   — updated to accept result_text + tokens_used
  *
  * ─── AUTH / WORKSPACE NOTE ───────────────────────────────────────────────────
  * There is NO server-side auth or workspace filtering yet.
@@ -188,9 +188,9 @@ describe('GET /api/issues/ready', () => {
   });
 });
 
-// ─── PUT /api/issues/:id/result ───────────────────────────────────────────────
+// ─── PUT /api/issues/:id/result_text ───────────────────────────────────────────────
 
-describe('PUT /api/issues/:id/result', () => {
+describe('PUT /api/issues/:id/result_text', () => {
   beforeEach(() => jest.clearAllMocks());
 
   test('accepts new_status "review" and posts back successfully', async () => {
@@ -201,7 +201,7 @@ describe('PUT /api/issues/:id/result', () => {
     ]);
 
     const res = await worker.fetch(
-      new Request('http://localhost/api/issues/issue-001/result', {
+      new Request('http://localhost/api/issues/issue-001/result_text', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ new_status: 'review' })
@@ -223,7 +223,7 @@ describe('PUT /api/issues/:id/result', () => {
     ]);
 
     const res = await worker.fetch(
-      new Request('http://localhost/api/issues/issue-001/result', {
+      new Request('http://localhost/api/issues/issue-001/result_text', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -247,7 +247,7 @@ describe('PUT /api/issues/:id/result', () => {
     ]);
 
     const res = await worker.fetch(
-      new Request('http://localhost/api/issues/issue-001/result', {
+      new Request('http://localhost/api/issues/issue-001/result_text', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -265,7 +265,7 @@ describe('PUT /api/issues/:id/result', () => {
 
   test('rejects invalid new_status values', async () => {
     const res = await worker.fetch(
-      new Request('http://localhost/api/issues/issue-001/result', {
+      new Request('http://localhost/api/issues/issue-001/result_text', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ new_status: 'closed' })
@@ -282,7 +282,7 @@ describe('PUT /api/issues/:id/result', () => {
     mockD1Response(openIssue(), 'first'); // still 'open', not 'in_progress'
 
     const res = await worker.fetch(
-      new Request('http://localhost/api/issues/issue-001/result', {
+      new Request('http://localhost/api/issues/issue-001/result_text', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ new_status: 'review' })
@@ -300,7 +300,7 @@ describe('PUT /api/issues/:id/result', () => {
     mockD1Response(null, 'first');
 
     const res = await worker.fetch(
-      new Request('http://localhost/api/issues/nonexistent/result', {
+      new Request('http://localhost/api/issues/nonexistent/result_text', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ new_status: 'review' })
