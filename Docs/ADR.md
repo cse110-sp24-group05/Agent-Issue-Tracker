@@ -525,3 +525,30 @@ The Schema has been modified, and these changes are reflected on our D1 Cloudfla
 
 - Due to time-constraints, we sacrifice the team dev aspect, making this a solo dev tool (only you as the user as well as your agent), for simplicity.
 - DB may require large changes, which impacts both frontend and backend
+  
+# ADR 11: Remove Token Tracking and Budget
+
+**Status:** Accepted
+**Date:** 2026-06-05
+**Decision-makers:** Whole Team
+
+## Context and Problem Statement
+
+Token and time tracking (M7) was originally scoped as an MVP P1 feature. The plan was to log actual tokens consumed and time spent per agent run, and display a budget vs. actual dashboard. Given time constraints and the decision to scope AIT as a solo-dev tool, this feature was cut before implementation.
+
+## Decision Outcome
+
+Remove token and time tracking from scope entirely. The `tokens_used` field remains in the schema as a foundation for future implementation but no tracking logic, logging, or dashboard will be built for this release.
+
+## Consequences
+
+### Good
+
+- Reduces implementation complexity across backend and frontend
+- Keeps scope realistic given remaining time
+- Field remains in schema so the feature can be added in a future iteration without a migration
+
+### Bad
+
+- No visibility into how many tokens the agent consumes per run
+- Users cannot track or estimate costs associated with agent work
