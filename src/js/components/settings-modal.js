@@ -1,4 +1,4 @@
-import { getAgentEnvLine, logout, getSettings, saveSettings, getProfile } from '../data.js';
+import { getAgentEnvLine, logout, getSettings, saveSettings, getProfile, updateName } from '../data.js';
 import { saveTheme, useDarkTheme, useLightTheme, useSystemTheme, getActiveTheme } from '../themes.js';
 
 
@@ -134,7 +134,7 @@ export class SettingsModal extends HTMLElement {
 
     // Close modal via Save button and write data
     if (saveBtn) {
-      saveBtn.addEventListener('click', () => {
+      saveBtn.addEventListener('click', async () => {
         // Save the Name
         if (nameInput) {
           const newName = nameInput.value.trim();
@@ -148,6 +148,13 @@ export class SettingsModal extends HTMLElement {
 
         // Close the modal
         settingsModal.classList.add('hidden');
+
+        // Do async name updating after hiding the model so
+        if (profile.name !== nameInput.value && nameInput.value !== '') {
+          console.log('Updating name...');
+          await updateName(nameInput.value);
+        }
+
       });
     }
 
