@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.5.0](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/compare/agent-issue-tracker-v1.4.0...agent-issue-tracker-v1.5.0) (2026-06-07)
+
+
+### Features
+
+* implement username update and profile persistence ([e3d442a](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/e3d442a1465a66b50cd1d111d6c4caf5bf8eaaee))
+* implement username update and profile persistence ([ae651dd](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/ae651dd270f4aa6abc1a1ef3de3ba43161b40642))
+
+
+### Bug Fixes
+
+* changed buttons for certain statuses to be unique ([28dae52](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/28dae527cea01fb213e608a45462e59c52070402))
+* ESLint and JSDoc errors ([eb9fe4f](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/eb9fe4faa00877b5aa5306cdc4a5e9cec234fcd2))
+* fixed create issue modal not working on activity page ([255b771](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/255b77191b20111ad210b20556959e0049def78e))
+* fixed get issues having test behavior (oops) ([d59b237](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/d59b23767bf7ef05b7b56ad1116331af51a0c6a7))
+* fixed issue post result not being saved ([bac73e5](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/bac73e53c7ce7f86fc2d2128b59b8b1923e1e444))
+* fixed new result text not refreshing UI, removed emojis on issue page ([cb142d7](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/cb142d7a899d60a476b4a8f7d5deff5e5d00410e))
+* fixed some API calls referring to "result" instead of "result_text" ([3d56720](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/3d56720763feda07fbeda04300262aa6221ba999))
+* resolved import problem ([f1889d1](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/f1889d161bda814b85fc55b8c7b9398da72c0974))
+
 ## [1.4.0](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/compare/agent-issue-tracker-v1.3.0...agent-issue-tracker-v1.4.0) (2026-06-05)
 
 
