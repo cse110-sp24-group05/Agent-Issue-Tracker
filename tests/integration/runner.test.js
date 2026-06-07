@@ -3,7 +3,7 @@
  *
  * Covers the three API interactions that runner.js makes:
  *   GET  /api/issues/ready        — new endpoint, returns highest-priority open issue
- *   PUT  /api/issues/:id/claim    — existing endpoint (existing tests in src/tests)
+ *   PUT  /api/issues/:id/claim    — existing endpoint (covered in integration/worker.test.js)
  *   PUT  /api/issues/:id/result_text   — updated to accept result_text + tokens_used
  *
  * ─── AUTH / WORKSPACE NOTE ───────────────────────────────────────────────────
@@ -23,7 +23,7 @@
  */
 
 import { jest } from '@jest/globals';
-import worker from '../src/js/worker.js';
+import worker from '../../src/js/worker.js';
 
 const env = {
   issues_db: {
@@ -32,7 +32,7 @@ const env = {
 };
 
 /**
- * Mirror of the helper in tests/worker.test.js.
+ * Mirror of the helper in tests/integration/worker.test.js.
  * Sets up a D1 mock chain and wires the requested method to return `response`.
  * Uses mockReturnValue — every call to prepare() gets this chain.
  *
@@ -54,7 +54,7 @@ function mockD1Response(response, method = 'first') {
 
 /**
  * Queue multiple D1 responses in order for handlers that call prepare() more
- * than once. Matches the signature used in tests/worker.test.js (main's impl).
+ * than once. Matches the signature used in tests/integration/worker.test.js.
  *
  * @param {Array<{ response: any, method: 'first'|'all'|'run' }>} calls - Ordered mock responses
  */

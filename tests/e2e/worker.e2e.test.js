@@ -1,6 +1,6 @@
 // End-to-end tests for the issues API.
 //
-// Unlike worker.test.js (which mocks env.issues_db with canned responses and
+// Unlike integration/worker.test.js (which mocks env.issues_db with canned responses and
 // only checks routing + handler guards), these drive worker.fetch() against a
 // REAL in-memory SQLite database. The actual SQL in db.js runs — inserts,
 // the per-user display_no subquery, the status-history triggers, FK and CHECK
@@ -9,8 +9,8 @@
 // The database lives only in memory and is rebuilt for every test, so the
 // remote D1 is never touched and tests never see each other's data.
 
-import worker from '../src/js/worker.js';
-import { createTestEnv } from './helpers/memory-d1.js';
+import worker from '../../src/js/worker.js';
+import { createTestEnv } from '../helpers/memory-d1.js';
 
 let env;
 let db;

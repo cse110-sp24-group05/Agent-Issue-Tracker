@@ -4,7 +4,7 @@
 // Human reviewed and tested
 
 import { jest } from '@jest/globals';
-import worker from '../src/js/worker.js';
+import worker from '../../src/js/worker.js';
 
 // Mock the environment variables
 const env = {

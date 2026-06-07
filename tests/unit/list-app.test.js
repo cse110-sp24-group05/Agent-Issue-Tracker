@@ -3,7 +3,7 @@ import {
   tokenLevel,
   filterIssues,
   countByStatus,
-} from '../js/issue-helpers.js';
+} from '../../src/js/issue-helpers.js';
 
 // Test tokenLevel
 describe('tokenLevel', () => {

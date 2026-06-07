@@ -22,7 +22,7 @@ beforeAll(() => { console.log = jest.fn(); });
 afterAll(() => { console.log = originalLog; });
 
 // import the runner functions after setting up mocks
-const { runRunner, isClaudeBlocked, smartTruncate } = await import('../src/runner/claude-runner.js');
+const { runRunner, isClaudeBlocked, smartTruncate } = await import('../../src/runner/claude-runner.js');
 
 
 /**
