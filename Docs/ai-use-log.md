@@ -2,7 +2,7 @@
 
 Ava: Used Claude Code (Sonnet 4.6) for coding support. Reviewed and tested before committing.
 
-Patrick: Used Claude LLM for coding support and design decisions. Reviewed, debugged, and tested code with AI assistance. 
+Patrick: Used Claude LLM for coding support and design decisions. Reviewed, debugged, and tested code with AI assistance.
 
 Hanwen: Used Chatgpt for coding support. Reviewed and tested before committing.
 
@@ -16,7 +16,7 @@ Nikolas: I used Claude Code Sonnet 4.6 for advice and guidance while developing.
 
 Lisa: I used Claude Code Sonnet 4.6 for coding support and guidance. All code was manually reviewed and tested before committing.
 
-Hien:
+Hien: I used Claude Sonnet 4.6 for coding assistance, debugging, and documentation. All code was thoroughly reviewed for correctness, tested locally, and manually validated before being committed to the repository.
 
 Jayden: Used Claude Code (opus 4.6) for coding support. Reviewed and tested before committing.
 
