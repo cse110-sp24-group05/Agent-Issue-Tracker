@@ -149,8 +149,8 @@ export class SettingsModal extends HTMLElement {
         // Close the modal
         settingsModal.classList.add('hidden');
 
-        // Do async name updating after hiding the model so
-        if (profile.name !== nameInput.value && nameInput.value !== '') {
+        // Do async name updating after hiding the modal
+        if (nameInput.value !== '') {
           console.log('Updating name...');
           await updateName(nameInput.value);
         }
