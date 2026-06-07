@@ -18,3 +18,8 @@ Week 9:
 https://ucsd-g025825.slack.com/archives/C0B18HWALFL/p1779864310635659
 https://ucsd-g025825.slack.com/archives/C0B18HWALFL/p1780037109949869
 https://ucsd-g025825.slack.com/archives/C0B18HWALFL/p1780209904415019
+
+Week 10:
+https://ucsd-g025825.slack.com/archives/C0B18HWALFL/p1780469106705599
+https://ucsd-g025825.slack.com/archives/C0B18HWALFL/p1780641904921609
+https://ucsd-g025825.slack.com/archives/C0B18HWALFL/p1780814698595379

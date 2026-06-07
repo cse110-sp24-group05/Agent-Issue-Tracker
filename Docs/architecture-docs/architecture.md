@@ -100,6 +100,7 @@ Full contract in `Docs/archtiecture-docs/api-contract.md`.
 | Method | Endpoint | Description |
 |--------|----------------------------------|----------------------------------------|
 | POST   | `/api/login`                     | Login or auto-register a user          |
+| PUT    | `/api/users/:id`                 | Change a user's display name           |
 | GET    | `/api/issues?user_id=:id`        | List issues for one user               |
 | GET    | `/api/issues/ready`              | Get next ready issue (X-User-ID)       |
 | GET    | `/api/issues/:id`                | Get one issue                          |
@@ -185,15 +186,15 @@ resets any `in_progress` issues whose `claim_expires_at` has passed back to
 ## Agent Runner Workflow
 
 ```
-1. Read user id from ~/.ait/.env             →  config
-2. Fetch next ready issue                    →  GET /api/issues/ready (X-User-ID)
-3. Claim the issue                           →  PUT /api/issues/:id/claim
-4. Print task and curl command to stdout     →  (Claude Code reads it)
+1. Read user id from ~/.ait/.env             ->  config
+2. Fetch next ready issue                    ->  GET /api/issues/ready (X-User-ID)
+3. Claim the issue                           ->  PUT /api/issues/:id/claim
+4. Print task and curl command to stdout     ->  (Claude Code reads it)
 5. Claude Code does the work locally
-6. Claude Code runs the printed curl         →  PUT /api/issues/:id/result_text
-                                                body: { new_status, result_text }
+6. Claude Code runs the printed curl         ->  PUT /api/issues/:id/result_text
+                                                 body: { new_status, result_text }
 7. Human reviews the result in the UI
-8. Human approves                            →  PUT /api/issues/:id/close
+8. Human approves                            ->  PUT /api/issues/:id/close
 ```
 
 AIT records every step in the `issue_status_history` table via triggers, so
@@ -211,8 +212,8 @@ checks, deployment, and versioning:
   deploys the Worker to Cloudflare. Schema-first ordering ensures the new code
   never crashes on missing columns.
 - **`semver.yml`** — runs on push to `main`. Uses `release-please` to compute
-  the next version from commit messages (`feat: ...` → minor, `fix: ...` →
-  patch, `BREAKING CHANGE` → major) and opens a Release PR with an updated
+  the next version from commit messages (`feat: ...` -> minor, `fix: ...` ->
+  patch, `BREAKING CHANGE` -> major) and opens a Release PR with an updated
   CHANGELOG.
 
 ## Technology Stack
