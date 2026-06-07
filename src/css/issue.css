@@ -304,13 +304,8 @@
 }
 
 .token-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 4px;
+  vertical-align: middle;
   min-width: 120px;
-  height: 100%;
 }
 
 .token-wrap {

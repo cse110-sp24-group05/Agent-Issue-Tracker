@@ -291,7 +291,7 @@ export async function claimIssue(id) {
  * @returns {Promise<UiIssue|null>}
  */
 export async function postResult(id, result, tokensUsed, timeSpent) {
-  await request(`/api/issues/${encodeURIComponent(id)}/result_text`, {
+  await request(`/api/issues/${encodeURIComponent(id)}/result`, {
     method: 'PUT',
     body: JSON.stringify({ issue_status: 'review', result_text: result })
   });
