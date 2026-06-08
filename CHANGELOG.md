@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.5.1](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/compare/agent-issue-tracker-v1.5.0...agent-issue-tracker-v1.5.1) (2026-06-08)
+
+
+### Bug Fixes
+
+* changed postResult api request from result_text to result (everything else still uses result_text) ([8e806df](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/8e806df93b127e5f53bab0ff781f1b592bca1545))
+* fix the tokenbar line ([bb1654b](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/bb1654bed562d29cec4a20f728e193cb6fb2a796))
+* fixed updated name not saving sometimes ([cc52288](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/cc522887a60edda088b82db714bba85306f4440e))
+
 ## [1.5.0](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/compare/agent-issue-tracker-v1.4.0...agent-issue-tracker-v1.5.0) (2026-06-07)
 
 
