@@ -149,12 +149,12 @@ export class CreateIssueModal extends HTMLElement {
             priority: document.getElementById('new-priority').value,
             assignee:
           document.getElementById('new-assignee').value || 'open-to-all',
-            token_budget:
-          parseInt(document.getElementById('new-budget').value, 10) || 2000,
-            time_estimate:
-          parseInt(document.getElementById('new-estimate').value, 10) || 60,
-            creator: getSettings().ait_user || 'unknown',
-            created_by: 'human-manual',
+          //   token_budget:
+          // parseInt(document.getElementById('new-budget').value, 10) || 2000,
+          //   time_estimate:
+          // parseInt(document.getElementById('new-estimate').value, 10) || 60,
+          //   creator: getSettings().ait_user || 'unknown',
+          //   created_by: 'human-manual',
           });
           closeModal();
         } catch (err) {
