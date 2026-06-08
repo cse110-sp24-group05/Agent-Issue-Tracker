@@ -20,6 +20,6 @@ Hien: I used Claude Sonnet 4.6 for coding assistance, debugging, and documentati
 
 Jayden: Used Claude Code (opus 4.6) for coding support. Reviewed and tested before committing.
 
-Zay: I used Claude Code Opus 4.7 for testing and documentation.
+Zay: I used Claude Code Opus 4.7 for testing support and documentation.
 
 Jared:
