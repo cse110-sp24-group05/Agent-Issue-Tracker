@@ -8,7 +8,7 @@ Hanwen: Used Chatgpt for coding support. Reviewed and tested before committing.
 
 Jaylen: Used Claude for assistance with debugging, and coding support. ChatGPT was used for idea organization. All code was personally reviewed and tested before committing.
 
-Pranav:
+Pranav: Used Claude Code for assistance, reviewed and tested.
 
 Nick: I did not use AI to write code. Chat-GPT 5 Mini was used inside Duck-Duck-Go browser's AI search assist to help with research.
 
@@ -22,4 +22,4 @@ Jayden: Used Claude Code (opus 4.6) for coding support. Reviewed and tested befo
 
 Zay: I used Claude Code Opus 4.7 for testing support and documentation.
 
-Jared:
+Jared: Used Claude code for coding support and documentation.
