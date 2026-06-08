@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/compare/agent-issue-tracker-v1.5.1...agent-issue-tracker-v1.5.2) (2026-06-08)
+
+
+### Bug Fixes
+
+* fixed create issue modal null reference ([afdaffc](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/commit/afdaffc78c6a313c62f86be7e8a560f31b4fc4ae))
+
 ## [1.5.1](https://github.com/cse110-sp24-group05/Agent-Issue-Tracker/compare/agent-issue-tracker-v1.5.0...agent-issue-tracker-v1.5.1) (2026-06-08)
 
 
