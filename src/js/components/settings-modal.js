@@ -70,15 +70,6 @@ export class SettingsModal extends HTMLElement {
                     <option value="dark">Dark Mode</option>
                   </select>
                 </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="setting-comm">Agent Communication Style</label>
-                  <select class="form-select" id="setting-comm">
-                    <option value="professional">Professional & Concise</option>
-                    <option value="casual">Casual & Friendly</option>
-                    <option value="detailed">Highly Detailed</option>
-                  </select>
-                </div>
               </div>
 
             </div>
