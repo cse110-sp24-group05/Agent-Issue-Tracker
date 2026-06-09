@@ -22,4 +22,4 @@ Jayden: Used Claude Code (opus 4.6) for coding support. Reviewed and tested befo
 
 Zay: I used Claude Code Opus 4.7 for testing support and documentation.
 
-Jared: Used Claude code for coding support and documentation.
+Jared: Used Claude code for understand codebase, asking questions, and building runnerflow. It was also used to revidse documentation.
